@@ -12,6 +12,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TS = os.path.expanduser("~/.cargo/bin/tree-sitter")
 DEFAULT_OUT = os.path.expanduser("~/.local/share/nvim/site/parser/cangjie.so")
 
+QUERIES_OUT = os.path.expanduser("~/.local/share/nvim/site/queries/cangjie/")
 
 def run(cmd: list[str]) -> str:
     r = subprocess.run(cmd, cwd=ROOT, capture_output=True, text=True)
@@ -40,6 +41,11 @@ def main() -> None:
         "-o", args.out,
     ])
     print(f"OK -> {args.out}")
+    import shutil
+    src = os.path.join(ROOT, "queries")
+    dst = QUERIES_OUT
+    shutil.copytree(src, dst, dirs_exist_ok=True)
+    print(f"{src} -> {dst}")
     exit(0)
 
 

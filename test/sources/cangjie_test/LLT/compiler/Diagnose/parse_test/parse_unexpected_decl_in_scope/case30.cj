@@ -1,0 +1,25 @@
+// Copyright (c) Huawei Technologies Co., Ltd. 2025. All rights reserved.
+// This source file is part of the Cangjie project, licensed under Apache-2.0
+// with Runtime Library Exception.
+//
+// See https://cangjie-lang.cn/pages/LICENSE for license information.
+
+// LEVEL: 0
+// ERRCHECK: %compiler %noColor %n.cj
+
+extend foo {
+    public interface bar{}
+}
+
+/* SCAN
+error: unexpected interface declaration in extend body
+  ==> case30.cj:11:12:
+   | 
+10 | extend foo {
+   | ~~~~~~ in extend
+11 |     public interface bar{}
+   |            ^^^^^^^^^ unexpected interface declaration
+   | 
+
+1 error generated, 1 error printed.
+*/

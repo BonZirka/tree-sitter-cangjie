@@ -60,6 +60,7 @@ DEFAULT_BASE = os.path.join(REPO_ROOT, "test", "sources")
 DEFAULT_ROOTS = [
     os.path.join(DEFAULT_BASE, "cangjie_runtime", "stdlib"),
     os.path.join(DEFAULT_BASE, "cangjie_stdx"),
+    os.path.join(DEFAULT_BASE, "cangjie_test"),
 ]
 # Legacy local checkouts keep their historical keys via these bases.
 LEGACY_BASES = [
