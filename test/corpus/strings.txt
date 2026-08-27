@@ -1,0 +1,117 @@
+==================
+closed line string with escape and interpolation
+==================
+main() {
+  let x = 1
+  let s = "a\n${x}b"
+}
+------------------
+
+(translation_unit
+  (main_definition
+    (parameter_list)
+    (block
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (postfix_expression
+          (integer_literal)))
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (postfix_expression
+          (string_literal
+            (escape_sequence)
+            (string_interpolation
+              (postfix_expression
+                (identifier)))))))))
+
+==================
+unterminated line string recovers at the newline without an error node
+==================
+main() {
+  let s = "abc
+  let t = 1
+}
+------------------
+
+(translation_unit
+  (main_definition
+    (parameter_list)
+    (block
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (postfix_expression
+          (string_literal)))
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (postfix_expression
+          (integer_literal))))))
+
+==================
+multiline string with escape and interpolation hole
+==================
+main() {
+  let x = 1
+  let s = """
+line1 \n ${x} end
+"""
+}
+------------------
+
+(translation_unit
+  (main_definition
+    (parameter_list)
+    (block
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (postfix_expression
+          (integer_literal)))
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (postfix_expression
+          (string_literal
+            (escape_sequence)
+            (string_interpolation
+              (postfix_expression
+                (identifier)))))))))
+
+==================
+raw string with embedded quote
+==================
+main() {
+  let s = #"a"b"#
+}
+------------------
+
+(translation_unit
+  (main_definition
+    (parameter_list)
+    (block
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (postfix_expression
+          (string_literal))))))
+
+==================
+dollar alone in string
+==================
+main() {
+  let s = "$5"
+}
+------------------
+
+(translation_unit
+  (main_definition
+    (parameter_list)
+    (block
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (postfix_expression
+          (string_literal))))))

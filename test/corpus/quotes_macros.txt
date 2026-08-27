@@ -1,0 +1,95 @@
+==================
+quote with nested parens, raw tokens and interpolation
+==================
+main() {
+  let q = quote( (a) $(x) "s" )
+}
+------------------
+
+(translation_unit
+  (main_definition
+    (parameter_list)
+    (block
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (postfix_expression
+          (quote_expression
+            (quote_keyword)
+            (quote_raw_token)
+            (quote_paren_group
+              (quote_raw_token))
+            (quote_raw_token)
+            (quote_interpolation
+              (postfix_expression
+                (identifier)))
+            (quote_raw_token)
+            (string_literal)
+            (quote_raw_token)))))))
+
+==================
+macro body with escape, string and raw tokens
+==================
+main() {
+  @M[a \@ b "s" c]
+}
+------------------
+
+(translation_unit
+  (main_definition
+    (parameter_list)
+    (block
+      (postfix_expression
+        (macro_expression
+          (macro_call_sigil)
+          (macro_name)
+          (macro_attribute_body
+            (macro_raw_token)
+            (escape_sequence)
+            (macro_raw_token)
+            (string_literal)
+            (macro_raw_token)))))))
+
+==================
+unbalanced macro paren group recovers at the close bracket
+==================
+main() {
+  @M[a(b]
+  let t = 1
+}
+------------------
+
+(translation_unit
+  (main_definition
+    (parameter_list)
+    (block
+      (postfix_expression
+        (macro_expression
+          (macro_call_sigil)
+          (macro_name)
+          (macro_attribute_body
+            (macro_raw_token))))
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (postfix_expression
+          (integer_literal))))))
+
+==================
+unterminated macro body recovers at EOF without swallowing the file
+==================
+main() {
+  @M[abc
+------------------
+
+(translation_unit
+  (main_definition
+    (parameter_list)
+    (block
+      (postfix_expression
+        (macro_expression
+          (macro_call_sigil)
+          (macro_name)
+          (macro_attribute_body
+            (macro_raw_token))))
+      (MISSING "}"))))

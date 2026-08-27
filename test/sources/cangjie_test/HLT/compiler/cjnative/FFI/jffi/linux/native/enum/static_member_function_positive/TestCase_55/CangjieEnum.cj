@@ -1,0 +1,46 @@
+/*
+ * Copyright (c) Huawei Technologies Co., Ltd. 2025. All rights reserved.
+ * This source file is part of the Cangjie project, licensed under Apache-2.0
+ * with Runtime Library Exception.
+ *
+ * See https://cangjie-lang.cn/pages/LICENSE for license information.
+ */
+
+package UNNAMED
+
+import java.lang.*
+
+public class AnotherCangjieClass {
+    public var value: Int64 = 114514i64
+
+    public func getValue(): Int64 {
+        this.value
+    }
+}
+
+public enum AnotherCangjieEnum {
+    | A(Int64)
+    | B(Int64)
+    | C(Int64)
+
+    public func getValue(): Int64 {
+        match (this) {
+            case A(v) => v
+
+            case B(v) => v
+
+            case C(v) => v
+        }
+    }
+}
+
+public enum CangjieEnum {
+    | A
+    | B
+    | C
+
+    public static func foo(param0: JArray<Int64>, param1!: AnotherCangjieClass,
+        param2!: JArray<Int16> = JArray<Int16>(114514i32)): AnotherCangjieEnum {
+        AnotherCangjieEnum.A(114514i64)
+    }
+}
