@@ -1,0 +1,165 @@
+==================
+closed line string with escape and interpolation
+==================
+main() {
+  let x = 1
+  let s = "a\n${x}b"
+}
+------------------
+
+(source_file
+  (main_definition
+    (parameter_list)
+    (block
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (postfix_expression
+          (integer_literal)))
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (postfix_expression
+          (string_literal
+            (string_start)
+            (string_content)
+            (escape_sequence)
+            (string_interpolation
+              (interp_open)
+              (postfix_expression
+                (identifier))
+              (interp_close))
+            (string_content)
+            (string_end)))))))
+
+==================
+unterminated line string recovers at the newline without an error node
+==================
+main() {
+  let s = "abc
+  let t = 1
+}
+------------------
+
+(source_file
+  (main_definition
+    (parameter_list)
+    (block
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (postfix_expression
+          (string_literal
+            (string_start)
+            (string_content))))
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (postfix_expression
+          (integer_literal))))))
+
+==================
+multiline string with escape and interpolation hole
+==================
+main() {
+  let x = 1
+  let s = """
+line1 \n ${x} end
+"""
+}
+------------------
+
+(source_file
+  (main_definition
+    (parameter_list)
+    (block
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (postfix_expression
+          (integer_literal)))
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (postfix_expression
+          (string_literal
+            (string_start)
+            (string_content)
+            (escape_sequence)
+            (string_content)
+            (string_interpolation
+              (interp_open)
+              (postfix_expression
+                (identifier))
+              (interp_close))
+            (string_content)))))))
+
+==================
+raw string with embedded quote
+==================
+main() {
+  let s = #"a"b"#
+}
+------------------
+
+(source_file
+  (main_definition
+    (parameter_list)
+    (block
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (postfix_expression
+          (string_literal
+            (string_start)
+            (string_content)))))))
+
+==================
+dollar alone in string
+==================
+main() {
+  let s = "$5"
+}
+------------------
+
+(source_file
+  (main_definition
+    (parameter_list)
+    (block
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (postfix_expression
+          (string_literal
+            (string_start)
+            (string_content)
+            (string_end)))))))
+
+==================
+self-invoking lambda in string interpolation
+==================
+
+main() { let s = "${ { => 42 }() }" }
+
+---
+
+(source_file
+  (main_definition
+    (parameter_list)
+    (block
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (postfix_expression
+          (string_literal
+            (string_start)
+            (string_interpolation
+              (interp_open)
+              (postfix_expression
+                base: (postfix_expression
+                  (lambda_expression
+                    (postfix_expression
+                      (integer_literal))))
+                suffix: (call_suffix))
+              (interp_close))
+            (string_end)))))))

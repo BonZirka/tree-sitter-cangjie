@@ -1,0 +1,76 @@
+==================
+bare call statement at top level is not cangjie
+:error
+==================
+
+f(@f(1))
+
+---
+
+
+
+==================
+array destructuring is not cangjie
+:error
+==================
+
+main() { let [x, y] = items }
+
+---
+
+
+
+==================
+parenless catch pattern is not cangjie
+:error
+==================
+
+main() { try { a() } catch e { b() } }
+
+---
+
+
+
+==================
+prefix increment is not cangjie
+:error
+==================
+
+main() { ++i }
+
+---
+
+
+
+==================
+unary plus is not cangjie
+:error
+==================
+
+main() { let x = +y }
+
+---
+
+
+
+==================
+generic constraint inline in type parameters is not cangjie
+:error
+==================
+
+func f<T: Eq>(x: T): T { return x }
+
+---
+
+
+
+==================
+keyword as parameter name
+:error
+==================
+
+func f(func: Int64): Int64 { return func }
+
+---
+
+

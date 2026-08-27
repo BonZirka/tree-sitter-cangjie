@@ -1,0 +1,385 @@
+==================
+package declaration
+==================
+
+package mypkg.sub
+
+---
+
+(source_file
+  (package_declaration
+    (scoped_identifier
+      (identifier)
+      (identifier))))
+
+==================
+import: dotted path
+==================
+
+import std.io
+
+---
+
+(source_file
+  (import_list
+    package_name: (scoped_identifier
+      scope: (identifier)
+      name: (identifier))))
+
+==================
+import: wildcard
+==================
+
+import std.math.*
+
+---
+
+(source_file
+  (import_list
+    (package_full
+      package_name: (scoped_identifier
+        scope: (identifier)
+        name: (identifier)))))
+
+==================
+import: alias
+==================
+
+import java.time as JTime
+
+---
+
+(source_file
+  (import_list
+    (package_alias
+      package_name: (scoped_identifier
+        scope: (identifier)
+        name: (identifier))
+      alias: (identifier))))
+
+==================
+import: group
+==================
+
+import std.{math, io}
+
+---
+
+(source_file
+  (import_list
+    (sub_group_of_package
+      package_name: (identifier)
+      (package_group
+        package_name: (identifier)
+        package_name: (identifier)))))
+
+==================
+import: subpackage group
+==================
+
+import std.collection.{Array, ArrayList}
+
+---
+
+(source_file
+  (import_list
+    (sub_group_of_package
+      package_name: (scoped_identifier
+        scope: (identifier)
+        name: (identifier))
+      (package_group
+        package_name: (identifier)
+        package_name: (identifier)))))
+
+==================
+local function
+==================
+
+main() {
+    func inner(x: Int64): Int64 { return x }
+}
+
+---
+
+(source_file
+  (main_definition
+    (parameter_list)
+    (block
+      (function_definition
+        name: (func_name)
+        parameters: (parameter_list
+          (parameter
+            para_name: (identifier)
+            type: (Int64)))
+        return_type: (return_type
+          type: (Int64))
+        body: (block
+          (postfix_expression
+            (jump_expression
+              (postfix_expression
+                (identifier)))))))))
+
+==================
+modifier words on declarations
+==================
+
+public abstract class Base {
+    protected open func run(): Unit { }
+    private static let count = 0
+    internal mut prop flag: Bool { get() { false } }
+}
+
+---
+
+(source_file
+  (class_definition
+    (modifiers)
+    name: (class_name)
+    body: (declaration_body
+      (function_definition
+        (modifiers)
+        name: (func_name)
+        parameters: (parameter_list)
+        return_type: (return_type
+          type: (Unit))
+        body: (block))
+      (variable_declaration
+        (modifiers)
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (postfix_expression
+          (integer_literal)))
+      (property_definition
+        (modifiers)
+        name: (property_name)
+        type: (Bool)
+        getter: (getter_keyword)
+        getter: (block
+          (postfix_expression
+            (boolean_literal)))))))
+
+==================
+operator function with index
+==================
+
+public operator func [](idx: Int64): Int64 { return 0 }
+
+---
+
+(source_file
+  (operator_function_definition
+    (modifiers)
+    name: (operator)
+    parameters: (parameter_list
+      (parameter
+        para_name: (identifier)
+        type: (Int64)))
+    return_type: (return_type
+      type: (Int64))
+    body: (block
+      (postfix_expression
+        (jump_expression
+          (postfix_expression
+            (integer_literal)))))))
+
+==================
+macro definition
+==================
+
+macro mymacro(x: Expr): Expr {
+    return x
+}
+
+---
+
+(source_file
+  (macro_definition
+    name: (macro_name)
+    parameters: (macro_parameter
+      name: (identifier)
+      type: (user_type
+        (identifier)))
+    return_type: (return_type
+      type: (user_type
+        (identifier)))
+    body: (block
+      (postfix_expression
+        (jump_expression
+          (postfix_expression
+            (identifier)))))))
+
+==================
+type alias
+==================
+
+type Callback = (Int64) -> Bool
+
+---
+
+(source_file
+  (type_alias
+    name: (type_alias_name)
+    type: (arrow_type
+      (Int64)
+      type: (Bool))))
+
+==================
+foreign declaration
+==================
+
+foreign func external(x: Int64): Int64
+
+---
+
+(source_file
+  (foreign_declaration
+    (function_definition
+      (func_name)
+      (parameter_list
+        (parameter
+          (identifier)
+          (Int64)))
+      (return_type
+        (Int64)))))
+
+==================
+decorated declaration
+==================
+
+@Frozen
+public func stable(): Unit { }
+
+---
+
+(source_file
+  (decorated_declaration
+    (macro_call
+      (macro_call_sigil)
+      (macro_name))
+    (function_definition
+      (modifiers)
+      name: (func_name)
+      parameters: (parameter_list)
+      return_type: (return_type
+        type: (Unit))
+      body: (block))))
+
+==================
+initializer, static init and finalizer
+==================
+
+class C {
+    init(x: Int64) { }
+    static init() { }
+    finalizer() { }
+}
+
+---
+
+(source_file
+  (class_definition
+    name: (class_name)
+    body: (declaration_body
+      (init
+        parameters: (parameter_list
+          (parameter
+            para_name: (identifier)
+            type: (Int64)))
+        body: (block))
+      (init
+        (modifiers)
+        parameters: (parameter_list)
+        body: (block))
+      (primary_init
+        (class_name)
+        (primary_init_param_list)))))
+
+==================
+const and let variable declarations
+==================
+
+const LIMIT = 100
+let name: String = "x"
+
+---
+
+(source_file
+  (variable_declaration
+    name: (variable_name
+      (var_binding_pattern))
+    initializer: (postfix_expression
+      (integer_literal)))
+  (variable_declaration
+    name: (variable_name
+      (var_binding_pattern))
+    type: (String)
+    initializer: (postfix_expression
+      (string_literal
+        (string_start)
+        (string_content)
+        (string_end)))))
+
+==================
+static member variables
+==================
+
+class Registry {
+    static let instance = Registry()
+    static var counter = 0
+    public static mut prop flag: Bool { get() { true } }
+}
+
+---
+
+(source_file
+  (class_definition
+    name: (class_name)
+    body: (declaration_body
+      (variable_declaration
+        (modifiers)
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (postfix_expression
+          base: (postfix_expression
+            (identifier))
+          suffix: (call_suffix)))
+      (variable_declaration
+        (modifiers)
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (postfix_expression
+          (integer_literal)))
+      (property_definition
+        (modifiers)
+        name: (property_name)
+        type: (Bool)
+        getter: (getter_keyword)
+        getter: (block
+          (postfix_expression
+            (boolean_literal)))))))
+
+==================
+main with parameters and return type
+==================
+
+main(args: Array<String>): Int32 {
+    return 0
+}
+
+---
+
+(source_file
+  (main_definition
+    (parameter_list
+      (parameter
+        para_name: (identifier)
+        type: (generic_type
+          (type_arguments
+            (String)))))
+    (return_type
+      type: (Int32))
+    (block
+      (postfix_expression
+        (jump_expression
+          (postfix_expression
+            (integer_literal)))))))

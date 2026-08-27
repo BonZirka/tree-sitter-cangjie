@@ -1,0 +1,71 @@
+==================
+try catch finally attach across newline
+==================
+main() {
+  try {
+    1
+  }
+  catch (e: Exception) {
+    2
+  }
+  finally {
+    3
+  }
+}
+------------------
+
+(source_file
+  (main_definition
+    (parameter_list)
+    (block
+      (postfix_expression
+        (try_expression
+          try_body: (block
+            (postfix_expression
+              (integer_literal)))
+          (catch_clause
+            (catch_pattern
+              (var_binding_pattern)
+              (user_type
+                (identifier)))
+            catch_body: (block
+              (postfix_expression
+                (integer_literal))))
+          finally_body: (block
+            (postfix_expression
+              (integer_literal))))))))
+
+==================
+invalid catch pattern localizes error
+==================
+main() {
+  try {
+    1
+  }
+  catch (e) {
+    2
+  }
+  finally {
+    3
+  }
+}
+------------------
+
+(source_file
+  (main_definition
+    (parameter_list)
+    (block
+      (postfix_expression
+        (try_expression
+          try_body: (block
+            (postfix_expression
+              (integer_literal)))
+          (catch_clause
+            (ERROR
+              (var_binding_pattern))
+            catch_body: (block
+              (postfix_expression
+                (integer_literal))))
+          finally_body: (block
+            (postfix_expression
+              (integer_literal))))))))

@@ -1,0 +1,14 @@
+==================
+package and function
+==================
+package foo
+
+main() {
+}
+------------------
+(source_file
+  (package_declaration
+    package_name: (identifier))
+  (main_definition
+    (parameter_list)
+    (block)))

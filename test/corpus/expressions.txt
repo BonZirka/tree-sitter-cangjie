@@ -1,0 +1,681 @@
+==================
+arithmetic operators
+==================
+
+main() { let a = b + c; let d = e - f; let g = h * i; let j = k / l; let m = n % o }
+
+---
+
+(source_file
+  (main_definition
+    (parameter_list)
+    (block
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (binary_expression
+          left: (postfix_expression
+            (identifier))
+          right: (postfix_expression
+            (identifier))))
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (binary_expression
+          left: (postfix_expression
+            (identifier))
+          right: (postfix_expression
+            (identifier))))
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (binary_expression
+          left: (postfix_expression
+            (identifier))
+          right: (postfix_expression
+            (identifier))))
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (binary_expression
+          left: (postfix_expression
+            (identifier))
+          right: (postfix_expression
+            (identifier))))
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (binary_expression
+          left: (postfix_expression
+            (identifier))
+          right: (postfix_expression
+            (identifier)))))))
+
+==================
+bitwise and shift operators
+==================
+
+main() { let a = b & c; let d = e | f; let g = h ^ i; let j = k << l; let m = n >> o }
+
+---
+
+(source_file
+  (main_definition
+    (parameter_list)
+    (block
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (binary_expression
+          left: (postfix_expression
+            (identifier))
+          right: (postfix_expression
+            (identifier))))
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (binary_expression
+          left: (postfix_expression
+            (identifier))
+          right: (postfix_expression
+            (identifier))))
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (binary_expression
+          left: (postfix_expression
+            (identifier))
+          right: (postfix_expression
+            (identifier))))
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (binary_expression
+          left: (postfix_expression
+            (identifier))
+          right: (postfix_expression
+            (identifier))))
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (binary_expression
+          left: (postfix_expression
+            (identifier))
+          right: (postfix_expression
+            (identifier)))))))
+
+==================
+relational and equality operators
+==================
+
+main() { let a = b < c; let d = e > f; let g = h <= i; let j = k >= l; let m = n == o; let p = q != r }
+
+---
+
+(source_file
+  (main_definition
+    (parameter_list)
+    (block
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (binary_expression
+          left: (postfix_expression
+            (identifier))
+          right: (postfix_expression
+            (identifier))))
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (binary_expression
+          left: (postfix_expression
+            (identifier))
+          right: (postfix_expression
+            (identifier))))
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (binary_expression
+          left: (postfix_expression
+            (identifier))
+          right: (postfix_expression
+            (identifier))))
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (binary_expression
+          left: (postfix_expression
+            (identifier))
+          right: (postfix_expression
+            (identifier))))
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (binary_expression
+          left: (postfix_expression
+            (identifier))
+          right: (postfix_expression
+            (identifier))))
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (binary_expression
+          left: (postfix_expression
+            (identifier))
+          right: (postfix_expression
+            (identifier)))))))
+
+==================
+compound assignment operators
+==================
+
+main() {
+    a += 1; a -= 1; a *= 1; a /= 1; a %= 1; a **= 1
+    a &= 1; a |= 1; a ^= 1; a <<= 1; a >>= 1; a &&= true; a ||= false
+}
+
+---
+
+(source_file
+  (main_definition
+    (parameter_list)
+    (block
+      (assignment_expression
+        variable: (postfix_expression
+          (identifier))
+        value: (postfix_expression
+          (integer_literal)))
+      (assignment_expression
+        variable: (postfix_expression
+          (identifier))
+        value: (postfix_expression
+          (integer_literal)))
+      (assignment_expression
+        variable: (postfix_expression
+          (identifier))
+        value: (postfix_expression
+          (integer_literal)))
+      (assignment_expression
+        variable: (postfix_expression
+          (identifier))
+        value: (postfix_expression
+          (integer_literal)))
+      (assignment_expression
+        variable: (postfix_expression
+          (identifier))
+        value: (postfix_expression
+          (integer_literal)))
+      (assignment_expression
+        variable: (postfix_expression
+          (identifier))
+        value: (postfix_expression
+          (integer_literal)))
+      (assignment_expression
+        variable: (postfix_expression
+          (identifier))
+        value: (postfix_expression
+          (integer_literal)))
+      (assignment_expression
+        variable: (postfix_expression
+          (identifier))
+        value: (postfix_expression
+          (integer_literal)))
+      (assignment_expression
+        variable: (postfix_expression
+          (identifier))
+        value: (postfix_expression
+          (integer_literal)))
+      (assignment_expression
+        variable: (postfix_expression
+          (identifier))
+        value: (postfix_expression
+          (integer_literal)))
+      (assignment_expression
+        variable: (postfix_expression
+          (identifier))
+        value: (postfix_expression
+          (integer_literal)))
+      (assignment_expression
+        variable: (postfix_expression
+          (identifier))
+        value: (postfix_expression
+          (boolean_literal)))
+      (assignment_expression
+        variable: (postfix_expression
+          (identifier))
+        value: (postfix_expression
+          (boolean_literal))))))
+
+==================
+unary operators
+==================
+
+main() { let a = !b; let c = -d; let k = l++; let m = n-- }
+
+---
+
+(source_file
+  (main_definition
+    (parameter_list)
+    (block
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (unary_expression
+          argument: (postfix_expression
+            (identifier))))
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (unary_expression
+          argument: (postfix_expression
+            (identifier))))
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (postfix_expression
+          base: (postfix_expression
+            (identifier))
+          suffix: (inc_or_dec)))
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (postfix_expression
+          base: (postfix_expression
+            (identifier))
+          suffix: (inc_or_dec))))))
+
+==================
+lambda forms
+==================
+
+main() {
+    let a = { x => x + 1 }
+    let b = { x: Int64 => x }
+    let c = { => unit }
+    let d = { p, q => p + q }
+}
+
+---
+
+(source_file
+  (main_definition
+    (parameter_list)
+    (block
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (postfix_expression
+          (lambda_expression
+            (lambda_parameters
+              (lambda_parameter
+                (var_binding_pattern)))
+            (binary_expression
+              left: (postfix_expression
+                (identifier))
+              right: (postfix_expression
+                (integer_literal))))))
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (postfix_expression
+          (lambda_expression
+            (lambda_parameters
+              (lambda_parameter
+                (var_binding_pattern)
+                (Int64)))
+            (postfix_expression
+              (identifier)))))
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (postfix_expression
+          (lambda_expression
+            (postfix_expression
+              (identifier)))))
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (postfix_expression
+          (lambda_expression
+            (lambda_parameters
+              (lambda_parameter
+                (var_binding_pattern))
+              (lambda_parameter
+                (var_binding_pattern)))
+            (binary_expression
+              left: (postfix_expression
+                (identifier))
+              right: (postfix_expression
+                (identifier)))))))))
+
+==================
+index, member and sub accesses
+==================
+
+main() {
+    let a = grid[i][j]
+    let b = obj.deep.field
+    let c = s.sub(0, 2)
+    let d = opt?.deep?.leaf
+}
+
+---
+
+(source_file
+  (main_definition
+    (parameter_list)
+    (block
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (postfix_expression
+          base: (postfix_expression
+            base: (postfix_expression
+              (identifier))
+            suffix: (index_access
+              (postfix_expression
+                (identifier))))
+          suffix: (index_access
+            (postfix_expression
+              (identifier)))))
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (postfix_expression
+          base: (postfix_expression
+            base: (postfix_expression
+              (identifier))
+            suffix: (field_access
+              (identifier)))
+          suffix: (field_access
+            (identifier))))
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (postfix_expression
+          base: (postfix_expression
+            base: (postfix_expression
+              (identifier))
+            suffix: (field_access
+              (identifier)))
+          suffix: (call_suffix
+            (postfix_expression
+              (integer_literal))
+            (postfix_expression
+              (integer_literal)))))
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (postfix_expression
+          base: (postfix_expression
+            base: (postfix_expression
+              (identifier))
+            suffix: (quest_access
+              (field_access
+                (identifier))))
+          suffix: (quest_access
+            (field_access
+              (identifier))))))))
+
+==================
+range expressions
+==================
+
+main() {
+    for (i in 0..n) { }
+    for (i in 0..=n) { }
+    for (i in n..0) { }
+}
+
+---
+
+(source_file
+  (main_definition
+    (parameter_list)
+    (block
+      (postfix_expression
+        (for_in_expression
+          (var_binding_pattern)
+          (postfix_expression
+            (range_expression
+              start: (postfix_expression
+                (integer_literal))
+              end: (postfix_expression
+                (identifier))))
+          (block)))
+      (postfix_expression
+        (for_in_expression
+          (var_binding_pattern)
+          (postfix_expression
+            (range_expression
+              start: (postfix_expression
+                (integer_literal))
+              end: (postfix_expression
+                (identifier))))
+          (block)))
+      (postfix_expression
+        (for_in_expression
+          (var_binding_pattern)
+          (postfix_expression
+            (range_expression
+              start: (postfix_expression
+                (identifier))
+              end: (postfix_expression
+                (integer_literal))))
+          (block))))))
+
+==================
+jump expressions with labels
+==================
+
+main() {
+    while (true) {
+        break
+        continue
+    }
+    return 0
+}
+
+---
+
+(source_file
+  (main_definition
+    (parameter_list)
+    (block
+      (postfix_expression
+        (while_expression
+          (postfix_expression
+            (boolean_literal))
+          (block
+            (postfix_expression
+              (jump_expression))
+            (postfix_expression
+              (jump_expression)))))
+      (postfix_expression
+        (jump_expression
+          (postfix_expression
+            (integer_literal)))))))
+
+==================
+spawn expression
+==================
+
+main() {
+    let t = spawn { worker() }
+}
+
+---
+
+(source_file
+  (main_definition
+    (parameter_list)
+    (block
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (postfix_expression
+          (spawn_expression
+            (lambda_expression
+              (postfix_expression
+                base: (postfix_expression
+                  (identifier))
+                suffix: (call_suffix)))))))))
+
+==================
+unsafe block and try-with resources
+==================
+
+main() {
+    let r = try (res = open()) { use(res) } catch (_) { }
+    unsafe { rawOp() }
+}
+
+---
+
+(source_file
+  (main_definition
+    (parameter_list)
+    (block
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (postfix_expression
+          (try_expression
+            resources: (resource_specifications
+              (resource_specification
+                (identifier)
+                (postfix_expression
+                  base: (postfix_expression
+                    (identifier))
+                  suffix: (call_suffix))))
+            try_body: (block
+              (postfix_expression
+                base: (postfix_expression
+                  (identifier))
+                suffix: (call_suffix
+                  (postfix_expression
+                    (identifier)))))
+            (catch_clause
+              (catch_pattern
+                (wildcard_pattern))
+              catch_body: (block)))))
+      (postfix_expression
+        (unsafe_expression
+          (block
+            (postfix_expression
+              base: (postfix_expression
+                (identifier))
+              suffix: (call_suffix))))))))
+
+==================
+synchronized and perform/resume
+==================
+
+main() {
+    synchronized (lock) { critical() }
+    let v = perform effect(1)
+    let w = resume with { 42 }
+}
+
+---
+
+(source_file
+  (main_definition
+    (parameter_list)
+    (block
+      (postfix_expression
+        (synchronized_expression
+          (postfix_expression
+            (identifier))
+          (block
+            (postfix_expression
+              base: (postfix_expression
+                (identifier))
+              suffix: (call_suffix)))))
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (postfix_expression
+          (perform_expression
+            argument: (postfix_expression
+              base: (postfix_expression
+                (identifier))
+              suffix: (call_suffix
+                (postfix_expression
+                  (integer_literal)))))))
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (postfix_expression
+          (resume_expression
+            with_argument: (postfix_expression
+              (lambda_expression
+                (postfix_expression
+                  (integer_literal))))))))))
+
+==================
+throw expression
+==================
+
+func fail(): Unit {
+    throw Error("boom")
+}
+
+---
+
+(source_file
+  (function_definition
+    name: (func_name)
+    parameters: (parameter_list)
+    return_type: (return_type
+      type: (Unit))
+    body: (block
+      (postfix_expression
+        (jump_expression
+          (postfix_expression
+            base: (postfix_expression
+              (identifier))
+            suffix: (call_suffix
+              (postfix_expression
+                (string_literal
+                  (string_start)
+                  (string_content)
+                  (string_end))))))))))
+
+==================
+this and super calls
+==================
+
+class D <: C {
+    init() {
+        super(1)
+        this.x = 2
+    }
+}
+
+---
+
+(source_file
+  (class_definition
+    name: (class_name)
+    (super_or_interface
+      (identifier))
+    body: (declaration_body
+      (init
+        parameters: (parameter_list)
+        body: (block
+          (postfix_expression
+            base: (postfix_expression
+              (this_super_expression))
+            suffix: (call_suffix
+              (postfix_expression
+                (integer_literal))))
+          (assignment_expression
+            variable: (postfix_expression
+              base: (postfix_expression
+                (this_super_expression))
+              suffix: (field_access
+                (identifier)))
+            value: (postfix_expression
+              (integer_literal))))))))

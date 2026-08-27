@@ -1,0 +1,225 @@
+==================
+bool and unit literals
+==================
+
+main() { let a = true; let b = false; let c = () }
+
+---
+
+(source_file
+  (main_definition
+    (parameter_list)
+    (block
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (postfix_expression
+          (boolean_literal)))
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (postfix_expression
+          (boolean_literal)))
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (postfix_expression
+          (unit_literal))))))
+
+==================
+rune literals with escapes
+==================
+
+main() { let a = r'a'; let b = r'\n'; let c = r'\\'; let d = r'\'' }
+
+---
+
+(source_file
+  (main_definition
+    (parameter_list)
+    (block
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (postfix_expression
+          (rune_literal)))
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (postfix_expression
+          (rune_literal)))
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (postfix_expression
+          (rune_literal)))
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (postfix_expression
+          (rune_literal))))))
+
+==================
+byte literals
+==================
+
+main() { let a = b'x'; let b = b'\x41'; let c = b'0' }
+
+---
+
+(source_file
+  (main_definition
+    (parameter_list)
+    (block
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (postfix_expression
+          (byte_literal)))
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (postfix_expression
+          (byte_literal)))
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (postfix_expression
+          (byte_literal))))))
+
+==================
+string escapes
+==================
+
+main() { let s = "\t\r\n\\\'\"\0" }
+
+---
+
+(source_file
+  (main_definition
+    (parameter_list)
+    (block
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (postfix_expression
+          (string_literal
+            (string_start)
+            (escape_sequence)
+            (escape_sequence)
+            (escape_sequence)
+            (escape_sequence)
+            (escape_sequence)
+            (escape_sequence)
+            (escape_sequence)
+            (string_end)))))))
+
+==================
+multiple interpolations in one string
+==================
+
+main() { let s = "${a}${b}${a + b}" }
+
+---
+
+(source_file
+  (main_definition
+    (parameter_list)
+    (block
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (postfix_expression
+          (string_literal
+            (string_start)
+            (string_interpolation
+              (interp_open)
+              (postfix_expression
+                (identifier))
+              (interp_close))
+            (string_interpolation
+              (interp_open)
+              (postfix_expression
+                (identifier))
+              (interp_close))
+            (string_interpolation
+              (interp_open)
+              (binary_expression
+                left: (postfix_expression
+                  (identifier))
+                right: (postfix_expression
+                  (identifier)))
+              (interp_close))
+            (string_end)))))))
+
+==================
+raw strings with different hash counts
+==================
+
+main() { let a = r"a"; let b = r#"q"#; let c = r##"deep #"q" content"## }
+
+---
+
+(source_file
+  (main_definition
+    (parameter_list)
+    (block
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (postfix_expression
+          (rune_literal)))
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (postfix_expression
+          (identifier)))
+      (postfix_expression
+        (string_literal
+          (string_start)
+          (string_content)))
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (postfix_expression
+          (identifier)))
+      (postfix_expression
+        (string_literal
+          (string_start)
+          (string_content))))))
+
+==================
+nested arrays and tuples
+==================
+
+main() { let m = [(1, "a"), (2, "b")] }
+
+---
+
+(source_file
+  (main_definition
+    (parameter_list)
+    (block
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (postfix_expression
+          (array_literal
+            (postfix_expression
+              (tuple_expression
+                (postfix_expression
+                  (integer_literal))
+                (postfix_expression
+                  (string_literal
+                    (string_start)
+                    (string_content)
+                    (string_end)))))
+            (postfix_expression
+              (tuple_expression
+                (postfix_expression
+                  (integer_literal))
+                (postfix_expression
+                  (string_literal
+                    (string_start)
+                    (string_content)
+                    (string_end)))))))))))
