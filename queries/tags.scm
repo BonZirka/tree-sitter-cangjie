@@ -1,0 +1,7 @@
+(class_definition (class_name) @definition.class)
+(interface_definition (interface_name) @definition.interface)
+(enum_definition (enum_name) @definition.enum)
+(function_definition (func_name) @definition.function)
+(macro_definition (macro_name) @definition.macro)
+(struct_definition (struct_name) @definition.struct)
+(type_alias (type_alias_name) @definition.type)
