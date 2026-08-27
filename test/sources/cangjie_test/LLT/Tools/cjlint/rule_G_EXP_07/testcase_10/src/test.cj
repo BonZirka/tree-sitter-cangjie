@@ -1,0 +1,20 @@
+// Copyright (c) Huawei Technologies Co., Ltd. 2025. All rights reserved.
+// This source file is part of the Cangjie project, licensed under Apache-2.0
+// with Runtime Library Exception.
+//
+// See https://cangjie-lang.cn/pages/LICENSE for license information.
+
+let MAX = 100
+public class TEST {
+    public var _p2: Int64 = 2
+    public mut prop a: Int64 {
+        get() { _p2 }
+        set(v) { _p2 = v }
+    }
+}
+main() {
+    if (MAX > TEST().a){
+        return 1
+    }
+    return 0
+}

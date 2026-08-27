@@ -1,0 +1,56 @@
+{
+  "$schema": "https://tree-sitter.github.io/tree-sitter/assets/schemas/config.schema.json",
+  "grammars": [
+    {
+      "name": "cangjie",
+      "camelcase": "Cangjie",
+      "title": "Cangjie",
+      "scope": "source.cj",
+      "file-types": [
+        "cj.macrocall",
+        "cj"
+      ],
+      "injection-regex": "^cangjie$",
+      "class-name": "TreeSitterCangjie"
+    }
+  ],
+  "tree-sitter": [
+    {
+      "scope": "source.cj",
+      "file-types": [
+        "cj",
+        "cj.macrocall"
+      ],
+      "highlights": "queries/highlights.scm",
+      "locals": "queries/locals.scm",
+      "folds": "queries/folds.scm",
+      "indents": "queries/indents.scm",
+      "textobjects": "queries/textobjects.scm",
+      "tags": "queries/tags.scm"
+    }
+  ],
+  "metadata": {
+    "version": "0.1.0",
+    "license": "MIT",
+    "description": "Cangjie grammar for tree-sitter",
+    "authors": [
+      {
+        "name": "BonZer0",
+        "email": "sergeykovaltsov@gmail.com",
+        "url": "https://github.com/BonZirka"
+      }
+    ],
+    "links": {
+      "repository": "https://github.com/BonZirka/tree-sitter-cangjie"
+    }
+  },
+  "bindings": {
+    "c": true,
+    "go": true,
+    "node": true,
+    "python": true,
+    "rust": true,
+    "swift": true,
+    "zig": false
+  }
+}

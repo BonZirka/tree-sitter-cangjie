@@ -1,0 +1,32 @@
+conflicts: 19
+
+STATE_COUNT 3303
+
+sizes (bytes):
+src/parser.c 6965042
+src/scanner.c 14926
+grammar.js 43103
+
+error files: 858  error nodes: 6852
+
+top-20 slowest files (ms, bytes, B/ms, errors, path):
+155.81	375809	2412	0	cangjie_test/HLT/regression/testcase_28/test_15.cj
+149.87	422934	2822	4	cangjie_test/HLT/regression/testcase_621.cj
+132.27	527636	3989	0	cangjie_test/HLT/API/Regression/Fuzz/fuzz_cases/regression_fuzz_0016.cj
+103.34	232009	2245	8	cangjie_test/HLT/regression/testcase_610.cj
+94.26	386094	4096	0	cangjie_test/LLT/compiler/ConstEval/integer-constants.cj
+91.13	282142	3096	0	cangjie_test/HLT/regression/testcase_176.cj
+90.69	281944	3109	4	cangjie_test/HLT/regression/testcase_180.cj
+89.23	204870	2296	111	cangjie_test/HLT/regression/testcase_338/testcase_147/test_25.cj
+85.96	282395	3285	0	cangjie_test/HLT/regression/testcase_527.cj
+76.74	360619	4699	4	cangjie_test/HLT/regression/testcase_537.cj
+72.64	213431	2938	0	cangjie_test/HLT/regression/testcase_224/testcase_128/core_20220620-132405285471301/test.cj
+72.36	259696	3589	0	cangjie_test/HLT/regression/testcase_174.cj
+70.42	157102	2231	0	cangjie_test/HLT/regression/testcase_28/test_34.cj
+70.35	277108	3939	0	cangjie_test/HLT/regression/testcase_139.cj
+68.86	120364	1748	166	cangjie_test/HLT/regression/testcase_128/test.cj
+68.19	205180	3009	0	cangjie_test/HLT/regression/testcase_28/test_21.cj
+67.43	273308	4053	4	cangjie_test/HLT/regression/testcase_102.cj
+67.21	195113	2903	0	cangjie_test/HLT/regression/testcase_224/testcase_128/core_20220620-124111907785768/test.cj
+66.80	214041	3204	8	cangjie_test/HLT/regression/testcase_748.cj
+66.73	224357	3362	0	cangjie_test/HLT/regression/testcase_314.cj

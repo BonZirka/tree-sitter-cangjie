@@ -1,0 +1,121 @@
+==================
+else attaches across newline
+==================
+main() {
+  if (c) {
+    f()
+  }
+  else {
+    g()
+  }
+}
+------------------
+
+(file
+  (main_definition
+    (parameter_list)
+    (block
+      (postfix_expression
+        (if_expression
+          condition: (postfix_expression
+            (identifier))
+          consequence: (block
+            (postfix_expression
+              base: (postfix_expression
+                (identifier))
+              suffix: (call_suffix)))
+          alternative: (block
+            (postfix_expression
+              base: (postfix_expression
+                (identifier))
+              suffix: (call_suffix))))))))
+
+==================
+else attaches across newline with comment
+==================
+main() {
+  if (c) {
+    f()
+  }
+  // c
+  else {
+    g()
+  }
+}
+------------------
+
+(file
+  (main_definition
+    (parameter_list)
+    (block
+      (postfix_expression
+        (if_expression
+          condition: (postfix_expression
+            (identifier))
+          consequence: (block
+            (postfix_expression
+              base: (postfix_expression
+                (identifier))
+              suffix: (call_suffix)))
+          (line_comment)
+          alternative: (block
+            (postfix_expression
+              base: (postfix_expression
+                (identifier))
+              suffix: (call_suffix))))))))
+
+==================
+local function with next-line brace
+==================
+main() {
+  func f(): Int64
+  {
+    1
+  }
+}
+------------------
+
+(file
+  (main_definition
+    (parameter_list)
+    (block
+      (function_definition
+        name: (func_name)
+        parameters: (parameter_list)
+        return_type: (return_type
+          type: (Int64))
+        body: (block
+          (postfix_expression
+            (integer_literal)))))))
+
+==================
+class member generic function with where clause
+==================
+class C {
+  func f<T>(): T where T <: Numeric {
+    1
+  }
+}
+------------------
+
+(file
+  (class_definition
+    name: (class_name)
+    body: (declaration_body
+      (function_definition
+        name: (func_name)
+        (type_parameters
+          (type_parameter
+            name: (identifier)))
+        parameters: (parameter_list)
+        return_type: (return_type
+          type: (user_type
+            (identifier)))
+        (generic_constraints
+          (generic_constraint
+            (identifier)
+            (user_type
+              (identifier))))
+        body: (block
+          (postfix_expression
+            (integer_literal)))))))
