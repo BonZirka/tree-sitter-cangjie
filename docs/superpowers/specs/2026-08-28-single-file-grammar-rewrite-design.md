@@ -275,9 +275,17 @@ In this exact order:
 
 1. `tree-sitter generate` succeeds. Record `STATE_COUNT`, `LARGE_STATE_COUNT`,
    conflict-group count. **Must not increase** vs. the previous checkpoint.
-2. `make golden-ci` — **hard gate**: total files-with-ERROR/MISSING must be
-   ≤ previous (cangjie_test ≤ 1315 baseline; total across all roots ≤ current).
-   Any increase → stop, fix before proceeding.
+2. **Error-count hard gate** — `make golden-ci` alone exits on REGRESSION
+   count, *not* on error-file count, so the no-new-errors gate must be invoked
+   explicitly:
+   ```sh
+   # capture baseline at the Phase-0 checkpoint, then at each step:
+   ERR_BASE=$(python3 scripts/golden.py --ci 2>&1 | grep -oP 'error nodes in \K\d+')
+   # gate: fails (exit 1) when files-with-errors exceeds the captured baseline
+   python3 scripts/golden.py --ci --fail-on-error "$ERR_BASE"
+   ```
+   `cangjie_test` error-file count must stay ≤ 1315; total across all roots
+   ≤ the value captured at the previous checkpoint. Any increase → stop, fix.
 3. `python3 scripts/recovery_report.py` — no new `cascading` verdict among the
    12 `test/recovery/` cases (baseline: 5 cascading, 5 clean, 2 localized).
 4. CST-shape review: `python3 scripts/golden.py --diff <key>` on a sample of
