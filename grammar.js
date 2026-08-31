@@ -7,17 +7,199 @@
 /// <reference types="tree-sitter-cli/dsl" />
 // @ts-check
 
-const {
-    PREC,
-    TOKENS,
-    newline,
-    terminator,
-    sep1,
-    commaSep,
-    commaSep1,
-    commaSep1Trailing,
-    commaSepTrailing
-} = require('./grammar_common');
+const newline = /\r?\n/;
+
+const terminator = ($) => choice($._terminator, ';');
+
+const PREC = {
+    COMMENT: 0,           // //  /*  */
+    ASSIGN: 0,            // = += ... (loosest; looser than pipeline)
+    PIPE: 1,              // |> ~>  (Tokens.inc priority 1, lowest binary)
+    OR: 13,               // ||
+    COALESCE: 2,          // ??   (Tokens.inc priority 2, looser than ||)
+    AND: 14,              // &&
+    BIT_OR: 15,           // |
+    BIT_XOR: 16,          // ^
+    BIT_AND: 17,          // &
+    EQUALITY: 18,         // ==  !=
+    REL: 19,              // > < >= <= is as
+    RANGE: 20,            // .. ..=
+    SHIFT: 21,            // <<  >>
+    ADD_SUB: 22,          // +  -
+    MUL_DIV: 23,          // *  /  %
+    POWER: 24,            // **
+    UNARY: 25,            // ! -  + 
+    POSTFIX: 26,          // ++  -- ?
+    PARENS: 27,           // (Expression)
+    ARRAY: 28,            // [index]
+    MEMBER: 29,           // .
+    MARCO_CALL: 30,       // @
+};
+
+const TOKENS = {
+    AS            :     token('as'),
+    BREAK         :     token('break'),
+    BOOL          :     token('Bool'),
+    CASE          :     token('case'),
+    CATCH         :     token('catch'),
+    CLASS         :     token('class'),
+    CONST         :     token('const'),
+    CONTINUE      :     token('continue'),
+    RUNE          :     token('Rune'),
+    DO            :     token('do'),
+    ELSE          :     token('else'),
+    ENUM          :     token('enum'),
+    EXTEND        :     token('extend'),
+    FEATURES      :     token('features'),
+    FOR           :     token('for'),
+    FROM          :     token('from'),
+    FUNC          :     token('func'),
+    FINALLY       :     token('finally'),
+    FOREIGN       :     token('foreign'),
+    HANDLE        :     token('handle'),
+    FLOAT16       :     token('Float16'),
+    FLOAT32       :     token('Float32'),
+    FLOAT64       :     token('Float64'),
+    IF            :     token('if'),
+    IN            :     token('in'),
+    NOT_IN        :     token('!in'),
+    IS            :     token('is'),
+    INIT          :     token('init'),
+    INOUT         :     token('inout'),
+    IMPORT        :     token('import'),
+    INTERFACE     :     token('interface'),
+    INT8          :     token('Int8'),
+    INT16         :     token('Int16'),
+    INT32         :     token('Int32'),
+    INT64         :     token('Int64'),
+    INTNATIVE     :     token('IntNative'),
+    LET           :     token('let'),
+    MUT           :     token('mut'),
+    MAIN          :     token('main'),
+    MACRO         :     token('macro'),
+    MATCH         :     token('match'),
+    NOTHING       :     token('Nothing'),
+    OPERATOR      :     token('operator'),
+    PROP          :     token('prop'),
+    PACKAGE       :     token('package'),
+    QUOTE         :     token('quote'),
+    RETURN        :     token('return'),
+    SPAWN         :     token('spawn'),
+    SUPER         :     token('super'),
+    STATIC        :     token('static'),
+    STRUCT        :     token('struct'),
+    SYNCHRONIZED  :     token('synchronized'),
+    PERFORM       :     token('perform'),
+    RESUME        :     token('resume'),
+    WITH          :     token('with'),
+    THROWING      :     token('throwing'),
+    TRY           :     token('try'),
+    THIS          :     token('this'),
+    TRUE          :     token('true'),
+    TYPE          :     token('type'),
+    THROW         :     token('throw'),
+    THISTYPE      :     token('This'),
+    UNSAFE        :     token('unsafe'),
+    UNIT          :     token('Unit'),
+    UINT8         :     token('UInt8'),
+    UINT16        :     token('UInt16'),
+    UINT32        :     token('UInt32'),
+    UINT64        :     token('UInt64'),
+    UINTNATIVE    :     token('UIntNative'),
+    VAR           :     token('var'),
+    VARRAY        :     token('VArray'),
+    WHERE         :     token('where'),
+    WHILE         :     token('while'),
+    PUBLIC        :     token('public'),
+    PROTECTED     :     token('protected'),
+    INTERNAL      :     token('internal'),
+    PRIVATE       :     token('private'),
+    ABSTRACT      :     token('abstract'),
+    SEALED        :     token('sealed'),
+    REDEF         :     token('redef'),
+    OPEN          :     token('open'),
+    OVERRIDE      :     token('override'),
+    COMMON        :     token('common'),
+    SPECIFIC      :     token('specific'),
+}
+
+function commaSep1(rule) {
+    return seq(rule, repeat(seq(',', rule)));
+}
+
+function commaSep1Trailing(rule) {
+    return seq(rule, repeat(seq(',', rule)), optional(','));
+}
+
+function commaSepTrailing(rule) {
+    return optional(commaSep1Trailing(rule));
+}
+
+function sep1(rule, separator) {
+    return seq(rule, repeat(seq(separator, rule)));
+}
+
+function commaSep(rule) {
+    return optional(commaSep1(rule));
+}
+
+const hexDigit = /[0-9a-fA-F]/;
+const octalDigit = /[0-7]/;
+const decimalDigit = /[0-9]/;
+const binaryDigit = /[01]/;
+
+const hexDigits = seq(hexDigit, repeat(choice('_', hexDigit)));
+const octalDigits = seq(octalDigit, repeat(choice('_', octalDigit)));
+const decimalDigits = seq(decimalDigit, repeat(choice('_', decimalDigit)));
+const binaryDigits = seq(binaryDigit, repeat(choice('_', binaryDigit)));
+
+const hexLiteral = seq('0', choice('x', 'X'), hexDigits);
+const octalLiteral = seq('0', choice('o', 'O'), octalDigits);
+const binaryLiteral = seq('0', choice('b', 'B'), binaryDigits);
+const decimalLiteral = choice(decimalDigit, seq(/[1-9]/, repeat1(choice('_', decimalDigit))));
+
+const intLiteral = seq(
+    choice(binaryLiteral, octalLiteral, hexLiteral,decimalLiteral),
+    optional(/_?[iu](8|16|32|64)/),
+);
+
+const decimalExponent = seq(choice('e', 'E'), optional(choice('+', '-')), decimalDigits);
+const decimalFloatLiteral = seq(
+    choice(
+        seq(decimalLiteral, decimalExponent),
+        seq(decimalLiteral, '.', decimalDigits, optional(decimalExponent)),
+        seq('.', decimalDigits, optional(decimalExponent)),
+    ),
+    optional(/_?[fF](16|32|64)/),
+);
+
+const hexExponent = seq(choice('p', 'P'), optional(choice('+', '-')), decimalDigits);
+const hexMantissa = choice(
+    seq(hexDigits),
+    seq(hexDigits, '.', hexDigits),
+    seq('.', hexDigits),
+);
+const hexFloatLiteral = seq('0', choice('x', 'X'), hexMantissa, hexExponent);
+
+const float_literal = choice(decimalFloatLiteral, hexFloatLiteral);
+
+const uniCharacterLiteral = seq('\\u{', /[0-9a-fA-F]{1,8}/, '}');
+const escapedIdentifier = /\\[tbrn'"\\fv0\$]/;
+
+const rune_literal = choice(
+    seq('r\'', choice(/[^'\\]/, uniCharacterLiteral, escapedIdentifier), '\''),
+    seq('r"', choice(/[^"\\]/, uniCharacterLiteral, escapedIdentifier), '"'),
+);
+
+const singleCharByte = /[\u0000-\u0009\u000B\u000C\u000E-\u0021\u0023-\u0026\u0028-\u005B\u005D-\u007F]/;
+const byteEscapedIdentifier = /\\[tbrn'"\\fv0]/;
+const hexCharByte = seq('\\u{', choice(hexDigit, seq(hexDigit, hexDigit)), '}');
+
+// Byte literal: b'…' (RUNE_BYTE_LITERAL, Tokens.inc:154). Mirrors rune_literal
+// with a 'b' prefix; body is a single byte char, a \u{XX} hex, or an escape.
+// singleCharByte excludes both quotes + backslash; for b'…' the double-quote
+// is a valid body char (e.g. b'"'), so allow it explicitly.
+const byte_literal = seq('b\'', choice(singleCharByte, '"', hexCharByte, byteEscapedIdentifier), '\'');
 
 const BINARY_OPERATORS = [
     ['>', PREC.REL],
@@ -47,8 +229,6 @@ const BINARY_OPERATORS = [
     ['|>', PREC.PIPE],
     ['~>', PREC.PIPE],
 ];
-
-const Literal = require('./grammar_literal');
 
 const M = {
     name: 'cangjie',
@@ -1056,7 +1236,108 @@ const M = {
         )),
         _dollar_identifier: $ => seq('$', $.identifier),
 
-        ...Literal(),
+        _literal: $ => choice(
+            $.integer_literal,
+            $.float_literal,
+            $.rune_literal,
+            $.byte_literal,
+            $.boolean_literal,
+            $.string_literal,
+            $.unit_literal
+        ),
+
+        integer_literal: _ => token(intLiteral),
+        float_literal: _ => token(float_literal),
+        rune_literal: _ => token(rune_literal),
+        byte_literal: _ => token(byte_literal),
+        // Escape sequence in string bodies (\n \t \" \' \\ \$ …)
+        escape_sequence: _ => token(/\\[tbrn'"\\fv0\$]/),
+        boolean_literal: _ => token(prec(1, choice('true', 'false'))),
+
+        string_literal: $ => choice(
+            $._line_string_literal,
+            $._multi_line_string_literal,
+            $._multi_line_raw_string_literal,
+        ),
+
+        _line_string_literal: $ => choice(
+            seq(
+                '\'',
+                repeat(choice(
+                    token(prec(1, /[^'\\$]+/)),  //string body chars (higher prec than comments)
+                    '$',  //literal $ (without {)
+                    uniCharacterLiteral,
+                    $.escape_sequence,
+                    $.inline_expression
+                )),
+                '\''
+            ),
+            seq(
+                '"',
+                repeat(choice(
+                    token(prec(1, /[^"\\$]+/)),  //string body chars (higher prec than comments)
+                    '$',  //literal $ (without {)
+                    uniCharacterLiteral,
+                    $.escape_sequence,
+                    $.inline_expression
+                )),
+                '"'
+            ),
+        ),
+
+        inline_expression: $ => seq(
+            '${',
+            // Per spec, ${} holes accept declarations too, e.g.
+            // "${let PI = 3.14; PI*r*r}" — same statement list as multiline strings.
+            seq($._interpolation_statement, repeat(seq(repeat1(';'), $._interpolation_statement))),
+            '}'
+        ),
+
+        _multi_line_string_literal: $ => choice(
+            seq(
+                seq('"""', /\r?\n/),
+                repeat(choice(
+                    /[^\\]/,
+                    uniCharacterLiteral,
+                    $.escape_sequence,
+                    $.in_multi_line_string_expression
+                )),
+                '"""',
+            ),
+            seq(
+                seq("'''", /\r?\n/),
+                repeat(choice(
+                    /[^\\]/,
+                    uniCharacterLiteral,
+                    $.escape_sequence,
+                    $.in_multi_line_string_expression
+                )),
+                "'''",
+            ),
+        ),
+
+        in_multi_line_string_expression: $ => seq(
+            '${',
+            optional(seq(
+                optional(repeat(terminator($))),
+                $._interpolation_statement,
+                repeat(seq(repeat(terminator($)), $._interpolation_statement)),
+                optional(repeat(terminator($))),
+            )),
+            '}'
+        ),
+        _interpolation_statement: $ => choice(
+            $.variable_declaration,
+            $._expression,
+        ),
+
+        _multi_line_raw_string_literal: $ => seq(
+            $._multi_line_raw_string_start,
+            optional($._multi_line_raw_string_content),
+            $._multi_line_raw_string_end
+        ),
+
+        unit_literal: _ => seq('(', ')'),
     },
 };
 
