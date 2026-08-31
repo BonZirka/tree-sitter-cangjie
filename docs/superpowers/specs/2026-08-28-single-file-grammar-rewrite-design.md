@@ -254,20 +254,24 @@ named).
 ### 7. Re-evaluate `conflicts`
 
 After §1–§6, re-run `tree-sitter generate` and re-derive the conflict list.
-Expected to **drop**: `[call_suffix]`, `[function_definition]`,
-`[_member_declarations]`, `[interface_body]`, `[_top_objects]`,
-`[macro_expression]`, `[_try_handler]`, `[annotation_list, decorated_declaration]`,
-`[features_directive]`, `[translation_unit, _top_level_object]`.
+Predicted to **drop** (mechanism clear from §2/§3/§5): `[call_suffix]`,
+`[function_definition]`, `[_member_declarations]`, `[interface_body]`,
+`[_top_objects]`, `[macro_expression]`, `[_try_handler]`,
+`[annotation_list, decorated_declaration]`, `[features_directive]`.
+
+**Re-verify** (mechanism uncertain; keep if still present): `[translation_unit,
+_top_level_object]`, `[primary_init, this_super_expression]`,
+`[named_parameter, unnamed_member_param]`.
 
 **Keep and declare cleanly** (inherent):
 - `[atomic_variable]` — the `a<b>` generic-vs-relational ambiguity is
   irreducible without an external scanner token for `<`.
 - `[_macro_name, annotation]` — both are `@? identifier…`.
 - `[modifiers]`, `[modifiers, variable_declaration]` — modifier-list prefix.
-- `[primary_init, this_super_expression]`, `[named_parameter, unnamed_member_param]`
-  — re-verify; keep if still present.
 
-Target: 16 → **≤ 8**.
+Target: 16 → **≤ 8** (≥8 must drop). If after §1–§6 more than 8 remain, one more
+targeted refactor pass on the survivors is in scope before the rewrite is
+declared done.
 
 ## Verification protocol (every Phase-1 sub-step)
 
