@@ -10,6 +10,7 @@ enum TokenType {
   _MULTI_LINE_RAW_STRING_END,
   _LINE_STRING_TAIL_SINGLE,
   _LINE_STRING_TAIL_DOUBLE,
+  _ERROR_SENTINEL,
 };
 
 typedef struct {
@@ -197,6 +198,16 @@ static bool scan_line_string_tail(TSLexer *lexer, char quote, enum TokenType res
 // ----------------------------------------------------------
 
 bool tree_sitter_cangjie_external_scanner_scan(void *payload, TSLexer *lexer, const bool *valid_symbols) {
+  // Error-recovery mode: tree-sitter marks ALL external tokens valid when
+  // repairing an error. _BLOCK_COMMENT_CONTENT would then unconditionally
+  // scan from an arbitrary position to '*/'/EOF, swallowing the rest of the
+  // file as one phantom token. The sentinel is referenced by no grammar rule,
+  // so it is valid in NO state except error recovery — decline and let the
+  // internal lexer drive recovery (same pattern as tree-sitter-rust).
+  if (valid_symbols[_ERROR_SENTINEL]) {
+    return false;
+  }
+
   Scanner *scanner = (Scanner *)payload;
 
   // Unterminated line-string tail. At most one of the two symbols is valid

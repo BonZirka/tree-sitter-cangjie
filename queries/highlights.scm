@@ -182,8 +182,6 @@
     "/"
     "+"
     "-"
-    "++"
-    "--"
     "&&"
     "||"
     "!"
@@ -227,6 +225,9 @@
     "&&="
     "||="
 ] @operator
+
+; ++/-- are a single named token (not anonymous "+"-style literals)
+(inc_or_dec) @operator
 
 ; ===== Call-shape refinements (must follow broad captures above) =====
 

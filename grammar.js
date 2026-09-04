@@ -15,7 +15,10 @@ const PREC = {
     TOKEN: 1,
     COMMENT: 0, ASSIGN: 0, PIPE: 1, COALESCE: 2, OR: 13, AND: 14,
     BIT_OR: 15, BIT_XOR: 16, BIT_AND: 17, EQUALITY: 18, REL: 19,
-    RANGE: 20, SHIFT: 21, ADD_SUB: 22, MUL_DIV: 23, POWER: 24,
+    // Range binds looser than every arithmetic/logical/bitwise operator
+    // (Cangjie spec: just above assignment) — `(x&127)..=(y&127):step` is the
+    // corpus's dominant mask-range idiom and misgroups if RANGE is tighter.
+    RANGE: 12, SHIFT: 21, ADD_SUB: 22, MUL_DIV: 23, POWER: 24,
     UNARY: 25, POSTFIX: 26, PARENS: 27, ARRAY: 28, MEMBER: 29, MARCO_CALL: 30,
     INIT: -1, STATIC_INIT: -2, RESERVED_ID: -3, MACRO_QUOTE: 9,
 };
@@ -83,6 +86,7 @@ const M = {
         $._multi_line_raw_string_end,
         $._line_string_tail_single,
         $._line_string_tail_double,
+        $._error_sentinel,
     ],
 
     supertypes: $ => [
@@ -102,6 +106,7 @@ const M = {
         [$._try_handler],
         [$.named_parameter, $.unnamed_member_param],
         [$._macro_name, $.annotation],
+        [$._macro_name],
         [$.annotation_list, $.decorated_declaration],
         [$.features_directive],
         [$.translation_unit, $._top_level_object],
@@ -327,12 +332,21 @@ const M = {
         ellipsis_parameter: $ => seq(optional(','), '...'),
         _unnamed_parameter_list: $ => seq(optional(seq($._unnamed_parameter_list, ',')), $.parameter),
         _named_parameter_list: $ => seq(optional(seq($._named_parameter_list, ',')), $.named_parameter),
+        // Parameters may carry stacked annotations (@A0 / @A1[12]) and may be
+        // wrapped in parens — `init(@M1 (a: Int64), @M1[x] (b!: Int64))` is the
+        // macro-expansion-in-parameter-position shape (cjc-verified). The
+        // paren group lives only on `parameter`; its inner contents are
+        // disjoint (named_parameter requires `!`), so no GLR conflict.
         parameter: $ => seq(
-            field('para_name', choice($.identifier, '_')),
-            ':',
-            field('type', $._type)
+            optional($.annotation_list),
+            choice(
+                seq(field('para_name', choice($.identifier, '_')), ':', field('type', $._type)),
+                seq('(', $.parameter, ')'),
+                seq('(', $.named_parameter, ')'),
+            )
         ),
         named_parameter: $ => seq(
+            optional($.annotation_list),
             seq(field('para_name', $.identifier), '!'),
             ':',
             field('type', $._type),
@@ -541,7 +555,9 @@ const M = {
             ':',
             field('type', $._type)
         ),
-        _macro_name: $ => alias($.identifier, $.macro_name),
+        // Macro names may be package-qualified: `@p1.M1[tok](body)` (the
+        // standard macro-package form, cjc-verified).
+        _macro_name: $ => alias(seq(repeat(seq($.identifier, '.')), $.identifier), $.macro_name),
 
         annotation_list: $ => repeat1($.annotation),
         annotation: $ => seq(
@@ -667,7 +683,12 @@ const M = {
                 seq(TOKENS.INOUT, optional(seq($._expression, '.')), $._var_binding_pattern)
             ))),
             ')',
-            optional(seq(',', $.trailing_lambda_expression))
+            // No comma-form: `f(x, { ... })` parses `{ ... }` as a plain
+            // lambda_expression argument. The old
+            // `optional(seq(',', trailing_lambda_expression))` made every
+            // `, {` after a nested call's `)` spawn a "whose lambda?" GLR
+            // version that lived across the whole argument list.
+            optional($.trailing_lambda_expression)
         ),
         index_access: $ => seq(
             '[',

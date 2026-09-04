@@ -5106,7 +5106,7 @@
         ]
       },
       "name": {
-        "multiple": false,
+        "multiple": true,
         "required": true,
         "types": [
           {
@@ -5165,6 +5165,21 @@
         },
         {
           "type": "macro_name",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "macro_name",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "identifier",
           "named": true
         }
       ]
@@ -6141,6 +6156,16 @@
           }
         ]
       }
+    },
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "annotation_list",
+          "named": true
+        }
+      ]
     }
   },
   {
@@ -6337,7 +6362,7 @@
     "fields": {
       "para_name": {
         "multiple": false,
-        "required": true,
+        "required": false,
         "types": [
           {
             "type": "_",
@@ -6351,7 +6376,7 @@
       },
       "type": {
         "multiple": false,
-        "required": true,
+        "required": false,
         "types": [
           {
             "type": "Bool",
@@ -6455,6 +6480,24 @@
           }
         ]
       }
+    },
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "annotation_list",
+          "named": true
+        },
+        {
+          "type": "named_parameter",
+          "named": true
+        },
+        {
+          "type": "parameter",
+          "named": true
+        }
+      ]
     }
   },
   {
@@ -11487,19 +11530,19 @@
   },
   {
     "type": "Bool",
-    "named": true
+    "named": false
   },
   {
     "type": "Bool",
-    "named": false
-  },
-  {
-    "type": "Float16",
-    "named": false
+    "named": true
   },
   {
     "type": "Float16",
     "named": true
+  },
+  {
+    "type": "Float16",
+    "named": false
   },
   {
     "type": "Float32",
@@ -11511,14 +11554,10 @@
   },
   {
     "type": "Float64",
-    "named": true
+    "named": false
   },
   {
     "type": "Float64",
-    "named": false
-  },
-  {
-    "type": "Int16",
     "named": true
   },
   {
@@ -11526,7 +11565,7 @@
     "named": false
   },
   {
-    "type": "Int32",
+    "type": "Int16",
     "named": true
   },
   {
@@ -11534,12 +11573,16 @@
     "named": false
   },
   {
-    "type": "Int64",
+    "type": "Int32",
     "named": true
   },
   {
     "type": "Int64",
     "named": false
+  },
+  {
+    "type": "Int64",
+    "named": true
   },
   {
     "type": "Int8",
@@ -11551,11 +11594,11 @@
   },
   {
     "type": "IntNative",
-    "named": false
+    "named": true
   },
   {
     "type": "IntNative",
-    "named": true
+    "named": false
   },
   {
     "type": "Nothing",
@@ -11571,19 +11614,19 @@
   },
   {
     "type": "Rune",
-    "named": false
+    "named": true
   },
   {
     "type": "Rune",
-    "named": true
-  },
-  {
-    "type": "String",
     "named": false
   },
   {
     "type": "String",
     "named": true
+  },
+  {
+    "type": "String",
+    "named": false
   },
   {
     "type": "Thistype",
@@ -11591,27 +11634,27 @@
   },
   {
     "type": "UInt16",
-    "named": true
+    "named": false
   },
   {
     "type": "UInt16",
-    "named": false
-  },
-  {
-    "type": "UInt32",
-    "named": false
+    "named": true
   },
   {
     "type": "UInt32",
     "named": true
   },
   {
-    "type": "UInt64",
-    "named": true
+    "type": "UInt32",
+    "named": false
   },
   {
     "type": "UInt64",
     "named": false
+  },
+  {
+    "type": "UInt64",
+    "named": true
   },
   {
     "type": "UInt8",
@@ -11843,10 +11886,6 @@
     "named": true
   },
   {
-    "type": "macro_name",
-    "named": true
-  },
-  {
     "type": "macro_raw_token",
     "named": true
   },
@@ -11868,11 +11907,11 @@
   },
   {
     "type": "operator",
-    "named": true
+    "named": false
   },
   {
     "type": "operator",
-    "named": false
+    "named": true
   },
   {
     "type": "override",
