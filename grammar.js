@@ -241,6 +241,9 @@ const M = {
         [$._var_binding_pattern, $._primary_expression],
         [$.named_parameter, $.unnamed_member_param],
         [$._constant_pattern, $._primary_expression],
+        // `let x: T` in a block: a declaration (`= e`) or a let pattern
+        // (`<- e`) — the two read alike up to that token.
+        [$.type_pattern, $._patterns_maybe_irrefutable],
     ],
 
     rules: {
@@ -380,7 +383,10 @@ const M = {
         // prec.right: `as Foo<Bar>` keeps `<Bar>` in the type instead of
         // spilling into an outer relational continuation (`(x as Foo) < Bar`).
         user_type: $ => prec.right(seq($._name, optional($.type_arguments))),
-        generic_type: $ => seq(choice(token('Array'), token('Range')), $.type_arguments),
+        // `Array`/`Range` lex as keywords in type positions, so the bare
+        // type (`let r: Range`, `AsRange(Range)`) has to be accepted here:
+        // user_type can no longer see them as identifiers.
+        generic_type: $ => prec.right(seq(choice(token('Array'), token('Range')), optional($.type_arguments))),
 
         const_generic: $ => seq(token('$'), $.integer_literal),
 
@@ -635,7 +641,10 @@ const M = {
             ))),
             ')',
         ),
+        // A member parameter may carry annotations before its modifiers
+        // (`@M[x] public let a: T`), as a plain parameter does.
         unnamed_member_param: $ => seq(
+            optional(repeat1($.macro_call)),
             optional($.modifiers),
             choice(TOKENS.LET, TOKENS.VAR),
             field('para_name', choice(reserved('id', $.identifier), '_')),
@@ -646,6 +655,7 @@ const M = {
         ),
 
         named_member_param: $ => seq(
+            optional(repeat1($.macro_call)),
             optional($.modifiers),
             choice(TOKENS.LET, TOKENS.VAR),
             $.named_parameter
@@ -662,7 +672,7 @@ const M = {
         enum_body: $ => seq(
             '{', optional('|'),
             sep1(field('enum_constant', choice(
-                    seq(reserved('id', $.identifier), optional(seq('(', commaSep1Trailing($._type), ')'))),
+                    seq(optional(repeat1($.macro_call)), reserved('id', $.identifier), optional(seq('(', commaSep1Trailing($._type), ')'))),
                     token('...')
                 )), '|'),
             optional($._declaration_list),
@@ -803,7 +813,8 @@ const M = {
         ),
 
         let_pattern_destructor: $ => prec.right(seq(
-            TOKENS.LET, $._patterns_maybe_irrefutable, token('<-'), $._expression,
+            // `if (let x: T <- e)`: a let pattern may also be a type pattern.
+            TOKENS.LET, choice($._patterns_maybe_irrefutable, $.type_pattern), token('<-'), $._expression,
         )),
 
 

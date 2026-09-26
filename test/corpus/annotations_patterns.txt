@@ -1,0 +1,164 @@
+==================
+annotation on an enum constructor
+==================
+enum K {
+    | @M[value: 1] Replace
+    | @A @B Other(Int64)
+}
+------------------
+
+(translation_unit
+  (enum_definition
+    (enum_name)
+    (enum_body
+      (macro_call
+        (macro_call_sigil)
+        (macro_name)
+        (macro_attribute_body
+          (macro_raw_token)))
+      (identifier)
+      (macro_call
+        (macro_call_sigil)
+        (macro_name))
+      (macro_call
+        (macro_call_sigil)
+        (macro_name))
+      (identifier)
+      (Int64))))
+
+==================
+annotation on primary constructor member parameters
+==================
+struct P {
+    public P(@M[rename: "x"] public let a!: Int64, @N let b: Int64) {}
+}
+------------------
+
+(translation_unit
+  (struct_definition
+    (struct_name)
+    (declaration_body
+      (primary_init
+        (modifiers)
+        (class_name)
+        (primary_init_param_list
+          (unnamed_member_param
+            (macro_call
+              (macro_call_sigil)
+              (macro_name)
+              (macro_attribute_body
+                (macro_raw_token)
+                (string_literal)))
+            (modifiers)
+            (identifier)
+            (Int64))
+          (unnamed_member_param
+            (macro_call
+              (macro_call_sigil)
+              (macro_name))
+            (identifier)
+            (Int64)))))))
+
+==================
+if-let with a type pattern
+==================
+main() {
+    if (let x: Int64 <- e) { x }
+    let y: Int64 = 1
+}
+------------------
+
+(translation_unit
+  (main_definition
+    (parameter_list)
+    (block
+      (postfix_expression
+        (if_expression
+          (postfix_expression
+            (let_pattern_destructor
+              (type_pattern
+                (var_binding_pattern)
+                (Int64))
+              (postfix_expression
+                (identifier))))
+          (block
+            (postfix_expression
+              (identifier)))))
+      (variable_declaration
+        (variable_name
+          (var_binding_pattern))
+        (Int64)
+        (postfix_expression
+          (integer_literal))))))
+
+==================
+macro attribute with nested brackets around strings
+==================
+@Test
+class T {
+    @TestCase[key in ["missing", "null"]]
+    func t(key: String): Unit {}
+}
+------------------
+
+(translation_unit
+  (decorated_declaration
+    (macro_call
+      (macro_call_sigil)
+      (macro_name))
+    (class_definition
+      (class_name)
+      (declaration_body
+        (decorated_declaration
+          (macro_call
+            (macro_call_sigil)
+            (macro_name)
+            (macro_attribute_body
+              (macro_raw_token)
+              (string_literal)
+              (macro_raw_token)
+              (string_literal)
+              (macro_raw_token)))
+          (function_definition
+            (func_name)
+            (parameter_list
+              (parameter
+                (identifier)
+                (String)))
+            (return_type
+              (Unit))
+            (block)))))))
+
+==================
+bare Range and Array types
+==================
+struct R {
+    public R(public let range!: Range, let a!: Array) {}
+}
+enum E { AsRange(Range) | AsRanges(Range<Int64>) }
+------------------
+
+(translation_unit
+  (struct_definition
+    (struct_name)
+    (declaration_body
+      (primary_init
+        (modifiers)
+        (class_name)
+        (primary_init_param_list
+          (unnamed_member_param
+            (modifiers)
+            (identifier)
+            (generic_type))
+          (unnamed_member_param
+            (identifier)
+            (generic_type))))))
+  (enum_definition
+    (enum_name)
+    (enum_body
+      (identifier)
+      (generic_type)
+      (identifier)
+      (generic_type
+        (type_arguments
+          (Int64))))))

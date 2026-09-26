@@ -1306,32 +1306,44 @@
       }
     },
     "generic_type": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "TOKEN",
-              "content": {
-                "type": "STRING",
-                "value": "Array"
+      "type": "PREC_RIGHT",
+      "value": 0,
+      "content": {
+        "type": "SEQ",
+        "members": [
+          {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "TOKEN",
+                "content": {
+                  "type": "STRING",
+                  "value": "Array"
+                }
+              },
+              {
+                "type": "TOKEN",
+                "content": {
+                  "type": "STRING",
+                  "value": "Range"
+                }
               }
-            },
-            {
-              "type": "TOKEN",
-              "content": {
-                "type": "STRING",
-                "value": "Range"
+            ]
+          },
+          {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "type_arguments"
+              },
+              {
+                "type": "BLANK"
               }
-            }
-          ]
-        },
-        {
-          "type": "SYMBOL",
-          "name": "type_arguments"
-        }
-      ]
+            ]
+          }
+        ]
+      }
     },
     "const_generic": {
       "type": "SEQ",
@@ -3770,6 +3782,21 @@
           "type": "CHOICE",
           "members": [
             {
+              "type": "REPEAT1",
+              "content": {
+                "type": "SYMBOL",
+                "name": "macro_call"
+              }
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
               "type": "SYMBOL",
               "name": "modifiers"
             },
@@ -3872,6 +3899,21 @@
     "named_member_param": {
       "type": "SEQ",
       "members": [
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "REPEAT1",
+              "content": {
+                "type": "SYMBOL",
+                "name": "macro_call"
+              }
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        },
         {
           "type": "CHOICE",
           "members": [
@@ -4183,6 +4225,21 @@
                     "type": "SEQ",
                     "members": [
                       {
+                        "type": "CHOICE",
+                        "members": [
+                          {
+                            "type": "REPEAT1",
+                            "content": {
+                              "type": "SYMBOL",
+                              "name": "macro_call"
+                            }
+                          },
+                          {
+                            "type": "BLANK"
+                          }
+                        ]
+                      },
+                      {
                         "type": "RESERVED",
                         "content": {
                           "type": "SYMBOL",
@@ -4283,6 +4340,21 @@
                         {
                           "type": "SEQ",
                           "members": [
+                            {
+                              "type": "CHOICE",
+                              "members": [
+                                {
+                                  "type": "REPEAT1",
+                                  "content": {
+                                    "type": "SYMBOL",
+                                    "name": "macro_call"
+                                  }
+                                },
+                                {
+                                  "type": "BLANK"
+                                }
+                              ]
+                            },
                             {
                               "type": "RESERVED",
                               "content": {
@@ -5328,8 +5400,17 @@
             }
           },
           {
-            "type": "SYMBOL",
-            "name": "_patterns_maybe_irrefutable"
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "_patterns_maybe_irrefutable"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "type_pattern"
+              }
+            ]
           },
           {
             "type": "TOKEN",
@@ -9791,6 +9872,10 @@
     [
       "_constant_pattern",
       "_primary_expression"
+    ],
+    [
+      "type_pattern",
+      "_patterns_maybe_irrefutable"
     ]
   ],
   "precedences": [],

@@ -835,9 +835,15 @@ bool tree_sitter_cangjie_external_scanner_scan(void *payload, TSLexer *lexer, co
       return false;
 
     case CTX_MACRO_BODY: {
-      bool balancable = s->macro_openers_top >= 2 &&
-                        s->macro_openers[s->macro_openers_top - 1] == '(' &&
-                        lexer->lookahead == ')';
+      // A closer matching a bracket opened inside the body (`@M[a in [1]]`)
+      // is content, not the end of the body — whatever the bracket kind.
+      bool balancable = false;
+      if (s->macro_openers_top >= 2) {
+        char open = s->macro_openers[s->macro_openers_top - 1];
+        int32_t c = lexer->lookahead;
+        balancable = (open == '(' && c == ')') || (open == '[' && c == ']') ||
+                     (open == '{' && c == '}');
+      }
       if (!balancable && (valid_symbols[MACRO_ATTR_CLOSE] || valid_symbols[MACRO_INPUT_CLOSE]) &&
           lexer->lookahead == s->params[s->top - 1]) {
         pop(s);
