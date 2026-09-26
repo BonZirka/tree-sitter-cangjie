@@ -99,6 +99,9 @@ test:
 check-queries:
 	python3 scripts/check_keywords.py
 
+sources:
+	scripts/fetch_sources.sh
+
 GOLDEN_ROOTS ?=
 golden:
 	python3 scripts/golden.py $(GOLDEN_ROOTS:%=--roots=%)
@@ -106,4 +109,4 @@ golden:
 golden-ci:
 	python3 scripts/golden.py --ci $(GOLDEN_ROOTS:%=--roots=%)
 
-.PHONY: all install uninstall clean test check-queries golden golden-ci
+.PHONY: all install uninstall clean test check-queries sources golden golden-ci

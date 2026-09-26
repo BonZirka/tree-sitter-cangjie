@@ -8,9 +8,11 @@ queries/highlights.scm) under test/golden/.
 
 Reference corpus
 ----------------
-By default the *vendored* sources under test/sources/ are used (see
-test/sources/README.md), so a fresh clone can verify everything. Pass
---roots DIR (repeatable) to scan a local checkout instead, e.g.
+By default the sources under test/sources/ are used: the upstream
+repositories as git submodules pinned to one commit each, of which
+cangjie_test contributes only the files its manifest lists (see
+test/sources/README.md). `make sources` fetches them. Pass --roots DIR
+(repeatable) to scan a local checkout instead, e.g.
 ~/projects/cangjie-repos/cangjie_stdx; file keys stay identical for both
 layouts, so golden snapshots remain valid.
 
@@ -62,6 +64,14 @@ DEFAULT_ROOTS = [
     os.path.join(DEFAULT_BASE, "cangjie_stdx"),
     os.path.join(DEFAULT_BASE, "cangjie_test"),
 ]
+# Roots of which only a sample is used: root -> (manifest, directory in the
+# root the manifest's paths are relative to). A file's key is the root's
+# path under DEFAULT_BASE joined with its manifest path, which keeps the
+# keys the vendored sample had (`cangjie_test/HLT/...`).
+MANIFESTS = {
+    os.path.join(DEFAULT_BASE, "cangjie_test"): (
+        os.path.join(DEFAULT_BASE, "cangjie_test.manifest"), "testsuites"),
+}
 # Legacy local checkouts keep their historical keys via these bases.
 LEGACY_BASES = [
     os.path.join(os.path.expanduser("~"), "projects", "cangjie-repos"),
@@ -117,6 +127,16 @@ def key_for(path, root):
     return os.path.relpath(path, root).replace(os.sep, "/")
 
 
+def check_submodule(root):
+    """Fail with the command to run when root is in an unfetched submodule."""
+    if not root.startswith(DEFAULT_BASE + os.sep):
+        return
+    top = os.path.join(DEFAULT_BASE, os.path.relpath(root, DEFAULT_BASE).split(os.sep)[0])
+    if os.path.isdir(top) and not os.listdir(top):
+        sys.exit(f"error: {os.path.relpath(top, REPO_ROOT)} is an uninitialized "
+                 "submodule; run:  make sources")
+
+
 def discover_sources(roots):
     """Return sorted [(key, abs_path)] for every .cj file under roots.
 
@@ -126,8 +146,19 @@ def discover_sources(roots):
     entries = set()
     for root in roots:
         root = os.path.abspath(root)
+        check_submodule(root)
         if not os.path.isdir(root):
             sys.exit(f"error: reference root does not exist: {root}")
+        if root in MANIFESTS:
+            manifest, subdir = MANIFESTS[root]
+            prefix = os.path.relpath(root, DEFAULT_BASE).replace(os.sep, "/")
+            with open(manifest, encoding="utf8") as f:
+                for rel in filter(None, (ln.strip() for ln in f)):
+                    path = os.path.join(root, subdir, *rel.split("/"))
+                    if not os.path.isfile(path):
+                        sys.exit(f"error: {manifest} lists {rel}, missing from {root}")
+                    entries.add((f"{prefix}/{rel}", path))
+            continue
         for dirpath, dirnames, filenames in os.walk(root):
             dirnames[:] = sorted(d for d in dirnames if not d.startswith("."))
             for fn in sorted(filenames):
@@ -225,7 +256,7 @@ def main():
                     help="substring filters on file keys/paths")
     ap.add_argument("--roots", action="append", metavar="DIR",
                     help="reference directory to scan; repeatable "
-                         "(default: ~/projects/cangjie-repos/{cangjie_runtime/stdlib,cangjie_stdx})")
+                         "(default: the submodules under test/sources)")
     ap.add_argument("--ci", action="store_true",
                     help="non-interactive: print diffs, exit 1 on any mismatch")
     ap.add_argument("--update", nargs="+", metavar="KEY", default=[],

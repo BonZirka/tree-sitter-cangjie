@@ -1,23 +1,24 @@
 #!/usr/bin/env python3
 """Reproducible stratified sampler for the cangjie_test corpus.
 
-Selects which `.cj` files to vendor into test/sources/cangjie_test/:
+Selects which `.cj` files of the cangjie_test submodule the GOLDEN harness
+parses (test/sources/cangjie_test.manifest):
 
 * Full — every `.cj` under SYNTAX_FULL_DIRS (syntax-focused, ~3.5k files).
 * Sampled — RATE of each top-level stratum, capped at CAP, drawn with a
   fixed SEED so the manifest is reproducible across runs.
 
 Emits the manifest (one selected path per line, relative to the testsuites
-root) to stdout. --output writes to a file; --vendor DIR copies the selected
-files into DIR, preserving their testsuites/... relative paths.
+root) to stdout; --output writes it to a file.
 """
 import argparse
 import os
 import random
-import shutil
 import sys
 
-DEFAULT_ROOT = os.path.expanduser("~/newrepos/main/cangjie_test/testsuites")
+DEFAULT_ROOT = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+    "test", "sources", "cangjie_test", "testsuites")
 
 # Directories under testsuites/ taken in full (every .cj file).
 SYNTAX_FULL_DIRS = [
@@ -92,26 +93,12 @@ def select(root, seed=SEED, rate=RATE, cap=CAP,
     return sorted(set(full) | set(sampled))
 
 
-def vendor(root, dest, selected):
-    """Copy each selected rel path from root into dest, preserving structure."""
-    copied = 0
-    for rel in selected:
-        src = os.path.join(root, rel)
-        dst = os.path.join(dest, rel)
-        os.makedirs(os.path.dirname(dst), exist_ok=True)
-        shutil.copy2(src, dst)
-        copied += 1
-    return copied
-
-
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--root", default=DEFAULT_ROOT,
                     help="testsuites root (default: %(default)s)")
     ap.add_argument("--output", default="-",
                     help="manifest output path, or '-' for stdout (default: stdout)")
-    ap.add_argument("--vendor", metavar="DIR",
-                    help="also copy selected files into DIR, preserving paths")
     ap.add_argument("--seed", type=int, default=SEED)
     ap.add_argument("--rate", type=float, default=RATE)
     ap.add_argument("--cap", type=int, default=CAP)
@@ -120,12 +107,6 @@ def main(argv=None):
         sys.exit("error: root not found: %s" % args.root)
 
     selected = select(args.root, args.seed, args.rate, args.cap)
-
-    if args.vendor:
-        if not os.path.isdir(args.vendor):
-            os.makedirs(args.vendor, exist_ok=True)
-        n = vendor(args.root, args.vendor, selected)
-        print("vendored %d files into %s" % (n, args.vendor), file=sys.stderr)
 
     out = sys.stdout if args.output == "-" else open(args.output, "w")
     try:

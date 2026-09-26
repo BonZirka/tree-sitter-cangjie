@@ -1,0 +1,12 @@
+[submodule "test/sources/cangjie_runtime"]
+	path = test/sources/cangjie_runtime
+	url = https://gitcode.com/Cangjie/cangjie_runtime.git
+	shallow = true
+[submodule "test/sources/cangjie_stdx"]
+	path = test/sources/cangjie_stdx
+	url = https://gitcode.com/Cangjie/cangjie_stdx.git
+	shallow = true
+[submodule "test/sources/cangjie_test"]
+	path = test/sources/cangjie_test
+	url = https://gitcode.com/Cangjie/cangjie_test.git
+	shallow = true
