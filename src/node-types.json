@@ -1268,90 +1268,6 @@
     }
   },
   {
-    "type": "file",
-    "named": true,
-    "root": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": false,
-      "types": [
-        {
-          "type": "class_definition",
-          "named": true
-        },
-        {
-          "type": "decorated_declaration",
-          "named": true
-        },
-        {
-          "type": "enum_definition",
-          "named": true
-        },
-        {
-          "type": "extend_definition",
-          "named": true
-        },
-        {
-          "type": "features_directive",
-          "named": true
-        },
-        {
-          "type": "foreign_declaration",
-          "named": true
-        },
-        {
-          "type": "function_definition",
-          "named": true
-        },
-        {
-          "type": "import_list",
-          "named": true
-        },
-        {
-          "type": "interface_definition",
-          "named": true
-        },
-        {
-          "type": "macro_definition",
-          "named": true
-        },
-        {
-          "type": "macro_expression",
-          "named": true
-        },
-        {
-          "type": "macro_package_declaration",
-          "named": true
-        },
-        {
-          "type": "main_definition",
-          "named": true
-        },
-        {
-          "type": "operator_function_definition",
-          "named": true
-        },
-        {
-          "type": "package_declaration",
-          "named": true
-        },
-        {
-          "type": "struct_definition",
-          "named": true
-        },
-        {
-          "type": "type_alias",
-          "named": true
-        },
-        {
-          "type": "variable_declaration",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
     "type": "finalizer",
     "named": true,
     "fields": {},
@@ -3247,6 +3163,90 @@
           }
         ]
       }
+    }
+  },
+  {
+    "type": "source_file",
+    "named": true,
+    "root": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "class_definition",
+          "named": true
+        },
+        {
+          "type": "decorated_declaration",
+          "named": true
+        },
+        {
+          "type": "enum_definition",
+          "named": true
+        },
+        {
+          "type": "extend_definition",
+          "named": true
+        },
+        {
+          "type": "features_directive",
+          "named": true
+        },
+        {
+          "type": "foreign_declaration",
+          "named": true
+        },
+        {
+          "type": "function_definition",
+          "named": true
+        },
+        {
+          "type": "import_list",
+          "named": true
+        },
+        {
+          "type": "interface_definition",
+          "named": true
+        },
+        {
+          "type": "macro_definition",
+          "named": true
+        },
+        {
+          "type": "macro_expression",
+          "named": true
+        },
+        {
+          "type": "macro_package_declaration",
+          "named": true
+        },
+        {
+          "type": "main_definition",
+          "named": true
+        },
+        {
+          "type": "operator_function_definition",
+          "named": true
+        },
+        {
+          "type": "package_declaration",
+          "named": true
+        },
+        {
+          "type": "struct_definition",
+          "named": true
+        },
+        {
+          "type": "type_alias",
+          "named": true
+        },
+        {
+          "type": "variable_declaration",
+          "named": true
+        }
+      ]
     }
   },
   {

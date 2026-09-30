@@ -3,7 +3,7 @@
   "name": "cangjie",
   "word": "identifier",
   "rules": {
-    "file": {
+    "source_file": {
       "type": "SEQ",
       "members": [
         {

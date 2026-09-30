@@ -190,7 +190,7 @@ const M = {
 
     rules: {
 // ===== top-level structure =====
-        file: $ => seq(
+        source_file: $ => seq(
             optional($.features_directive),
             optional(choice($.package_declaration, $.macro_package_declaration)),
             repeat($.import_list),

@@ -6,7 +6,7 @@
 
 ; ===== Scopes =====
 
-(file) @local.scope
+(source_file) @local.scope
 (block) @local.scope
 (declaration_body) @local.scope
 (function_definition) @local.scope
