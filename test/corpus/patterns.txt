@@ -1,171 +1,11 @@
 ==================
-match with constructor, literal and wildcard cases
+typed and guarded patterns
 ==================
 
 main() {
-    match (value) {
-        case Some(v) => handle(v)
-        case 42 => answer()
-        case None => skip()
-        case _ => other()
-    }
-}
-
----
-
-(source_file
-  (main_definition
-    (parameter_list)
-    (block
-      (postfix_expression
-        (match_expression
-          condition: (postfix_expression
-            (identifier))
-          (case_pattern
-            (enum_pattern
-              constructor: (enum_constructor)
-              arguments: (enum_pattern_arguments
-                (var_binding_pattern)))
-            (postfix_expression
-              base: (postfix_expression
-                (identifier))
-              suffix: (call_suffix
-                (postfix_expression
-                  (identifier)))))
-          (case_pattern
-            (constant_pattern
-              (integer_literal))
-            (postfix_expression
-              base: (postfix_expression
-                (identifier))
-              suffix: (call_suffix)))
-          (case_pattern
-            (var_binding_pattern)
-            (postfix_expression
-              base: (postfix_expression
-                (identifier))
-              suffix: (call_suffix)))
-          (case_pattern
-            (wildcard_pattern)
-            (postfix_expression
-              base: (postfix_expression
-                (identifier))
-              suffix: (call_suffix))))))))
-
-==================
-qualified constructor patterns with or
-==================
-
-main() {
-    match (shape) {
-        case C.Circle(r) | C.Rect(w, h) => area(r, w, h)
-        case C.Point => 0
-    }
-}
-
----
-
-(source_file
-  (main_definition
-    (parameter_list)
-    (block
-      (postfix_expression
-        (match_expression
-          condition: (postfix_expression
-            (identifier))
-          (case_pattern
-            (or_pattern
-              (enum_pattern
-                (identifier)
-                constructor: (enum_constructor)
-                arguments: (enum_pattern_arguments
-                  (var_binding_pattern)))
-              (enum_pattern
-                (identifier)
-                constructor: (enum_constructor)
-                arguments: (enum_pattern_arguments
-                  (var_binding_pattern)
-                  (var_binding_pattern))))
-            (postfix_expression
-              base: (postfix_expression
-                (identifier))
-              suffix: (call_suffix
-                (postfix_expression
-                  (identifier))
-                (postfix_expression
-                  (identifier))
-                (postfix_expression
-                  (identifier)))))
-          (case_pattern
-            (enum_pattern
-              (identifier)
-              constructor: (enum_constructor))
-            (postfix_expression
-              (integer_literal))))))))
-
-==================
-if-let and while-let
-==================
-
-main() {
-    if (let Some(x) <- maybe) { use(x) }
-    while (let Some(chunk) <- stream.next()) { push(chunk) }
-}
-
----
-
-(source_file
-  (main_definition
-    (parameter_list)
-    (block
-      (postfix_expression
-        (if_expression
-          condition: (let_pattern_destructor
-            (enum_pattern
-              constructor: (enum_constructor)
-              arguments: (enum_pattern_arguments
-                (var_binding_pattern)))
-            (postfix_expression
-              (identifier)))
-          consequence: (block
-            (postfix_expression
-              base: (postfix_expression
-                (identifier))
-              suffix: (call_suffix
-                (postfix_expression
-                  (identifier)))))))
-      (postfix_expression
-        (while_expression
-          (let_pattern_destructor
-            (enum_pattern
-              constructor: (enum_constructor)
-              arguments: (enum_pattern_arguments
-                (var_binding_pattern)))
-            (postfix_expression
-              base: (postfix_expression
-                base: (postfix_expression
-                  (identifier))
-                suffix: (field_access
-                  (identifier)))
-              suffix: (call_suffix)))
-          (block
-            (postfix_expression
-              base: (postfix_expression
-                (identifier))
-              suffix: (call_suffix
-                (postfix_expression
-                  (identifier))))))))))
-
-==================
-tuple and binding patterns in destructuring
-==================
-
-main() {
-    let (a, (b, c)) = pair
-    let (k, v) = entry
-    for ((k, v) in entries) { use(k, v) }
-    match (p) {
-        case (1, b) => b
+    match (v) {
+        case x: Int64 => use(x)
+        case s: String => show(s)
         case _ => 0
     }
 }
@@ -176,38 +16,107 @@ main() {
   (main_definition
     (parameter_list)
     (block
-      (variable_declaration
-        name: (variable_name
-          (tuple_pattern
-            (var_binding_pattern)
-            (tuple_pattern
-              (var_binding_pattern)
-              (var_binding_pattern))))
-        initializer: (postfix_expression
-          (identifier)))
-      (variable_declaration
-        name: (variable_name
-          (tuple_pattern
-            (var_binding_pattern)
-            (var_binding_pattern)))
-        initializer: (postfix_expression
-          (identifier)))
       (postfix_expression
-        (for_in_expression
-          (tuple_pattern
-            (var_binding_pattern)
-            (var_binding_pattern))
-          (postfix_expression
+        (match_expression
+          condition: (postfix_expression
             (identifier))
-          (block
+          (case_pattern
+            (type_pattern
+              (var_binding_pattern)
+              (Int64))
             (postfix_expression
               base: (postfix_expression
                 (identifier))
               suffix: (call_suffix
                 (postfix_expression
-                  (identifier))
+                  (identifier)))))
+          (case_pattern
+            (type_pattern
+              (var_binding_pattern)
+              (String))
+            (postfix_expression
+              base: (postfix_expression
+                (identifier))
+              suffix: (call_suffix
                 (postfix_expression
-                  (identifier)))))))
+                  (identifier)))))
+          (case_pattern
+            (wildcard_pattern)
+            (postfix_expression
+              (integer_literal))))))))
+
+==================
+constant patterns
+==================
+
+main() {
+    match (n) {
+        case 0 => zero()
+        case "stop" => halt()
+        case true => yes()
+        case LIMIT => limit()
+    }
+}
+
+---
+
+(source_file
+  (main_definition
+    (parameter_list)
+    (block
+      (postfix_expression
+        (match_expression
+          condition: (postfix_expression
+            (identifier))
+          (case_pattern
+            (constant_pattern
+              (integer_literal))
+            (postfix_expression
+              base: (postfix_expression
+                (identifier))
+              suffix: (call_suffix)))
+          (case_pattern
+            (constant_pattern
+              (string_literal
+                (string_start)
+                (string_content)
+                (string_end)))
+            (postfix_expression
+              base: (postfix_expression
+                (identifier))
+              suffix: (call_suffix)))
+          (case_pattern
+            (constant_pattern
+              (boolean_literal))
+            (postfix_expression
+              base: (postfix_expression
+                (identifier))
+              suffix: (call_suffix)))
+          (case_pattern
+            (var_binding_pattern)
+            (postfix_expression
+              base: (postfix_expression
+                (identifier))
+              suffix: (call_suffix))))))))
+
+==================
+nested tuple patterns
+==================
+
+main() {
+    match (point) {
+        case (0, y) => up(y)
+        case (x, 0) => right(x)
+        case (a, b) => diag(a, b)
+    }
+}
+
+---
+
+(source_file
+  (main_definition
+    (parameter_list)
+    (block
       (postfix_expression
         (match_expression
           condition: (postfix_expression
@@ -218,8 +127,128 @@ main() {
                 (integer_literal))
               (var_binding_pattern))
             (postfix_expression
-              (identifier)))
+              base: (postfix_expression
+                (identifier))
+              suffix: (call_suffix
+                (postfix_expression
+                  (identifier)))))
           (case_pattern
-            (wildcard_pattern)
+            (tuple_pattern
+              (var_binding_pattern)
+              (constant_pattern
+                (integer_literal)))
             (postfix_expression
-              (integer_literal))))))))
+              base: (postfix_expression
+                (identifier))
+              suffix: (call_suffix
+                (postfix_expression
+                  (identifier)))))
+          (case_pattern
+            (tuple_pattern
+              (var_binding_pattern)
+              (var_binding_pattern))
+            (postfix_expression
+              base: (postfix_expression
+                (identifier))
+              suffix: (call_suffix
+                (postfix_expression
+                  (identifier))
+                (postfix_expression
+                  (identifier))))))))))
+
+==================
+enum patterns with and without payload
+==================
+
+main() {
+    match (msg) {
+        case Empty => 0
+        case Text(s) => len(s)
+        case Pair(a, b) => join(a, b)
+        case Shape.Circle(r) => area(r)
+    }
+}
+
+---
+
+(source_file
+  (main_definition
+    (parameter_list)
+    (block
+      (postfix_expression
+        (match_expression
+          condition: (postfix_expression
+            (identifier))
+          (case_pattern
+            (var_binding_pattern)
+            (postfix_expression
+              (integer_literal)))
+          (case_pattern
+            (enum_pattern
+              constructor: (enum_constructor)
+              arguments: (enum_pattern_arguments
+                (var_binding_pattern)))
+            (postfix_expression
+              base: (postfix_expression
+                (identifier))
+              suffix: (call_suffix
+                (postfix_expression
+                  (identifier)))))
+          (case_pattern
+            (enum_pattern
+              constructor: (enum_constructor)
+              arguments: (enum_pattern_arguments
+                (var_binding_pattern)
+                (var_binding_pattern)))
+            (postfix_expression
+              base: (postfix_expression
+                (identifier))
+              suffix: (call_suffix
+                (postfix_expression
+                  (identifier))
+                (postfix_expression
+                  (identifier)))))
+          (case_pattern
+            (enum_pattern
+              (identifier)
+              constructor: (enum_constructor)
+              arguments: (enum_pattern_arguments
+                (var_binding_pattern)))
+            (postfix_expression
+              base: (postfix_expression
+                (identifier))
+              suffix: (call_suffix
+                (postfix_expression
+                  (identifier))))))))))
+
+==================
+let destructuring with tuple patterns
+==================
+
+main() {
+    let (x, y) = point
+    let (w, (h, d)) = box
+}
+
+---
+
+(source_file
+  (main_definition
+    (parameter_list)
+    (block
+      (variable_declaration
+        name: (variable_name
+          (tuple_pattern
+            (var_binding_pattern)
+            (var_binding_pattern)))
+        initializer: (postfix_expression
+          (identifier)))
+      (variable_declaration
+        name: (variable_name
+          (tuple_pattern
+            (var_binding_pattern)
+            (tuple_pattern
+              (var_binding_pattern)
+              (var_binding_pattern))))
+        initializer: (postfix_expression
+          (identifier))))))

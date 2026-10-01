@@ -65,7 +65,7 @@ VArray and builtin types
 ==================
 
 main() {
-    let fixed: VArray<Int64, $3> = VArray<Int64, $3>()
+    let fixed: VArray<Int64, $3> = VArray<Int64, $3>(1, 2, 3)
     let flag: Bool = true
     let ch: Rune = r'a'
     let none: Nothing = throw Nothing()
@@ -94,7 +94,13 @@ main() {
               (Int64)
               (const_generic
                 (integer_literal))))
-          suffix: (call_suffix)))
+          suffix: (call_suffix
+            (postfix_expression
+              (integer_literal))
+            (postfix_expression
+              (integer_literal))
+            (postfix_expression
+              (integer_literal)))))
       (variable_declaration
         name: (variable_name
           (var_binding_pattern))
@@ -232,3 +238,159 @@ public operator func +(lhs: Vec, rhs: Vec): Vec {
                     (identifier))
                   suffix: (field_access
                     (identifier)))))))))))
+
+==================
+optional and nested option types
+==================
+
+main() {
+    let a: ?Int64 = None
+    let b: ??String = None
+    let c: Array<?Int64> = []
+}
+
+---
+
+(source_file
+  (main_definition
+    (parameter_list)
+    (block
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        type: (prefix_type
+          type: (Int64))
+        initializer: (postfix_expression
+          (identifier)))
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        type: (prefix_type
+          type: (prefix_type
+            type: (String)))
+        initializer: (postfix_expression
+          (identifier)))
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        type: (generic_type
+          (type_arguments
+            (prefix_type
+              type: (Int64))))
+        initializer: (postfix_expression
+          (array_literal))))))
+
+==================
+function types with parens and multiple params
+==================
+
+main() {
+    let f: (Int64, String) -> Bool = check
+    let g: () -> Unit = noop
+}
+
+---
+
+(source_file
+  (main_definition
+    (parameter_list)
+    (block
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        type: (arrow_type
+          (Int64)
+          (String)
+          type: (Bool))
+        initializer: (postfix_expression
+          (identifier)))
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        type: (arrow_type
+          type: (Unit))
+        initializer: (postfix_expression
+          (identifier))))))
+
+==================
+generic type with nested arguments
+==================
+
+main() {
+    let m: HashMap<String, HashMap<Int64, Array<Option<Bool>>>> = make()
+}
+
+---
+
+(source_file
+  (main_definition
+    (parameter_list)
+    (block
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        type: (user_type
+          (identifier)
+          (type_arguments
+            (String)
+            (user_type
+              (identifier)
+              (type_arguments
+                (Int64)
+                (generic_type
+                  (type_arguments
+                    (user_type
+                      (identifier)
+                      (type_arguments
+                        (Bool)))))))))
+        initializer: (postfix_expression
+          base: (postfix_expression
+            (identifier))
+          suffix: (call_suffix))))))
+
+==================
+class with generic methods and constraints
+==================
+
+class Store<T> where T <: Item {
+    func get<K>(key: K): ?T where K <: Hashable { return None }
+}
+
+---
+
+(source_file
+  (class_definition
+    name: (class_name)
+    (type_parameters
+      (type_parameter
+        name: (identifier)))
+    (generic_constraints
+      (generic_constraint
+        (identifier)
+        (user_type
+          (identifier))))
+    body: (declaration_body
+      (function_definition
+        name: (func_name)
+        (type_parameters
+          (type_parameter
+            name: (identifier)))
+        parameters: (parameter_list
+          (parameter
+            para_name: (identifier)
+            type: (user_type
+              (identifier))))
+        return_type: (return_type
+          type: (prefix_type
+            type: (user_type
+              (identifier))))
+        (generic_constraints
+          (generic_constraint
+            (identifier)
+            (user_type
+              (identifier))))
+        body: (block
+          (postfix_expression
+            (jump_expression
+              (postfix_expression
+                (identifier)))))))))
