@@ -51,6 +51,7 @@ main() {
           (macro_call_sigil)
           (macro_name)
           (macro_attribute_body
+            (macro_attr_open)
             (macro_raw_token)
             (escape_sequence)
             (macro_raw_token)
@@ -58,7 +59,8 @@ main() {
               (string_start)
               (string_content)
               (string_end))
-            (macro_raw_token)))))))
+            (macro_raw_token)
+            (macro_attr_close)))))))
 
 ==================
 unbalanced macro paren group recovers at the close bracket
@@ -78,7 +80,9 @@ main() {
           (macro_call_sigil)
           (macro_name)
           (macro_attribute_body
-            (macro_raw_token))))
+            (macro_attr_open)
+            (macro_raw_token)
+            (macro_attr_close))))
       (variable_declaration
         name: (variable_name
           (var_binding_pattern))
@@ -101,5 +105,34 @@ main() {
           (macro_call_sigil)
           (macro_name)
           (macro_attribute_body
+            (macro_attr_open)
             (macro_raw_token))))
       (MISSING "}"))))
+
+==================
+macro expression inside string interpolation
+==================
+
+let s = "${@f(1)}"
+
+---
+
+(source_file
+  (variable_declaration
+    (variable_name
+      (var_binding_pattern))
+    (postfix_expression
+      (string_literal
+        (string_start)
+        (string_interpolation
+          (interp_open)
+          (postfix_expression
+            (macro_expression
+              (macro_call_sigil)
+              (macro_name)
+              (macro_call_body
+                (macro_input_open)
+                (macro_raw_token)
+                (macro_input_close))))
+          (interp_close))
+        (string_end)))))

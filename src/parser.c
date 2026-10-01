@@ -606,11 +606,11 @@ static const char * const ts_symbol_names[] = {
   [sym__quote_interp_close] = "quote_interp_close",
   [sym__quote_close] = "quote_close",
   [sym__macro_at] = "macro_call_sigil",
-  [sym__macro_attr_open] = "_macro_attr_open",
+  [sym__macro_attr_open] = "macro_attr_open",
   [sym__macro_body_content] = "macro_raw_token",
-  [sym__macro_attr_close] = "_macro_attr_close",
-  [sym__macro_input_open] = "_macro_input_open",
-  [sym__macro_input_close] = "_macro_input_close",
+  [sym__macro_attr_close] = "macro_attr_close",
+  [sym__macro_input_open] = "macro_input_open",
+  [sym__macro_input_close] = "macro_input_close",
   [sym__error_sentinel] = "_error_sentinel",
   [sym__generic_lt] = "_generic_lt",
   [sym_source_file] = "source_file",
@@ -1962,7 +1962,7 @@ static const TSSymbolMetadata ts_symbol_metadata[] = {
     .named = true,
   },
   [sym__macro_attr_open] = {
-    .visible = false,
+    .visible = true,
     .named = true,
   },
   [sym__macro_body_content] = {
@@ -1970,15 +1970,15 @@ static const TSSymbolMetadata ts_symbol_metadata[] = {
     .named = true,
   },
   [sym__macro_attr_close] = {
-    .visible = false,
+    .visible = true,
     .named = true,
   },
   [sym__macro_input_open] = {
-    .visible = false,
+    .visible = true,
     .named = true,
   },
   [sym__macro_input_close] = {
-    .visible = false,
+    .visible = true,
     .named = true,
   },
   [sym__error_sentinel] = {

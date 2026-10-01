@@ -70,3 +70,17 @@ main() {
 //      ^ @variable
 //              ^ @function
 }
+
+macro mk(x: Expr) { @body(1) }
+//^ @keyword
+//    ^ @function.macro
+//                  ^ @punctuation.special
+//                   ^ @function.macro
+//                       ^ @punctuation.special
+//                         ^ @punctuation.special
+
+  @Attr[flag = true]
+//^ @punctuation.special
+// ^ @function.macro
+//     ^ @punctuation.special
+//      ^ @markup.raw

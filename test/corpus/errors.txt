@@ -1,5 +1,5 @@
 ==================
-macro expression as bare callee argument is a documented bug (B2)
+bare call statement at top level is not cangjie
 :error
 ==================
 
@@ -7,15 +7,6 @@ f(@f(1))
 
 ---
 
-
-==================
-macro expression inside string interpolation is a documented bug (B2)
-:error
-==================
-
-let s = "${@f(1)}"
-
----
 
 
 ==================
@@ -28,6 +19,7 @@ main() { let [x, y] = items }
 ---
 
 
+
 ==================
 parenless catch pattern is not cangjie
 :error
@@ -36,6 +28,7 @@ parenless catch pattern is not cangjie
 main() { try { a() } catch e { b() } }
 
 ---
+
 
 
 ==================
@@ -48,6 +41,7 @@ main() { ++i }
 ---
 
 
+
 ==================
 unary plus is not cangjie
 :error
@@ -56,6 +50,7 @@ unary plus is not cangjie
 main() { let x = +y }
 
 ---
+
 
 
 ==================
@@ -68,6 +63,7 @@ func f<T: Eq>(x: T): T { return x }
 ---
 
 
+
 ==================
 keyword as parameter name
 :error
@@ -76,3 +72,5 @@ keyword as parameter name
 func f(func: Int64): Int64 { return func }
 
 ---
+
+

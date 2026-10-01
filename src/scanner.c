@@ -744,6 +744,10 @@ bool tree_sitter_cangjie_external_scanner_scan(void *payload, TSLexer *lexer, co
           (lexer->lookahead == '"' || lexer->lookahead == '\'')) {
         return scan_string_open(lexer, s);
       }
+      // Macro expressions may appear inside interpolations: ${@f(x)}.
+      if ((valid_symbols[MACRO_ATTR_OPEN] || valid_symbols[MACRO_INPUT_OPEN]) &&
+          scan_macro_body_open(lexer, s)) return true;
+      if (valid_symbols[MACRO_AT] && scan_macro_at(lexer)) return true;
       return false;
 
     case CTX_RAW_STRING:

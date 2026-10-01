@@ -1014,15 +1014,15 @@ const M = {
         )),
 
         _macro_attr_body: $ => prec.right(seq(
-            $._macro_attr_open,
+            alias($._macro_attr_open, $.macro_attr_open),
             repeat($._macro_body_item),
-            optional($._macro_attr_close),
+            optional(alias($._macro_attr_close, $.macro_attr_close)),
         )),
 
         _macro_input_body: $ => prec.right(seq(
-            $._macro_input_open,
+            alias($._macro_input_open, $.macro_input_open),
             repeat($._macro_body_item),
-            optional($._macro_input_close),
+            optional(alias($._macro_input_close, $.macro_input_close)),
         )),
 
         _macro_body_item: $ => choice(

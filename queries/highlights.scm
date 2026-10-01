@@ -406,6 +406,12 @@
 ; ===== Macro calls =====
 
 (macro_call_sigil) @punctuation.special
+; Macro input/attribute body delimiters join the @-sigil's color so the
+; whole call head @Name(...) reads as one unit.
+(macro_input_open) @punctuation.special
+(macro_input_close) @punctuation.special
+(macro_attr_open) @punctuation.special
+(macro_attr_close) @punctuation.special
 (quote_keyword) @keyword
 (quote_close) @keyword
 
