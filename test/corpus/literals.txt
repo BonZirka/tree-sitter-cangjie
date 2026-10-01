@@ -1,0 +1,266 @@
+==================
+integer literals in all bases
+==================
+
+main() {
+    let dec = 42
+    let hex = 0xFF
+    let oct = 0o17
+    let bin = 0b1010
+    let big = 1_000_000
+}
+
+---
+
+(source_file
+  (main_definition
+    (parameter_list)
+    (block
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (postfix_expression
+          (integer_literal)))
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (postfix_expression
+          (integer_literal)))
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (postfix_expression
+          (integer_literal)))
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (postfix_expression
+          (integer_literal)))
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (postfix_expression
+          (integer_literal))))))
+
+==================
+float literals
+==================
+
+main() {
+    let a = 1.5
+    let b = .5
+    let c = 1e10
+    let d = 1.5e-3
+    let e = 1.0_f32
+}
+
+---
+
+(source_file
+  (main_definition
+    (parameter_list)
+    (block
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (postfix_expression
+          (float_literal)))
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (postfix_expression
+          (float_literal)))
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (postfix_expression
+          (float_literal)))
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (postfix_expression
+          (float_literal)))
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (postfix_expression
+          (float_literal))))))
+
+==================
+strings: escapes, interpolation, raw
+==================
+
+main() {
+    let a = "tab\tand\nnewline"
+    let uni = "\u{1F600}"
+    let who = "user ${name} at ${port + 1}"
+    let raw = r#"raw \n text"#
+    let ch = r'x'
+    let byte = b'\x00'
+}
+
+---
+
+(source_file
+  (main_definition
+    (parameter_list)
+    (block
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (postfix_expression
+          (string_literal
+            (string_start)
+            (string_content)
+            (escape_sequence)
+            (string_content)
+            (escape_sequence)
+            (string_content)
+            (string_end))))
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (postfix_expression
+          (string_literal
+            (string_start)
+            (escape_sequence)
+            (string_end))))
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (postfix_expression
+          (string_literal
+            (string_start)
+            (string_content)
+            (string_interpolation
+              (interp_open)
+              (postfix_expression
+                (identifier))
+              (interp_close))
+            (string_content)
+            (string_interpolation
+              (interp_open)
+              (binary_expression
+                left: (postfix_expression
+                  (identifier))
+                right: (postfix_expression
+                  (integer_literal)))
+              (interp_close))
+            (string_end))))
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (postfix_expression
+          (identifier)))
+      (postfix_expression
+        (string_literal
+          (string_start)
+          (string_content)))
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (postfix_expression
+          (rune_literal)))
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (postfix_expression
+          (byte_literal))))))
+
+==================
+multiline strings
+==================
+
+main() {
+    let doc = """
+        line one
+        line two
+        """
+}
+
+---
+
+(source_file
+  (main_definition
+    (parameter_list)
+    (block
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (postfix_expression
+          (string_literal
+            (string_start)
+            (string_content)))))))
+
+==================
+composites: arrays, tuples, ranges
+==================
+
+main() {
+    let arr = [1, 2, 3]
+    let nest = [[1], [2, 3]]
+    let tup = (1, "two", 3.0)
+    let unit = ()
+    let rng = 1..=10
+}
+
+---
+
+(source_file
+  (main_definition
+    (parameter_list)
+    (block
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (postfix_expression
+          (array_literal
+            (postfix_expression
+              (integer_literal))
+            (postfix_expression
+              (integer_literal))
+            (postfix_expression
+              (integer_literal)))))
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (postfix_expression
+          (array_literal
+            (postfix_expression
+              (array_literal
+                (postfix_expression
+                  (integer_literal))))
+            (postfix_expression
+              (array_literal
+                (postfix_expression
+                  (integer_literal))
+                (postfix_expression
+                  (integer_literal)))))))
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (postfix_expression
+          (tuple_expression
+            (postfix_expression
+              (integer_literal))
+            (postfix_expression
+              (string_literal
+                (string_start)
+                (string_content)
+                (string_end)))
+            (postfix_expression
+              (float_literal)))))
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (postfix_expression
+          (unit_literal)))
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (postfix_expression
+          (range_expression
+            start: (postfix_expression
+              (integer_literal))
+            end: (postfix_expression
+              (integer_literal))))))))

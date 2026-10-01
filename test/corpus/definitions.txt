@@ -1,0 +1,161 @@
+==================
+class with modifiers, generics and where clause
+==================
+
+public open class Repository<T> <: Crud<T> where T <: Entity {
+    public func find(id: Int64): T {
+        return repo[T].load(id)
+    }
+}
+
+---
+
+(source_file
+  (class_definition
+    (modifiers)
+    name: (class_name)
+    (type_parameters
+      (type_parameter
+        name: (identifier)))
+    (super_or_interface
+      (identifier))
+    (type_arguments
+      (user_type
+        (identifier)))
+    (generic_constraints
+      (generic_constraint
+        (identifier)
+        (user_type
+          (identifier))))
+    body: (declaration_body
+      (function_definition
+        (modifiers)
+        name: (func_name)
+        parameters: (parameter_list
+          (parameter
+            para_name: (identifier)
+            type: (Int64)))
+        return_type: (return_type
+          type: (user_type
+            (identifier)))
+        body: (block
+          (postfix_expression
+            (jump_expression
+              (postfix_expression
+                base: (postfix_expression
+                  base: (postfix_expression
+                    base: (postfix_expression
+                      (identifier))
+                    suffix: (index_access
+                      (postfix_expression
+                        (identifier))))
+                  suffix: (field_access
+                    (identifier)))
+                suffix: (call_suffix
+                  (postfix_expression
+                    (identifier)))))))))))
+
+==================
+struct with primary init and member params
+==================
+
+public struct Money {
+    public Money(public let cents: Int64, let currency!: String) { }
+}
+
+---
+
+(source_file
+  (struct_definition
+    (modifiers)
+    name: (struct_name)
+    body: (declaration_body
+      (primary_init
+        (modifiers)
+        (class_name)
+        (primary_init_param_list
+          (unnamed_member_param
+            (modifiers)
+            para_name: (identifier)
+            type: (Int64))
+          (named_member_param
+            (named_parameter
+              para_name: (identifier)
+              type: (String))))))))
+
+==================
+interface with properties
+==================
+
+interface Shape {
+    prop area: Float64 {
+        get() { 0.0 }
+    }
+}
+
+---
+
+(source_file
+  (interface_definition
+    name: (interface_name)
+    body: (declaration_body
+      (property_definition
+        name: (property_name)
+        type: (Float64)
+        getter: (getter_keyword)
+        getter: (block
+          (postfix_expression
+            (float_literal)))))))
+
+==================
+enum with cases and payloads
+==================
+
+public enum Color {
+    Red | Green | Custom(Int64, String)
+}
+
+---
+
+(source_file
+  (enum_definition
+    (modifiers)
+    name: (enum_name)
+    body: (enum_body
+      enum_constant: (identifier)
+      enum_constant: (identifier)
+      enum_constant: (identifier)
+      enum_constant: (Int64)
+      enum_constant: (String))))
+
+==================
+extend declaration
+==================
+
+public extend Int64 {
+    public func doubled(): Int64 {
+        return this * 2
+    }
+}
+
+---
+
+(source_file
+  (extend_definition
+    (modifiers)
+    (extend_type)
+    body: (declaration_body
+      (function_definition
+        (modifiers)
+        name: (func_name)
+        parameters: (parameter_list)
+        return_type: (return_type
+          type: (Int64))
+        body: (block
+          (postfix_expression
+            (jump_expression
+              (binary_expression
+                left: (postfix_expression
+                  (this_super_expression))
+                right: (postfix_expression
+                  (integer_literal))))))))))

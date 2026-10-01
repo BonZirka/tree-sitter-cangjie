@@ -176,6 +176,7 @@
 (package_full package_name: [(scoped_identifier) (identifier)] @module)
 (package_group package_name: [(scoped_identifier) (identifier)] @module)
 (sub_group_of_package package_name: [(scoped_identifier) (identifier)] @module)
+(package_alias package_name: [(scoped_identifier) (identifier)] @module)
 (package_alias alias: (identifier) @module)
 
 ; ===== Keywords =====
