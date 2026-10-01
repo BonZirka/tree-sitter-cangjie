@@ -1,0 +1,105 @@
+==================
+quote with nested parens, raw tokens and interpolation
+==================
+main() {
+  let q = quote( (a) $(x) "s" )
+}
+------------------
+
+(source_file
+  (main_definition
+    (parameter_list)
+    (block
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (postfix_expression
+          (quote_expression
+            (quote_keyword)
+            (quote_raw_token)
+            (quote_paren)
+            (quote_raw_token)
+            (quote_paren)
+            (quote_raw_token)
+            (quote_interpolation
+              (quote_interp_open)
+              (postfix_expression
+                (identifier))
+              (quote_interp_close))
+            (quote_raw_token)
+            (string_literal
+              (string_start)
+              (string_content)
+              (string_end))
+            (quote_raw_token)
+            (quote_close)))))))
+
+==================
+macro body with escape, string and raw tokens
+==================
+main() {
+  @M[a \@ b "s" c]
+}
+------------------
+
+(source_file
+  (main_definition
+    (parameter_list)
+    (block
+      (postfix_expression
+        (macro_expression
+          (macro_call_sigil)
+          (macro_name)
+          (macro_attribute_body
+            (macro_raw_token)
+            (escape_sequence)
+            (macro_raw_token)
+            (string_literal
+              (string_start)
+              (string_content)
+              (string_end))
+            (macro_raw_token)))))))
+
+==================
+unbalanced macro paren group recovers at the close bracket
+==================
+main() {
+  @M[a(b]
+  let t = 1
+}
+------------------
+
+(source_file
+  (main_definition
+    (parameter_list)
+    (block
+      (postfix_expression
+        (macro_expression
+          (macro_call_sigil)
+          (macro_name)
+          (macro_attribute_body
+            (macro_raw_token))))
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (postfix_expression
+          (integer_literal))))))
+
+==================
+unterminated macro body recovers at EOF without swallowing the file
+==================
+main() {
+  @M[abc
+------------------
+
+(source_file
+  (main_definition
+    (parameter_list)
+    (block
+      (postfix_expression
+        (macro_expression
+          (macro_call_sigil)
+          (macro_name)
+          (macro_attribute_body
+            (macro_raw_token))))
+      (MISSING "}"))))
