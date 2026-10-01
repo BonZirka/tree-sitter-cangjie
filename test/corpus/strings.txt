@@ -134,3 +134,32 @@ main() {
             (string_start)
             (string_content)
             (string_end)))))))
+
+==================
+self-invoking lambda in string interpolation
+==================
+
+main() { let s = "${ { => 42 }() }" }
+
+---
+
+(source_file
+  (main_definition
+    (parameter_list)
+    (block
+      (variable_declaration
+        name: (variable_name
+          (var_binding_pattern))
+        initializer: (postfix_expression
+          (string_literal
+            (string_start)
+            (string_interpolation
+              (interp_open)
+              (postfix_expression
+                base: (postfix_expression
+                  (lambda_expression
+                    (postfix_expression
+                      (integer_literal))))
+                suffix: (call_suffix))
+              (interp_close))
+            (string_end)))))))

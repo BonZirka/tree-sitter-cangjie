@@ -1712,29 +1712,6 @@
     }
   },
   {
-    "type": "interp_brace_group",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": false,
-      "types": [
-        {
-          "type": "_expression",
-          "named": true
-        },
-        {
-          "type": "interp_brace_group",
-          "named": true
-        },
-        {
-          "type": "variable_declaration",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
     "type": "is_expression",
     "named": true,
     "fields": {
@@ -3313,10 +3290,6 @@
           "named": true
         },
         {
-          "type": "interp_brace_group",
-          "named": true
-        },
-        {
           "type": "interp_close",
           "named": true
         },
@@ -4146,11 +4119,11 @@
   },
   {
     "type": "Bool",
-    "named": false
+    "named": true
   },
   {
     "type": "Bool",
-    "named": true
+    "named": false
   },
   {
     "type": "Float16",
@@ -4170,11 +4143,11 @@
   },
   {
     "type": "Float64",
-    "named": false
+    "named": true
   },
   {
     "type": "Float64",
-    "named": true
+    "named": false
   },
   {
     "type": "Int16",
@@ -4186,11 +4159,11 @@
   },
   {
     "type": "Int32",
-    "named": false
+    "named": true
   },
   {
     "type": "Int32",
-    "named": true
+    "named": false
   },
   {
     "type": "Int64",
@@ -4218,11 +4191,11 @@
   },
   {
     "type": "Nothing",
-    "named": true
+    "named": false
   },
   {
     "type": "Nothing",
-    "named": false
+    "named": true
   },
   {
     "type": "Range",
@@ -4230,11 +4203,11 @@
   },
   {
     "type": "Rune",
-    "named": true
+    "named": false
   },
   {
     "type": "Rune",
-    "named": false
+    "named": true
   },
   {
     "type": "String",
@@ -4266,19 +4239,19 @@
   },
   {
     "type": "UInt64",
-    "named": true
+    "named": false
   },
   {
     "type": "UInt64",
-    "named": false
-  },
-  {
-    "type": "UInt8",
     "named": true
   },
   {
     "type": "UInt8",
     "named": false
+  },
+  {
+    "type": "UInt8",
+    "named": true
   },
   {
     "type": "UIntNative",
@@ -4543,11 +4516,11 @@
   },
   {
     "type": "operator",
-    "named": false
+    "named": true
   },
   {
     "type": "operator",
-    "named": true
+    "named": false
   },
   {
     "type": "override",

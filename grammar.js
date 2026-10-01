@@ -653,10 +653,10 @@ const M = {
         )),
 
         lambda_expression: $ => seq(
-            '{',
+            choice('{', $._brace_open),
             optional(seq(optional($.lambda_parameters), token('=>'))),
             optional($._expression_or_declarations),
-            '}'
+            choice('}', $._brace_close)
         ),
         lambda_parameters: $ => commaSep1Trailing($.lambda_parameter),
         lambda_parameter: $ => seq(choice($._var_binding_pattern, '_'), optional(seq(':', $._type))),
@@ -990,21 +990,14 @@ const M = {
             alias($._interp_open, $.interp_open),
             repeat(seq(
                 optional(repeat1(terminator($))),
-                choice($._interpolation_statement, $.interp_brace_group),
+                $._interpolation_statement,
             )),
             alias($._interp_close, $.interp_close),
         ),
 
         _interpolation_statement: $ => choice(alias($._local_variable_declaration, $.variable_declaration), $._expression),
 
-        unit_literal: _ => seq('(', ')'),        interp_brace_group: $ => seq(
-            $._brace_open,
-            repeat(seq(
-                optional(repeat1(terminator($))),
-                choice($._interpolation_statement, $.interp_brace_group),
-            )),
-            $._brace_close,
-        ),
+        unit_literal: _ => seq('(', ')'),
 
         macro_call: $ => prec(1, seq(
             alias($._macro_at, $.macro_call_sigil),
