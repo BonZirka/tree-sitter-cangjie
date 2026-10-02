@@ -10269,6 +10269,10 @@
         {
           "type": "SYMBOL",
           "name": "rune_literal"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "_expression"
         }
       ]
     },
@@ -10353,6 +10357,13 @@
       "modifiers",
       "_modifiers_var",
       "_primary_expression"
+    ],
+    [
+      "_literal",
+      "_macro_body_item"
+    ],
+    [
+      "macro_expression"
     ]
   ],
   "precedences": [],

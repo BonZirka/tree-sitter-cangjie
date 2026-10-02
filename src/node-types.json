@@ -1865,6 +1865,10 @@
       "required": true,
       "types": [
         {
+          "type": "_expression",
+          "named": true
+        },
+        {
           "type": "escape_sequence",
           "named": true
         },
@@ -1922,6 +1926,10 @@
       "multiple": true,
       "required": true,
       "types": [
+        {
+          "type": "_expression",
+          "named": true
+        },
         {
           "type": "escape_sequence",
           "named": true

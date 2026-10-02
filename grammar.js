@@ -186,6 +186,8 @@ const M = {
         [$.modifiers, $._primary_expression],
         [$._modifiers_var, $._primary_expression],
         [$.modifiers, $._modifiers_var, $._primary_expression],
+        [$._literal, $._macro_body_item],
+        [$.macro_expression],
     ],
 
     rules: {
@@ -1023,6 +1025,7 @@ const M = {
             $.escape_sequence,
             $.string_literal,
             $.rune_literal,
+            $._expression,
         ),
 
         block_comment: $ => seq('/*', $._block_comment_content),
