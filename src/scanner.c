@@ -466,13 +466,6 @@ static bool scan_macro_body_content(TSLexer *lexer, Scanner *s) {
   if (!s->top || s->kinds[s->top - 1] != CTX_MACRO_BODY) return false;
   char closer = s->params[s->top - 1];
   bool any = false;
-  // EXPERIMENT: expression-capable macro bodies. With no nested openers
-  // pending, raw content only covers whitespace/newline runs; anything
-  // else is declined so the internal lexer produces expression tokens.
-  if (s->macro_openers_top == 0) {
-    char c = (char)lexer->lookahead;
-    if (c != ' ' && c != '\t' && c != '\r' && c != '\n') return false;
-  }
   lexer->result_symbol = MACRO_BODY_CONTENT;
   while (lexer->lookahead != 0) {
     char c = (char)lexer->lookahead;
