@@ -29,9 +29,15 @@ runs when no nested openers are pending).
   corpus suite passes with identical trees.
 - Mixed bodies resolve raw-first today (`@A[x + 1]` → one `macro_raw_token`
   covering `x + 1`). Making expressions WIN over raw content needs
-  precedence work (e.g. `prec.dynamic` on the content alternative) — the
-  state-count and speed numbers above already include the full expression
-  machinery, so tuning precedence will not change them materially.
+  precedence work — the state-count and speed numbers above already
+  include the full expression machinery, so tuning precedence will not
+  change them materially.
+- A scanner-decline variant was tried and **reverted**: declining raw
+  content at expression-token starts broke 1225 corpus files
+  (attr bodies like `@Deprecated[message: "..."]` depend on the raw
+  swallow for the `name:` form, and whitespace-entry content swallowed
+  operators mid-expression, killing the expression readings it was
+  meant to enable).
 - Verdict: the state doubling is real but the corpus cost is ~40%; both
   parse time and memory stay comfortably usable. The design is viable for
   coloring macro bodies as real code.
