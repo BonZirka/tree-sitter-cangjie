@@ -2956,6 +2956,14 @@
           "named": true
         },
         {
+          "type": "quote_macro_head",
+          "named": true
+        },
+        {
+          "type": "quote_newline",
+          "named": true
+        },
+        {
           "type": "quote_paren",
           "named": true
         },
@@ -4119,11 +4127,11 @@
   },
   {
     "type": "Bool",
-    "named": true
+    "named": false
   },
   {
     "type": "Bool",
-    "named": false
+    "named": true
   },
   {
     "type": "Float16",
@@ -4143,11 +4151,11 @@
   },
   {
     "type": "Float64",
-    "named": true
+    "named": false
   },
   {
     "type": "Float64",
-    "named": false
+    "named": true
   },
   {
     "type": "Int16",
@@ -4175,19 +4183,19 @@
   },
   {
     "type": "Int8",
-    "named": false
+    "named": true
   },
   {
     "type": "Int8",
-    "named": true
-  },
-  {
-    "type": "IntNative",
-    "named": true
+    "named": false
   },
   {
     "type": "IntNative",
     "named": false
+  },
+  {
+    "type": "IntNative",
+    "named": true
   },
   {
     "type": "Nothing",
@@ -4211,11 +4219,11 @@
   },
   {
     "type": "String",
-    "named": false
+    "named": true
   },
   {
     "type": "String",
-    "named": true
+    "named": false
   },
   {
     "type": "Thistype",
@@ -4223,11 +4231,11 @@
   },
   {
     "type": "UInt16",
-    "named": true
+    "named": false
   },
   {
     "type": "UInt16",
-    "named": false
+    "named": true
   },
   {
     "type": "UInt32",
@@ -4255,11 +4263,11 @@
   },
   {
     "type": "UIntNative",
-    "named": false
+    "named": true
   },
   {
     "type": "UIntNative",
-    "named": true
+    "named": false
   },
   {
     "type": "Unit",
@@ -4516,11 +4524,11 @@
   },
   {
     "type": "operator",
-    "named": true
+    "named": false
   },
   {
     "type": "operator",
-    "named": false
+    "named": true
   },
   {
     "type": "override",
@@ -4568,6 +4576,14 @@
   },
   {
     "type": "quote_keyword",
+    "named": true
+  },
+  {
+    "type": "quote_macro_head",
+    "named": true
+  },
+  {
+    "type": "quote_newline",
     "named": true
   },
   {

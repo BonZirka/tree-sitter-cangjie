@@ -376,6 +376,11 @@
 
 (quote_raw_token) @markup.raw
 
+; Macro calls inside quotes stay raw tokens (the compiler keeps them inert
+; until the token sequence is evaluated); the scanner splits the @Name head
+; into its own quote_macro_head node so it can stand out. Arguments stay raw.
+(quote_macro_head) @function.macro
+
 ; The '(' ')' delimiters inside quote(...) are template text like the raw
 ; runs — same @markup.raw. (They are named nodes because anonymous externals
 ; are not queryable.)

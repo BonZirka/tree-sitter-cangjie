@@ -167,6 +167,8 @@ const M = {
         $._macro_input_close,
         $._error_sentinel,
         $._generic_lt,
+        $._quote_macro_head,
+        $._quote_newline,
     ],
 
     supertypes: $ => [
@@ -773,12 +775,19 @@ const M = {
 
         quote_expression: $ => prec(PREC.MACRO_QUOTE, seq(
             alias($._quote_open, $.quote_keyword),
-            repeat($._quote_body_item),
+            // Newlines after 'quote(' are ignored (spec); every newline
+            // after a token is itself the separator quoteToken.
+            repeat($._quote_newline),
+            repeat(seq(
+                $._quote_body_item,
+                repeat(alias($._quote_newline, $.quote_newline)),
+            )),
             alias($._quote_close, $.quote_close),
         )),
 
         _quote_body_item: $ => choice(
             alias($._quote_content, $.quote_raw_token),
+            alias($._quote_macro_head, $.quote_macro_head),
             $.escape_sequence,
             $.string_literal,
             $.rune_literal,

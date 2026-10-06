@@ -1,0 +1,1209 @@
+==================
+quote of operator tokens
+==================
+
+let a0: Tokens = quote(==)
+
+---
+
+(source_file
+  (variable_declaration
+    (variable_name
+      (var_binding_pattern))
+    (user_type
+      (identifier))
+    (postfix_expression
+      (quote_expression
+        (quote_keyword)
+        (quote_raw_token)
+        (quote_close)))))
+
+==================
+quote of arithmetic tokens
+==================
+
+let a1: Tokens = quote(2+3)
+
+---
+
+(source_file
+  (variable_declaration
+    (variable_name
+      (var_binding_pattern))
+    (user_type
+      (identifier))
+    (postfix_expression
+      (quote_expression
+        (quote_keyword)
+        (quote_raw_token)
+        (quote_close)))))
+
+==================
+quote concatenation with plus
+==================
+
+let a2: Tokens = quote(2) + quote(+) + quote(3)
+
+---
+
+(source_file
+  (variable_declaration
+    (variable_name
+      (var_binding_pattern))
+    (user_type
+      (identifier))
+    (binary_expression
+      (binary_expression
+        (postfix_expression
+          (quote_expression
+            (quote_keyword)
+            (quote_raw_token)
+            (quote_close)))
+        (postfix_expression
+          (quote_expression
+            (quote_keyword)
+            (quote_raw_token)
+            (quote_close))))
+      (postfix_expression
+        (quote_expression
+          (quote_keyword)
+          (quote_raw_token)
+          (quote_close))))))
+
+==================
+quote of non-cangjie token soup
+==================
+
+let a4: Tokens = quote(select * from Users where id=100086)
+
+---
+
+(source_file
+  (variable_declaration
+    (variable_name
+      (var_binding_pattern))
+    (user_type
+      (identifier))
+    (postfix_expression
+      (quote_expression
+        (quote_keyword)
+        (quote_raw_token)
+        (quote_close)))))
+
+==================
+quote of a function definition
+==================
+
+let a3: Tokens = quote(main(): Int64 {
+    0
+})
+
+---
+
+(source_file
+  (variable_declaration
+    (variable_name
+      (var_binding_pattern))
+    (user_type
+      (identifier))
+    (postfix_expression
+      (quote_expression
+        (quote_keyword)
+        (quote_raw_token)
+        (quote_paren)
+        (quote_paren)
+        (quote_raw_token)
+        (quote_newline)
+        (quote_raw_token)
+        (quote_newline)
+        (quote_raw_token)
+        (quote_close)))))
+
+==================
+nested quote expression
+==================
+
+let b1: Tokens = quote(quote(x))
+
+---
+
+(source_file
+  (variable_declaration
+    (variable_name
+      (var_binding_pattern))
+    (user_type
+      (identifier))
+    (postfix_expression
+      (quote_expression
+        (quote_keyword)
+        (quote_raw_token)
+        (quote_paren)
+        (quote_raw_token)
+        (quote_paren)
+        (quote_close)))))
+
+==================
+separator newline in quote body is its own token
+==================
+
+let n: Tokens = quote(
+
+var a = 3
+var b = 4
+
+)
+
+---
+
+(source_file
+  (variable_declaration
+    (variable_name
+      (var_binding_pattern))
+    (user_type
+      (identifier))
+    (postfix_expression
+      (quote_expression
+        (quote_keyword)
+        (quote_raw_token)
+        (quote_newline)
+        (quote_raw_token)
+        (quote_newline)
+        (quote_newline)
+        (quote_close)))))
+
+==================
+escaped parentheses do not count for matching
+==================
+
+let e1: Tokens = quote(\()
+let e2: Tokens = quote(a \) b)
+
+---
+
+(source_file
+  (variable_declaration
+    (variable_name
+      (var_binding_pattern))
+    (user_type
+      (identifier))
+    (postfix_expression
+      (quote_expression
+        (quote_keyword)
+        (escape_sequence)
+        (quote_close))))
+  (variable_declaration
+    (variable_name
+      (var_binding_pattern))
+    (user_type
+      (identifier))
+    (postfix_expression
+      (quote_expression
+        (quote_keyword)
+        (quote_raw_token)
+        (escape_sequence)
+        (quote_raw_token)
+        (quote_close)))))
+
+==================
+escaped at-sign and dollar inside quote
+==================
+
+let e3: Tokens = quote(\@)
+let e4: Tokens = quote(\$)
+
+---
+
+(source_file
+  (variable_declaration
+    (variable_name
+      (var_binding_pattern))
+    (user_type
+      (identifier))
+    (postfix_expression
+      (quote_expression
+        (quote_keyword)
+        (escape_sequence)
+        (quote_close))))
+  (variable_declaration
+    (variable_name
+      (var_binding_pattern))
+    (user_type
+      (identifier))
+    (postfix_expression
+      (quote_expression
+        (quote_keyword)
+        (escape_sequence)
+        (quote_close)))))
+
+==================
+sigil interpolation of identifier
+==================
+
+main() {
+    var x: Int64 = 2 + 3
+    let i1 = quote($x)
+    let i7 = quote($t + 1)
+}
+
+---
+
+(source_file
+  (main_definition
+    (parameter_list)
+    (block
+      (variable_declaration
+        (variable_name
+          (var_binding_pattern))
+        (Int64)
+        (binary_expression
+          (postfix_expression
+            (integer_literal))
+          (postfix_expression
+            (integer_literal))))
+      (variable_declaration
+        (variable_name
+          (var_binding_pattern))
+        (postfix_expression
+          (quote_expression
+            (quote_keyword)
+            (identifier)
+            (quote_close))))
+      (variable_declaration
+        (variable_name
+          (var_binding_pattern))
+        (postfix_expression
+          (quote_expression
+            (quote_keyword)
+            (identifier)
+            (quote_raw_token)
+            (quote_close)))))))
+
+==================
+sigil interpolation inside expression
+==================
+
+main() {
+    var x: Int64 = 2 + 3
+    let i2 = quote($x + 2)
+    let i3 = quote($x + (2 + 3))
+    let i4 = quote(1 + ($x + 1) * 2)
+}
+
+---
+
+(source_file
+  (main_definition
+    (parameter_list)
+    (block
+      (variable_declaration
+        (variable_name
+          (var_binding_pattern))
+        (Int64)
+        (binary_expression
+          (postfix_expression
+            (integer_literal))
+          (postfix_expression
+            (integer_literal))))
+      (variable_declaration
+        (variable_name
+          (var_binding_pattern))
+        (postfix_expression
+          (quote_expression
+            (quote_keyword)
+            (identifier)
+            (quote_raw_token)
+            (quote_close))))
+      (variable_declaration
+        (variable_name
+          (var_binding_pattern))
+        (postfix_expression
+          (quote_expression
+            (quote_keyword)
+            (identifier)
+            (quote_raw_token)
+            (quote_paren)
+            (quote_raw_token)
+            (quote_paren)
+            (quote_close))))
+      (variable_declaration
+        (variable_name
+          (var_binding_pattern))
+        (postfix_expression
+          (quote_expression
+            (quote_keyword)
+            (quote_raw_token)
+            (quote_paren)
+            (identifier)
+            (quote_raw_token)
+            (quote_paren)
+            (quote_raw_token)
+            (quote_close)))))))
+
+==================
+paren interpolation of expression
+==================
+
+main() {
+    var x: Int64 = 2 + 3
+    let i5 = quote(1 + $(x + 1) * 2)
+    let i6 = quote(2 + $rightOp)
+}
+
+---
+
+(source_file
+  (main_definition
+    (parameter_list)
+    (block
+      (variable_declaration
+        (variable_name
+          (var_binding_pattern))
+        (Int64)
+        (binary_expression
+          (postfix_expression
+            (integer_literal))
+          (postfix_expression
+            (integer_literal))))
+      (variable_declaration
+        (variable_name
+          (var_binding_pattern))
+        (postfix_expression
+          (quote_expression
+            (quote_keyword)
+            (quote_raw_token)
+            (quote_interpolation
+              (quote_interp_open)
+              (binary_expression
+                (postfix_expression
+                  (identifier))
+                (postfix_expression
+                  (integer_literal)))
+              (quote_interp_close))
+            (quote_raw_token)
+            (quote_close))))
+      (variable_declaration
+        (variable_name
+          (var_binding_pattern))
+        (postfix_expression
+          (quote_expression
+            (quote_keyword)
+            (quote_raw_token)
+            (identifier)
+            (quote_close)))))))
+
+==================
+quote inside interpolation cancels out
+==================
+
+let i8 = quote($(quote(t)))
+let i9 = quote($(quote($t)))
+
+---
+
+(source_file
+  (variable_declaration
+    (variable_name
+      (var_binding_pattern))
+    (postfix_expression
+      (quote_expression
+        (quote_keyword)
+        (quote_interpolation
+          (quote_interp_open)
+          (postfix_expression
+            (postfix_expression
+              (identifier))
+            (call_suffix
+              (postfix_expression
+                (identifier))))
+          (quote_interp_close))
+        (quote_close))))
+  (variable_declaration
+    (variable_name
+      (var_binding_pattern))
+    (postfix_expression
+      (quote_expression
+        (quote_keyword)
+        (quote_interpolation
+          (quote_interp_open)
+          (postfix_expression
+            (postfix_expression
+              (identifier))
+            (call_suffix
+              (postfix_expression
+                (identifier))))
+          (quote_interp_close))
+        (quote_close)))))
+
+==================
+macro call inside quote
+==================
+
+let m1: Tokens = quote(@SayHi("say hi"))
+
+---
+
+(source_file
+  (variable_declaration
+    (variable_name
+      (var_binding_pattern))
+    (user_type
+      (identifier))
+    (postfix_expression
+      (quote_expression
+        (quote_keyword)
+        (quote_macro_head)
+        (quote_paren)
+        (string_literal
+          (string_start)
+          (string_content)
+          (string_end))
+        (quote_paren)
+        (quote_close)))))
+
+==================
+macro call with interpolation inside quote
+==================
+
+let m2: Tokens = quote(@PlusOne($x))
+
+---
+
+(source_file
+  (variable_declaration
+    (variable_name
+      (var_binding_pattern))
+    (user_type
+      (identifier))
+    (postfix_expression
+      (quote_expression
+        (quote_keyword)
+        (quote_macro_head)
+        (quote_paren)
+        (identifier)
+        (quote_paren)
+        (quote_close)))))
+
+==================
+macro call among operators inside quote
+==================
+
+let m4: Tokens = quote(1 + @PlusOne(x) * 2)
+
+---
+
+(source_file
+  (variable_declaration
+    (variable_name
+      (var_binding_pattern))
+    (user_type
+      (identifier))
+    (postfix_expression
+      (quote_expression
+        (quote_keyword)
+        (quote_raw_token)
+        (quote_macro_head)
+        (quote_paren)
+        (quote_raw_token)
+        (quote_paren)
+        (quote_raw_token)
+        (quote_close)))))
+
+==================
+unmatched paren in quote is an error
+:error
+==================
+
+let b0: Tokens = quote(()
+
+---
+
+
+
+==================
+non-attribute macro definition
+==================
+
+public macro foo(x: Tokens): Tokens { x }
+public macro bar(x: Tokens): Tokens { return quote($x) }
+
+---
+
+(source_file
+  (macro_definition
+    (modifiers)
+    (macro_name)
+    (macro_parameter
+      (identifier)
+      (user_type
+        (identifier)))
+    (return_type
+      (user_type
+        (identifier)))
+    (block
+      (postfix_expression
+        (identifier))))
+  (macro_definition
+    (modifiers)
+    (macro_name)
+    (macro_parameter
+      (identifier)
+      (user_type
+        (identifier)))
+    (return_type
+      (user_type
+        (identifier)))
+    (block
+      (postfix_expression
+        (jump_expression
+          (postfix_expression
+            (quote_expression
+              (quote_keyword)
+              (identifier)
+              (quote_close))))))))
+
+==================
+attribute macro definition
+==================
+
+public macro Joint(attr: Tokens, x: Tokens): Tokens { attr + x }
+
+---
+
+(source_file
+  (macro_definition
+    (modifiers)
+    (macro_name)
+    (macro_parameter
+      (identifier)
+      (user_type
+        (identifier)))
+    (macro_parameter
+      (identifier)
+      (user_type
+        (identifier)))
+    (return_type
+      (user_type
+        (identifier)))
+    (block
+      (binary_expression
+        (postfix_expression
+          (identifier))
+        (postfix_expression
+          (identifier))))))
+
+==================
+macro definition returning quoted input
+==================
+
+public macro PlusOne(input: Tokens): Tokens { quote(($input + 1)) }
+
+---
+
+(source_file
+  (macro_definition
+    (modifiers)
+    (macro_name)
+    (macro_parameter
+      (identifier)
+      (user_type
+        (identifier)))
+    (return_type
+      (user_type
+        (identifier)))
+    (block
+      (postfix_expression
+        (quote_expression
+          (quote_keyword)
+          (quote_paren)
+          (identifier)
+          (quote_raw_token)
+          (quote_paren)
+          (quote_close))))))
+
+==================
+non-attribute macro call
+==================
+
+@Twice(foo())
+
+---
+
+(source_file
+  (macro_expression
+    (macro_call_sigil)
+    (macro_name)
+    (macro_call_body
+      (macro_input_open)
+      (macro_raw_token)
+      (macro_input_close))))
+
+==================
+attribute macro call
+==================
+
+@Joint[foo()](foo())
+
+---
+
+(source_file
+  (macro_expression
+    (macro_call_sigil)
+    (macro_name)
+    (macro_attribute_body
+      (macro_attr_open)
+      (macro_raw_token)
+      (macro_attr_close))
+    (macro_call_body
+      (macro_input_open)
+      (macro_raw_token)
+      (macro_input_close))))
+
+==================
+macro call with empty input body
+==================
+
+@Twice()
+
+---
+
+(source_file
+  (macro_expression
+    (macro_call_sigil)
+    (macro_name)
+    (macro_call_body
+      (macro_input_open)
+      (macro_input_close))))
+
+==================
+attribute macro call with empty attribute body
+==================
+
+@Joint[](foo())
+
+---
+
+(source_file
+  (macro_expression
+    (macro_call_sigil)
+    (macro_name)
+    (macro_attribute_body
+      (macro_attr_open)
+      (macro_attr_close))
+    (macro_call_body
+      (macro_input_open)
+      (macro_raw_token)
+      (macro_input_close))))
+
+==================
+macro call without parens applies to variable declaration
+==================
+
+@MacroWithoutParens
+var a: Int64 = 0
+
+---
+
+(source_file
+  (decorated_declaration
+    (macro_call
+      (macro_call_sigil)
+      (macro_name))
+    (variable_declaration
+      (variable_name
+        (var_binding_pattern))
+      (Int64)
+      (postfix_expression
+        (integer_literal)))))
+
+==================
+macro call without parens applies to class declaration
+==================
+
+@echo class A {}
+
+---
+
+(source_file
+  (decorated_declaration
+    (macro_call
+      (macro_call_sigil)
+      (macro_name))
+    (class_definition
+      (class_name)
+      (declaration_body))))
+
+==================
+nested macro calls
+==================
+
+main() {
+    @Outer @Inner(2+3)
+}
+
+---
+
+(source_file
+  (main_definition
+    (parameter_list)
+    (block
+      (postfix_expression
+        (macro_expression
+          (macro_call_sigil)
+          (macro_name)))
+      (postfix_expression
+        (macro_expression
+          (macro_call_sigil)
+          (macro_name)
+          (macro_call_body
+            (macro_input_open)
+            (macro_raw_token)
+            (macro_input_close)))))))
+
+==================
+nested macro calls at top level do not compose
+:error
+==================
+
+@Outer @Inner(2+3)
+
+---
+
+
+
+==================
+macro call in variable initializer
+==================
+
+main() {
+    var res: Int64 = @A(2+3)
+    return res
+}
+
+---
+
+(source_file
+  (main_definition
+    (parameter_list)
+    (block
+      (variable_declaration
+        (variable_name
+          (var_binding_pattern))
+        (Int64)
+        (postfix_expression
+          (macro_expression
+            (macro_call_sigil)
+            (macro_name)
+            (macro_call_body
+              (macro_input_open)
+              (macro_raw_token)
+              (macro_input_close)))))
+      (postfix_expression
+        (jump_expression
+          (postfix_expression
+            (identifier)))))))
+
+==================
+unbalanced parens in macro input leave body unclosed
+==================
+
+@ABC(a ( b)
+
+---
+
+(source_file
+  (macro_expression
+    (macro_call_sigil)
+    (macro_name)
+    (macro_call_body
+      (macro_input_open)
+      (macro_raw_token))))
+
+==================
+unbalanced brackets in attribute leave body unclosed
+==================
+
+@ABC[a [ b]()
+
+---
+
+(source_file
+  (macro_expression
+    (macro_call_sigil)
+    (macro_name)
+    (macro_attribute_body
+      (macro_attr_open)
+      (macro_raw_token))))
+
+==================
+source location tags in expressions and default parameters
+==================
+
+func test1() {
+    let s: String = @sourceFile()
+    let p: String = @sourcePackage()
+    let l: Int64 = @sourceLine()
+}
+func test2(n!: Int64 = @sourceLine()) { println(n) }
+
+---
+
+(source_file
+  (function_definition
+    (func_name)
+    (parameter_list)
+    (block
+      (variable_declaration
+        (variable_name
+          (var_binding_pattern))
+        (String)
+        (postfix_expression
+          (macro_expression
+            (macro_call_sigil)
+            (macro_name)
+            (macro_call_body
+              (macro_input_open)
+              (macro_input_close)))))
+      (variable_declaration
+        (variable_name
+          (var_binding_pattern))
+        (String)
+        (postfix_expression
+          (macro_expression
+            (macro_call_sigil)
+            (macro_name)
+            (macro_call_body
+              (macro_input_open)
+              (macro_input_close)))))
+      (variable_declaration
+        (variable_name
+          (var_binding_pattern))
+        (Int64)
+        (postfix_expression
+          (macro_expression
+            (macro_call_sigil)
+            (macro_name)
+            (macro_call_body
+              (macro_input_open)
+              (macro_input_close)))))))
+  (function_definition
+    (func_name)
+    (parameter_list
+      (named_parameter
+        (identifier)
+        (Int64)
+        (postfix_expression
+          (macro_expression
+            (macro_call_sigil)
+            (macro_name)
+            (macro_call_body
+              (macro_input_open)
+              (macro_input_close))))))
+    (block
+      (postfix_expression
+        (postfix_expression
+          (identifier))
+        (call_suffix
+          (postfix_expression
+            (identifier)))))))
+
+==================
+intrinsic tag on function without body
+==================
+
+@Intrinsic
+func invokeGC(heavy: Bool): Unit
+
+---
+
+(source_file
+  (decorated_declaration
+    (macro_call
+      (macro_call_sigil)
+      (macro_name))
+    (function_definition
+      (func_name)
+      (parameter_list
+        (parameter
+          (identifier)
+          (Bool)))
+      (return_type
+        (Unit)))))
+
+==================
+fast-native tag on foreign function
+==================
+
+@FastNative
+foreign func f(x: Int64): Int64
+
+---
+
+(source_file
+  (decorated_declaration
+    (macro_call
+      (macro_call_sigil)
+      (macro_name))
+    (foreign_declaration
+      (function_definition
+        (func_name)
+        (parameter_list
+          (parameter
+            (identifier)
+            (Int64)))
+        (return_type
+          (Int64))))))
+
+==================
+when tag with simple condition
+==================
+
+@When[os == "Linux"]
+func foo() {
+    print("Linux")
+}
+
+---
+
+(source_file
+  (decorated_declaration
+    (macro_call
+      (macro_call_sigil)
+      (macro_name)
+      (macro_attribute_body
+        (macro_attr_open)
+        (macro_raw_token)
+        (string_literal
+          (string_start)
+          (string_content)
+          (string_end))
+        (macro_attr_close)))
+    (function_definition
+      (func_name)
+      (parameter_list)
+      (block
+        (postfix_expression
+          (postfix_expression
+            (identifier))
+          (call_suffix
+            (postfix_expression
+              (string_literal
+                (string_start)
+                (string_content)
+                (string_end)))))))))
+
+==================
+when tag with compound condition
+==================
+
+@When[(backend == "cjnative" || os == "Linux") && cjc_version >= "0.40.1"]
+func foo() {
+    print("Multi")
+}
+
+---
+
+(source_file
+  (decorated_declaration
+    (macro_call
+      (macro_call_sigil)
+      (macro_name)
+      (macro_attribute_body
+        (macro_attr_open)
+        (macro_raw_token)
+        (string_literal
+          (string_start)
+          (string_content)
+          (string_end))
+        (macro_raw_token)
+        (string_literal
+          (string_start)
+          (string_content)
+          (string_end))
+        (macro_raw_token)
+        (string_literal
+          (string_start)
+          (string_content)
+          (string_end))
+        (macro_attr_close)))
+    (function_definition
+      (func_name)
+      (parameter_list)
+      (block
+        (postfix_expression
+          (postfix_expression
+            (identifier))
+          (call_suffix
+            (postfix_expression
+              (string_literal
+                (string_start)
+                (string_content)
+                (string_end)))))))))
+
+==================
+when tag with negated and flag conditions
+==================
+
+@When[!debug]
+func fee() { }
+@When[test]
+func tee() { }
+
+---
+
+(source_file
+  (decorated_declaration
+    (macro_call
+      (macro_call_sigil)
+      (macro_name)
+      (macro_attribute_body
+        (macro_attr_open)
+        (macro_raw_token)
+        (macro_attr_close)))
+    (function_definition
+      (func_name)
+      (parameter_list)
+      (block)))
+  (decorated_declaration
+    (macro_call
+      (macro_call_sigil)
+      (macro_name)
+      (macro_attribute_body
+        (macro_attr_open)
+        (macro_raw_token)
+        (macro_attr_close)))
+    (function_definition
+      (func_name)
+      (parameter_list)
+      (block))))
+
+==================
+when tag before import
+==================
+
+@When[os == "linux"]
+import std.math.*
+
+---
+
+(source_file
+  (import_list
+    (macro_call
+      (macro_call_sigil)
+      (macro_name)
+      (macro_attribute_body
+        (macro_attr_open)
+        (macro_raw_token)
+        (string_literal
+          (string_start)
+          (string_content)
+          (string_end))
+        (macro_attr_close)))
+    (package_full
+      (scoped_identifier
+        (identifier)
+        (identifier)))))
+
+==================
+macro package declaration with public macro
+==================
+
+macro package define
+import std.ast.*
+public macro M(input: Tokens): Tokens {
+    return input
+}
+
+---
+
+(source_file
+  (macro_package_declaration
+    (identifier))
+  (import_list
+    (package_full
+      (scoped_identifier
+        (identifier)
+        (identifier))))
+  (macro_definition
+    (modifiers)
+    (macro_name)
+    (macro_parameter
+      (identifier)
+      (user_type
+        (identifier)))
+    (return_type
+      (user_type
+        (identifier)))
+    (block
+      (postfix_expression
+        (jump_expression
+          (postfix_expression
+            (identifier)))))))
+
+==================
+macro package with public re-export import
+==================
+
+macro package c
+public import A.*
+import B.*
+public macro M2(input: Tokens): Tokens {
+    return @M1(input) + Token(TokenKind.ADD) + quote($(F1(1)))
+}
+
+---
+
+(source_file
+  (macro_package_declaration
+    (identifier))
+  (import_list
+    (modifiers)
+    (package_full
+      (identifier)))
+  (import_list
+    (package_full
+      (identifier)))
+  (macro_definition
+    (modifiers)
+    (macro_name)
+    (macro_parameter
+      (identifier)
+      (user_type
+        (identifier)))
+    (return_type
+      (user_type
+        (identifier)))
+    (block
+      (postfix_expression
+        (jump_expression
+          (binary_expression
+            (binary_expression
+              (postfix_expression
+                (macro_expression
+                  (macro_call_sigil)
+                  (macro_name)
+                  (macro_call_body
+                    (macro_input_open)
+                    (macro_raw_token)
+                    (macro_input_close))))
+              (postfix_expression
+                (postfix_expression
+                  (identifier))
+                (call_suffix
+                  (postfix_expression
+                    (postfix_expression
+                      (identifier))
+                    (field_access
+                      (identifier))))))
+            (postfix_expression
+              (quote_expression
+                (quote_keyword)
+                (quote_interpolation
+                  (quote_interp_open)
+                  (postfix_expression
+                    (postfix_expression
+                      (identifier))
+                    (call_suffix
+                      (postfix_expression
+                        (integer_literal))))
+                  (quote_interp_close))
+                (quote_close)))))))))

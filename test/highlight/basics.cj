@@ -84,3 +84,7 @@ macro mk(x: Expr) { @body(1) }
 // ^ @function.macro
 //     ^ @punctuation.special
 //      ^ @markup.raw
+
+let r = quote(1 + @PlusOne(x) * 2)
+//                     ^ @function.macro
+//               ^ @markup.raw

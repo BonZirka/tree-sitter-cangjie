@@ -49,3 +49,7 @@ zig-out/
 *.tgz
 *.zip
 __pycache__/
+
+# Editors & MCP
+.codegraph
+.vscode
