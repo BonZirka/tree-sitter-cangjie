@@ -7154,7 +7154,31 @@
             "type": "REPEAT",
             "content": {
               "type": "SYMBOL",
-              "name": "_quote_body_item"
+              "name": "_quote_newline"
+            }
+          },
+          {
+            "type": "REPEAT",
+            "content": {
+              "type": "SEQ",
+              "members": [
+                {
+                  "type": "SYMBOL",
+                  "name": "_quote_body_item"
+                },
+                {
+                  "type": "REPEAT",
+                  "content": {
+                    "type": "ALIAS",
+                    "content": {
+                      "type": "SYMBOL",
+                      "name": "_quote_newline"
+                    },
+                    "named": true,
+                    "value": "quote_newline"
+                  }
+                }
+              ]
             }
           },
           {
@@ -7180,6 +7204,15 @@
           },
           "named": true,
           "value": "quote_raw_token"
+        },
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_quote_macro_head"
+          },
+          "named": true,
+          "value": "quote_macro_head"
         },
         {
           "type": "SYMBOL",
@@ -10476,6 +10509,14 @@
     {
       "type": "SYMBOL",
       "name": "_generic_lt"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "_quote_macro_head"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "_quote_newline"
     }
   ],
   "inline": [
