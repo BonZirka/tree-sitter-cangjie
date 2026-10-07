@@ -10857,10 +10857,6 @@
       },
       {
         "type": "STRING",
-        "value": "features"
-      },
-      {
-        "type": "STRING",
         "value": "for"
       },
       {
@@ -10874,10 +10870,6 @@
       {
         "type": "STRING",
         "value": "foreign"
-      },
-      {
-        "type": "STRING",
-        "value": "handle"
       },
       {
         "type": "STRING",
@@ -10914,10 +10906,6 @@
       {
         "type": "STRING",
         "value": "mut"
-      },
-      {
-        "type": "STRING",
-        "value": "main"
       },
       {
         "type": "STRING",

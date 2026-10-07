@@ -184,7 +184,7 @@ const SOFT_MODIFIER_WORDS = [
 const MODIFIER_TOKENS = SOFT_MODIFIER_WORDS.map((w) => TOKENS[w.toUpperCase()]);
 
 const GLOBAL_RESERVED = [
-  ..._kwUsed.filter((w) => !_primitiveKeywords.has(w) && !SOFT_MODIFIER_WORDS.includes(w)),
+  ..._kwUsed.filter((w) => !_primitiveKeywords.has(w) && !CONTEXTUAL_KEYWORDS.includes(w)),
   'This',
 ];
 const IDENTIFIER_POS_RESERVED = [
