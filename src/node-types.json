@@ -152,10 +152,6 @@
         "named": true
       },
       {
-        "type": "generic_type",
-        "named": true
-      },
-      {
         "type": "prefix_type",
         "named": true
       },
@@ -1452,21 +1448,6 @@
       "types": [
         {
           "type": "generic_constraint",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "generic_type",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": false,
-      "types": [
-        {
-          "type": "type_arguments",
           "named": true
         }
       ]
@@ -4134,10 +4115,6 @@
     "named": false
   },
   {
-    "type": "Array",
-    "named": false
-  },
-  {
     "type": "Bool",
     "named": false
   },
@@ -4163,11 +4140,11 @@
   },
   {
     "type": "Float64",
-    "named": false
+    "named": true
   },
   {
     "type": "Float64",
-    "named": true
+    "named": false
   },
   {
     "type": "Int16",
@@ -4195,22 +4172,18 @@
   },
   {
     "type": "Int8",
-    "named": true
+    "named": false
   },
   {
     "type": "Int8",
-    "named": false
-  },
-  {
-    "type": "IntNative",
-    "named": false
+    "named": true
   },
   {
     "type": "IntNative",
     "named": true
   },
   {
-    "type": "Nothing",
+    "type": "IntNative",
     "named": false
   },
   {
@@ -4218,7 +4191,7 @@
     "named": true
   },
   {
-    "type": "Range",
+    "type": "Nothing",
     "named": false
   },
   {
@@ -4231,11 +4204,11 @@
   },
   {
     "type": "String",
-    "named": true
+    "named": false
   },
   {
     "type": "String",
-    "named": false
+    "named": true
   },
   {
     "type": "Thistype",
@@ -4267,19 +4240,19 @@
   },
   {
     "type": "UInt8",
-    "named": false
+    "named": true
   },
   {
     "type": "UInt8",
-    "named": true
-  },
-  {
-    "type": "UIntNative",
-    "named": true
+    "named": false
   },
   {
     "type": "UIntNative",
     "named": false
+  },
+  {
+    "type": "UIntNative",
+    "named": true
   },
   {
     "type": "Unit",
@@ -4536,11 +4509,11 @@
   },
   {
     "type": "operator",
-    "named": false
+    "named": true
   },
   {
     "type": "operator",
-    "named": true
+    "named": false
   },
   {
     "type": "override",

@@ -3574,13 +3574,6 @@
             "type": "STRING",
             "value": "String"
           }
-        },
-        {
-          "type": "TOKEN",
-          "content": {
-            "type": "STRING",
-            "value": "Range"
-          }
         }
       ]
     },
@@ -8434,10 +8427,6 @@
         },
         {
           "type": "SYMBOL",
-          "name": "generic_type"
-        },
-        {
-          "type": "SYMBOL",
           "name": "const_generic"
         }
       ]
@@ -8451,46 +8440,6 @@
           {
             "type": "SYMBOL",
             "name": "_name"
-          },
-          {
-            "type": "CHOICE",
-            "members": [
-              {
-                "type": "SYMBOL",
-                "name": "type_arguments"
-              },
-              {
-                "type": "BLANK"
-              }
-            ]
-          }
-        ]
-      }
-    },
-    "generic_type": {
-      "type": "PREC_RIGHT",
-      "value": 0,
-      "content": {
-        "type": "SEQ",
-        "members": [
-          {
-            "type": "CHOICE",
-            "members": [
-              {
-                "type": "TOKEN",
-                "content": {
-                  "type": "STRING",
-                  "value": "Array"
-                }
-              },
-              {
-                "type": "TOKEN",
-                "content": {
-                  "type": "STRING",
-                  "value": "Range"
-                }
-              }
-            ]
           },
           {
             "type": "CHOICE",

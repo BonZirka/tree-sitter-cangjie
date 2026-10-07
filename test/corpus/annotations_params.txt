@@ -99,23 +99,28 @@ func f(r: Range, a: Array): Range {
     (enum_name)
     (enum_body
       (identifier)
-      (generic_type)))
+      (user_type
+        (identifier))))
   (function_definition
     (func_name)
     (parameter_list
       (parameter
         (identifier)
-        (generic_type))
+        (user_type
+          (identifier)))
       (parameter
         (identifier)
-        (generic_type)))
+        (user_type
+          (identifier))))
     (return_type
-      (generic_type))
+      (user_type
+        (identifier)))
     (block
       (variable_declaration
         (variable_name
           (var_binding_pattern))
-        (generic_type)
+        (user_type
+          (identifier))
         (postfix_expression
           (identifier))))))
 

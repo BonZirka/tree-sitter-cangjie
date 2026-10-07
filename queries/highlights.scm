@@ -133,7 +133,6 @@
 ; The identifier child of a user_type refines the general @variable capture
 ; (later patterns win over overlapping ranges).
 (user_type (identifier) @type)
-(generic_type) @type
 (tuple_type type: (_) @type)
 (prefix_type type: (_) @type)
 (arrow_type type: (_) @type)

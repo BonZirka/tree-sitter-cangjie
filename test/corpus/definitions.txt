@@ -373,7 +373,8 @@ main(args: Array<String>): Int32 {
     (parameter_list
       (parameter
         para_name: (identifier)
-        type: (generic_type
+        type: (user_type
+          (identifier)
           (type_arguments
             (String)))))
     (return_type

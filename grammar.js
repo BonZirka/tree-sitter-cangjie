@@ -658,7 +658,6 @@ const M = {
         TOKENS.NOTHING,
         TOKENS.UNIT,
         token('String'),
-        token('Range'),
       ),
 
     block: ($) => seq('{', optional($._expression_or_declarations), '}'),
@@ -1093,15 +1092,10 @@ const M = {
         alias(TOKENS.UNIT, $.Unit),
         alias(TOKENS.THISTYPE, $.Thistype),
         $.user_type,
-        $.generic_type,
         $.const_generic,
       ),
 
     user_type: ($) => prec.right(seq($._name, optional($.type_arguments))),
-    // `Array`/`Range` lex as keywords in type positions, so the bare type
-    // (`let r: Range`, `AsRange(Range)`) is accepted here: user_type cannot
-    // see them as identifiers.
-    generic_type: ($) => prec.right(seq(choice(token('Array'), token('Range')), optional($.type_arguments))),
 
     arrow_type: ($) => seq('(', optional($._named_or_type_list), ')', token('->'), field('type', $._type)),
 
