@@ -440,7 +440,11 @@ const M = {
           field(
             'enum_constant',
             choice(
-              seq(reserved('id', $.identifier), optional(seq('(', commaSep1Trailing($._type), ')'))),
+              seq(
+                optional(repeat1($.macro_call)),
+                reserved('id', $.identifier),
+                optional(seq('(', commaSep1Trailing($._type), ')')),
+              ),
               token('...'),
             ),
           ),
@@ -619,7 +623,10 @@ const M = {
         ),
         ')',
       ),
-    named_member_param: ($) => seq(optional($.modifiers), choice(TOKENS.LET, TOKENS.VAR), $.named_parameter),
+    // A member parameter may carry annotations before its modifiers
+    // (`@M[x] public let a!: T`), as a plain parameter does.
+    named_member_param: ($) =>
+      seq(optional(repeat1($.macro_call)), optional($.modifiers), choice(TOKENS.LET, TOKENS.VAR), $.named_parameter),
 
     finalizer: ($) => seq('~', TOKENS.INIT, '(', ')', $.block),
 
@@ -693,7 +700,14 @@ const M = {
       seq(
         optional(repeat1($.macro_call)),
         choice(
-          seq(field('para_name', choice(reserved('id', $.identifier), '_')), ':', field('type', $._type)),
+          seq(
+            field(
+              'para_name',
+              choice(alias(choice(reserved('id', $.identifier), ...MODIFIER_TOKENS), $.identifier), '_'),
+            ),
+            ':',
+            field('type', $._type),
+          ),
           seq('(', $.parameter, ')'),
           seq('(', $.named_parameter, ')'),
         ),
@@ -708,6 +722,7 @@ const M = {
       ),
     unnamed_member_param: ($) =>
       seq(
+        optional(repeat1($.macro_call)),
         optional($.modifiers),
         choice(TOKENS.LET, TOKENS.VAR),
         field('para_name', choice(reserved('id', $.identifier), '_')),
@@ -723,7 +738,7 @@ const M = {
         optional(
           commaSep1Trailing(
             choice(
-              seq(reserved('id', $.identifier), ':', $._expression),
+              seq(alias(choice(reserved('id', $.identifier), ...MODIFIER_TOKENS), $.identifier), ':', $._expression),
               $._expression,
               seq(TOKENS.INOUT, optional(seq($._expression, '.')), reserved('id', $.identifier)),
             ),
@@ -1083,7 +1098,10 @@ const M = {
       ),
 
     user_type: ($) => prec.right(seq($._name, optional($.type_arguments))),
-    generic_type: ($) => seq(choice(token('Array'), token('Range')), $.type_arguments),
+    // `Array`/`Range` lex as keywords in type positions, so the bare type
+    // (`let r: Range`, `AsRange(Range)`) is accepted here: user_type cannot
+    // see them as identifiers.
+    generic_type: ($) => prec.right(seq(choice(token('Array'), token('Range')), optional($.type_arguments))),
 
     arrow_type: ($) => seq('(', optional($._named_or_type_list), ')', token('->'), field('type', $._type)),
 

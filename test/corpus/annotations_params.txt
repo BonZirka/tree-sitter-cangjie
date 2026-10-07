@@ -1,0 +1,165 @@
+==================
+annotated enum constructors
+==================
+
+enum E {
+    | @M[value: 1] Replace
+    | @M[rename: "o"] @N Other(Int64)
+    | Plain
+}
+
+---
+
+(source_file
+  (enum_definition
+    (enum_name)
+    (enum_body
+      (macro_call
+        (macro_call_sigil)
+        (macro_name)
+        (macro_attribute_body
+          (macro_attr_open)
+          (macro_raw_token)
+          (macro_attr_close)))
+      (identifier)
+      (macro_call
+        (macro_call_sigil)
+        (macro_name)
+        (macro_attribute_body
+          (macro_attr_open)
+          (macro_raw_token)
+          (string_literal
+            (string_start)
+            (string_content)
+            (string_end))
+          (macro_attr_close)))
+      (macro_call
+        (macro_call_sigil)
+        (macro_name))
+      (identifier)
+      (Int64)
+      (identifier))))
+
+==================
+annotated member parameters
+==================
+
+class P {
+    P(@M[rename: "x"] public let a!: Int64, @N let b: String) {}
+}
+
+---
+
+(source_file
+  (class_definition
+    (class_name)
+    (declaration_body
+      (primary_init
+        (class_name)
+        (primary_init_param_list
+          (named_member_param
+            (macro_call
+              (macro_call_sigil)
+              (macro_name)
+              (macro_attribute_body
+                (macro_attr_open)
+                (macro_raw_token)
+                (string_literal
+                  (string_start)
+                  (string_content)
+                  (string_end))
+                (macro_attr_close)))
+            (modifiers)
+            (named_parameter
+              (identifier)
+              (Int64)))
+          (unnamed_member_param
+            (macro_call
+              (macro_call_sigil)
+              (macro_name))
+            (identifier)
+            (String)))))))
+
+==================
+bare Range and Array types
+==================
+
+enum E {
+    | AsRange(Range)
+}
+
+func f(r: Range, a: Array): Range {
+    let x: Range = r
+}
+
+---
+
+(source_file
+  (enum_definition
+    (enum_name)
+    (enum_body
+      (identifier)
+      (generic_type)))
+  (function_definition
+    (func_name)
+    (parameter_list
+      (parameter
+        (identifier)
+        (generic_type))
+      (parameter
+        (identifier)
+        (generic_type)))
+    (return_type
+      (generic_type))
+    (block
+      (variable_declaration
+        (variable_name
+          (var_binding_pattern))
+        (generic_type)
+        (postfix_expression
+          (identifier))))))
+
+==================
+modifier words as parameter and argument names
+==================
+
+func header(open: String, close: String): Unit {}
+
+main() {
+    header(open: "a", close: "b")
+}
+
+---
+
+(source_file
+  (function_definition
+    (func_name)
+    (parameter_list
+      (parameter
+        (identifier)
+        (String))
+      (parameter
+        (identifier)
+        (String)))
+    (return_type
+      (Unit))
+    (block))
+  (main_definition
+    (parameter_list)
+    (block
+      (postfix_expression
+        (postfix_expression
+          (identifier))
+        (call_suffix
+          (identifier)
+          (postfix_expression
+            (string_literal
+              (string_start)
+              (string_content)
+              (string_end)))
+          (identifier)
+          (postfix_expression
+            (string_literal
+              (string_start)
+              (string_content)
+              (string_end))))))))

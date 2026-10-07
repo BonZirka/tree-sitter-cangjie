@@ -1758,6 +1758,21 @@
                     "type": "SEQ",
                     "members": [
                       {
+                        "type": "CHOICE",
+                        "members": [
+                          {
+                            "type": "REPEAT1",
+                            "content": {
+                              "type": "SYMBOL",
+                              "name": "macro_call"
+                            }
+                          },
+                          {
+                            "type": "BLANK"
+                          }
+                        ]
+                      },
+                      {
                         "type": "RESERVED",
                         "content": {
                           "type": "SYMBOL",
@@ -1858,6 +1873,21 @@
                         {
                           "type": "SEQ",
                           "members": [
+                            {
+                              "type": "CHOICE",
+                              "members": [
+                                {
+                                  "type": "REPEAT1",
+                                  "content": {
+                                    "type": "SYMBOL",
+                                    "name": "macro_call"
+                                  }
+                                },
+                                {
+                                  "type": "BLANK"
+                                }
+                              ]
+                            },
                             {
                               "type": "RESERVED",
                               "content": {
@@ -3238,6 +3268,21 @@
           "type": "CHOICE",
           "members": [
             {
+              "type": "REPEAT1",
+              "content": {
+                "type": "SYMBOL",
+                "name": "macro_call"
+              }
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
               "type": "SYMBOL",
               "name": "modifiers"
             },
@@ -3921,12 +3966,99 @@
                     "type": "CHOICE",
                     "members": [
                       {
-                        "type": "RESERVED",
+                        "type": "ALIAS",
                         "content": {
-                          "type": "SYMBOL",
-                          "name": "identifier"
+                          "type": "CHOICE",
+                          "members": [
+                            {
+                              "type": "RESERVED",
+                              "content": {
+                                "type": "SYMBOL",
+                                "name": "identifier"
+                              },
+                              "context_name": "id"
+                            },
+                            {
+                              "type": "TOKEN",
+                              "content": {
+                                "type": "STRING",
+                                "value": "public"
+                              }
+                            },
+                            {
+                              "type": "TOKEN",
+                              "content": {
+                                "type": "STRING",
+                                "value": "protected"
+                              }
+                            },
+                            {
+                              "type": "TOKEN",
+                              "content": {
+                                "type": "STRING",
+                                "value": "private"
+                              }
+                            },
+                            {
+                              "type": "TOKEN",
+                              "content": {
+                                "type": "STRING",
+                                "value": "internal"
+                              }
+                            },
+                            {
+                              "type": "TOKEN",
+                              "content": {
+                                "type": "STRING",
+                                "value": "abstract"
+                              }
+                            },
+                            {
+                              "type": "TOKEN",
+                              "content": {
+                                "type": "STRING",
+                                "value": "sealed"
+                              }
+                            },
+                            {
+                              "type": "TOKEN",
+                              "content": {
+                                "type": "STRING",
+                                "value": "redef"
+                              }
+                            },
+                            {
+                              "type": "TOKEN",
+                              "content": {
+                                "type": "STRING",
+                                "value": "open"
+                              }
+                            },
+                            {
+                              "type": "TOKEN",
+                              "content": {
+                                "type": "STRING",
+                                "value": "override"
+                              }
+                            },
+                            {
+                              "type": "TOKEN",
+                              "content": {
+                                "type": "STRING",
+                                "value": "common"
+                              }
+                            },
+                            {
+                              "type": "TOKEN",
+                              "content": {
+                                "type": "STRING",
+                                "value": "specific"
+                              }
+                            }
+                          ]
                         },
-                        "context_name": "id"
+                        "named": true,
+                        "value": "identifier"
                       },
                       {
                         "type": "STRING",
@@ -4159,6 +4291,21 @@
           "type": "CHOICE",
           "members": [
             {
+              "type": "REPEAT1",
+              "content": {
+                "type": "SYMBOL",
+                "name": "macro_call"
+              }
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
               "type": "SYMBOL",
               "name": "modifiers"
             },
@@ -4290,12 +4437,99 @@
                           "type": "SEQ",
                           "members": [
                             {
-                              "type": "RESERVED",
+                              "type": "ALIAS",
                               "content": {
-                                "type": "SYMBOL",
-                                "name": "identifier"
+                                "type": "CHOICE",
+                                "members": [
+                                  {
+                                    "type": "RESERVED",
+                                    "content": {
+                                      "type": "SYMBOL",
+                                      "name": "identifier"
+                                    },
+                                    "context_name": "id"
+                                  },
+                                  {
+                                    "type": "TOKEN",
+                                    "content": {
+                                      "type": "STRING",
+                                      "value": "public"
+                                    }
+                                  },
+                                  {
+                                    "type": "TOKEN",
+                                    "content": {
+                                      "type": "STRING",
+                                      "value": "protected"
+                                    }
+                                  },
+                                  {
+                                    "type": "TOKEN",
+                                    "content": {
+                                      "type": "STRING",
+                                      "value": "private"
+                                    }
+                                  },
+                                  {
+                                    "type": "TOKEN",
+                                    "content": {
+                                      "type": "STRING",
+                                      "value": "internal"
+                                    }
+                                  },
+                                  {
+                                    "type": "TOKEN",
+                                    "content": {
+                                      "type": "STRING",
+                                      "value": "abstract"
+                                    }
+                                  },
+                                  {
+                                    "type": "TOKEN",
+                                    "content": {
+                                      "type": "STRING",
+                                      "value": "sealed"
+                                    }
+                                  },
+                                  {
+                                    "type": "TOKEN",
+                                    "content": {
+                                      "type": "STRING",
+                                      "value": "redef"
+                                    }
+                                  },
+                                  {
+                                    "type": "TOKEN",
+                                    "content": {
+                                      "type": "STRING",
+                                      "value": "open"
+                                    }
+                                  },
+                                  {
+                                    "type": "TOKEN",
+                                    "content": {
+                                      "type": "STRING",
+                                      "value": "override"
+                                    }
+                                  },
+                                  {
+                                    "type": "TOKEN",
+                                    "content": {
+                                      "type": "STRING",
+                                      "value": "common"
+                                    }
+                                  },
+                                  {
+                                    "type": "TOKEN",
+                                    "content": {
+                                      "type": "STRING",
+                                      "value": "specific"
+                                    }
+                                  }
+                                ]
                               },
-                              "context_name": "id"
+                              "named": true,
+                              "value": "identifier"
                             },
                             {
                               "type": "STRING",
@@ -4370,12 +4604,99 @@
                                 "type": "SEQ",
                                 "members": [
                                   {
-                                    "type": "RESERVED",
+                                    "type": "ALIAS",
                                     "content": {
-                                      "type": "SYMBOL",
-                                      "name": "identifier"
+                                      "type": "CHOICE",
+                                      "members": [
+                                        {
+                                          "type": "RESERVED",
+                                          "content": {
+                                            "type": "SYMBOL",
+                                            "name": "identifier"
+                                          },
+                                          "context_name": "id"
+                                        },
+                                        {
+                                          "type": "TOKEN",
+                                          "content": {
+                                            "type": "STRING",
+                                            "value": "public"
+                                          }
+                                        },
+                                        {
+                                          "type": "TOKEN",
+                                          "content": {
+                                            "type": "STRING",
+                                            "value": "protected"
+                                          }
+                                        },
+                                        {
+                                          "type": "TOKEN",
+                                          "content": {
+                                            "type": "STRING",
+                                            "value": "private"
+                                          }
+                                        },
+                                        {
+                                          "type": "TOKEN",
+                                          "content": {
+                                            "type": "STRING",
+                                            "value": "internal"
+                                          }
+                                        },
+                                        {
+                                          "type": "TOKEN",
+                                          "content": {
+                                            "type": "STRING",
+                                            "value": "abstract"
+                                          }
+                                        },
+                                        {
+                                          "type": "TOKEN",
+                                          "content": {
+                                            "type": "STRING",
+                                            "value": "sealed"
+                                          }
+                                        },
+                                        {
+                                          "type": "TOKEN",
+                                          "content": {
+                                            "type": "STRING",
+                                            "value": "redef"
+                                          }
+                                        },
+                                        {
+                                          "type": "TOKEN",
+                                          "content": {
+                                            "type": "STRING",
+                                            "value": "open"
+                                          }
+                                        },
+                                        {
+                                          "type": "TOKEN",
+                                          "content": {
+                                            "type": "STRING",
+                                            "value": "override"
+                                          }
+                                        },
+                                        {
+                                          "type": "TOKEN",
+                                          "content": {
+                                            "type": "STRING",
+                                            "value": "common"
+                                          }
+                                        },
+                                        {
+                                          "type": "TOKEN",
+                                          "content": {
+                                            "type": "STRING",
+                                            "value": "specific"
+                                          }
+                                        }
+                                      ]
                                     },
-                                    "context_name": "id"
+                                    "named": true,
+                                    "value": "identifier"
                                   },
                                   {
                                     "type": "STRING",
@@ -8147,32 +8468,44 @@
       }
     },
     "generic_type": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "TOKEN",
-              "content": {
-                "type": "STRING",
-                "value": "Array"
+      "type": "PREC_RIGHT",
+      "value": 0,
+      "content": {
+        "type": "SEQ",
+        "members": [
+          {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "TOKEN",
+                "content": {
+                  "type": "STRING",
+                  "value": "Array"
+                }
+              },
+              {
+                "type": "TOKEN",
+                "content": {
+                  "type": "STRING",
+                  "value": "Range"
+                }
               }
-            },
-            {
-              "type": "TOKEN",
-              "content": {
-                "type": "STRING",
-                "value": "Range"
+            ]
+          },
+          {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "type_arguments"
+              },
+              {
+                "type": "BLANK"
               }
-            }
-          ]
-        },
-        {
-          "type": "SYMBOL",
-          "name": "type_arguments"
-        }
-      ]
+            ]
+          }
+        ]
+      }
     },
     "arrow_type": {
       "type": "SEQ",
