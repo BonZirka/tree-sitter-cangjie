@@ -3966,7 +3966,7 @@
                             "type": "SYMBOL",
                             "name": "identifier"
                           },
-                          "context_name": "id"
+                          "context_name": "none"
                         },
                         "named": true,
                         "value": "identifier"
@@ -4062,7 +4062,7 @@
                     "type": "SYMBOL",
                     "name": "identifier"
                   },
-                  "context_name": "id"
+                  "context_name": "none"
                 },
                 "named": true,
                 "value": "identifier"
@@ -4273,7 +4273,7 @@
                                   "type": "SYMBOL",
                                   "name": "identifier"
                                 },
-                                "context_name": "id"
+                                "context_name": "none"
                               },
                               "named": true,
                               "value": "identifier"
@@ -4358,7 +4358,7 @@
                                         "type": "SYMBOL",
                                         "name": "identifier"
                                       },
-                                      "context_name": "id"
+                                      "context_name": "none"
                                     },
                                     "named": true,
                                     "value": "identifier"
@@ -4490,7 +4490,7 @@
               "type": "SYMBOL",
               "name": "identifier"
             },
-            "context_name": "id"
+            "context_name": "none"
           },
           "named": true,
           "value": "identifier"
@@ -7364,7 +7364,7 @@
           "type": "SYMBOL",
           "name": "identifier"
         },
-        "context_name": "id"
+        "context_name": "none"
       },
       "named": true,
       "value": "var_binding_pattern"
