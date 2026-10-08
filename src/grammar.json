@@ -3961,94 +3961,12 @@
                       {
                         "type": "ALIAS",
                         "content": {
-                          "type": "CHOICE",
-                          "members": [
-                            {
-                              "type": "RESERVED",
-                              "content": {
-                                "type": "SYMBOL",
-                                "name": "identifier"
-                              },
-                              "context_name": "id"
-                            },
-                            {
-                              "type": "TOKEN",
-                              "content": {
-                                "type": "STRING",
-                                "value": "public"
-                              }
-                            },
-                            {
-                              "type": "TOKEN",
-                              "content": {
-                                "type": "STRING",
-                                "value": "protected"
-                              }
-                            },
-                            {
-                              "type": "TOKEN",
-                              "content": {
-                                "type": "STRING",
-                                "value": "private"
-                              }
-                            },
-                            {
-                              "type": "TOKEN",
-                              "content": {
-                                "type": "STRING",
-                                "value": "internal"
-                              }
-                            },
-                            {
-                              "type": "TOKEN",
-                              "content": {
-                                "type": "STRING",
-                                "value": "abstract"
-                              }
-                            },
-                            {
-                              "type": "TOKEN",
-                              "content": {
-                                "type": "STRING",
-                                "value": "sealed"
-                              }
-                            },
-                            {
-                              "type": "TOKEN",
-                              "content": {
-                                "type": "STRING",
-                                "value": "redef"
-                              }
-                            },
-                            {
-                              "type": "TOKEN",
-                              "content": {
-                                "type": "STRING",
-                                "value": "open"
-                              }
-                            },
-                            {
-                              "type": "TOKEN",
-                              "content": {
-                                "type": "STRING",
-                                "value": "override"
-                              }
-                            },
-                            {
-                              "type": "TOKEN",
-                              "content": {
-                                "type": "STRING",
-                                "value": "common"
-                              }
-                            },
-                            {
-                              "type": "TOKEN",
-                              "content": {
-                                "type": "STRING",
-                                "value": "specific"
-                              }
-                            }
-                          ]
+                          "type": "RESERVED",
+                          "content": {
+                            "type": "SYMBOL",
+                            "name": "identifier"
+                          },
+                          "context_name": "id"
                         },
                         "named": true,
                         "value": "identifier"
@@ -4139,94 +4057,12 @@
               "content": {
                 "type": "ALIAS",
                 "content": {
-                  "type": "CHOICE",
-                  "members": [
-                    {
-                      "type": "RESERVED",
-                      "content": {
-                        "type": "SYMBOL",
-                        "name": "identifier"
-                      },
-                      "context_name": "id"
-                    },
-                    {
-                      "type": "TOKEN",
-                      "content": {
-                        "type": "STRING",
-                        "value": "public"
-                      }
-                    },
-                    {
-                      "type": "TOKEN",
-                      "content": {
-                        "type": "STRING",
-                        "value": "protected"
-                      }
-                    },
-                    {
-                      "type": "TOKEN",
-                      "content": {
-                        "type": "STRING",
-                        "value": "private"
-                      }
-                    },
-                    {
-                      "type": "TOKEN",
-                      "content": {
-                        "type": "STRING",
-                        "value": "internal"
-                      }
-                    },
-                    {
-                      "type": "TOKEN",
-                      "content": {
-                        "type": "STRING",
-                        "value": "abstract"
-                      }
-                    },
-                    {
-                      "type": "TOKEN",
-                      "content": {
-                        "type": "STRING",
-                        "value": "sealed"
-                      }
-                    },
-                    {
-                      "type": "TOKEN",
-                      "content": {
-                        "type": "STRING",
-                        "value": "redef"
-                      }
-                    },
-                    {
-                      "type": "TOKEN",
-                      "content": {
-                        "type": "STRING",
-                        "value": "open"
-                      }
-                    },
-                    {
-                      "type": "TOKEN",
-                      "content": {
-                        "type": "STRING",
-                        "value": "override"
-                      }
-                    },
-                    {
-                      "type": "TOKEN",
-                      "content": {
-                        "type": "STRING",
-                        "value": "common"
-                      }
-                    },
-                    {
-                      "type": "TOKEN",
-                      "content": {
-                        "type": "STRING",
-                        "value": "specific"
-                      }
-                    }
-                  ]
+                  "type": "RESERVED",
+                  "content": {
+                    "type": "SYMBOL",
+                    "name": "identifier"
+                  },
+                  "context_name": "id"
                 },
                 "named": true,
                 "value": "identifier"
@@ -4432,94 +4268,12 @@
                             {
                               "type": "ALIAS",
                               "content": {
-                                "type": "CHOICE",
-                                "members": [
-                                  {
-                                    "type": "RESERVED",
-                                    "content": {
-                                      "type": "SYMBOL",
-                                      "name": "identifier"
-                                    },
-                                    "context_name": "id"
-                                  },
-                                  {
-                                    "type": "TOKEN",
-                                    "content": {
-                                      "type": "STRING",
-                                      "value": "public"
-                                    }
-                                  },
-                                  {
-                                    "type": "TOKEN",
-                                    "content": {
-                                      "type": "STRING",
-                                      "value": "protected"
-                                    }
-                                  },
-                                  {
-                                    "type": "TOKEN",
-                                    "content": {
-                                      "type": "STRING",
-                                      "value": "private"
-                                    }
-                                  },
-                                  {
-                                    "type": "TOKEN",
-                                    "content": {
-                                      "type": "STRING",
-                                      "value": "internal"
-                                    }
-                                  },
-                                  {
-                                    "type": "TOKEN",
-                                    "content": {
-                                      "type": "STRING",
-                                      "value": "abstract"
-                                    }
-                                  },
-                                  {
-                                    "type": "TOKEN",
-                                    "content": {
-                                      "type": "STRING",
-                                      "value": "sealed"
-                                    }
-                                  },
-                                  {
-                                    "type": "TOKEN",
-                                    "content": {
-                                      "type": "STRING",
-                                      "value": "redef"
-                                    }
-                                  },
-                                  {
-                                    "type": "TOKEN",
-                                    "content": {
-                                      "type": "STRING",
-                                      "value": "open"
-                                    }
-                                  },
-                                  {
-                                    "type": "TOKEN",
-                                    "content": {
-                                      "type": "STRING",
-                                      "value": "override"
-                                    }
-                                  },
-                                  {
-                                    "type": "TOKEN",
-                                    "content": {
-                                      "type": "STRING",
-                                      "value": "common"
-                                    }
-                                  },
-                                  {
-                                    "type": "TOKEN",
-                                    "content": {
-                                      "type": "STRING",
-                                      "value": "specific"
-                                    }
-                                  }
-                                ]
+                                "type": "RESERVED",
+                                "content": {
+                                  "type": "SYMBOL",
+                                  "name": "identifier"
+                                },
+                                "context_name": "id"
                               },
                               "named": true,
                               "value": "identifier"
@@ -4599,94 +4353,12 @@
                                   {
                                     "type": "ALIAS",
                                     "content": {
-                                      "type": "CHOICE",
-                                      "members": [
-                                        {
-                                          "type": "RESERVED",
-                                          "content": {
-                                            "type": "SYMBOL",
-                                            "name": "identifier"
-                                          },
-                                          "context_name": "id"
-                                        },
-                                        {
-                                          "type": "TOKEN",
-                                          "content": {
-                                            "type": "STRING",
-                                            "value": "public"
-                                          }
-                                        },
-                                        {
-                                          "type": "TOKEN",
-                                          "content": {
-                                            "type": "STRING",
-                                            "value": "protected"
-                                          }
-                                        },
-                                        {
-                                          "type": "TOKEN",
-                                          "content": {
-                                            "type": "STRING",
-                                            "value": "private"
-                                          }
-                                        },
-                                        {
-                                          "type": "TOKEN",
-                                          "content": {
-                                            "type": "STRING",
-                                            "value": "internal"
-                                          }
-                                        },
-                                        {
-                                          "type": "TOKEN",
-                                          "content": {
-                                            "type": "STRING",
-                                            "value": "abstract"
-                                          }
-                                        },
-                                        {
-                                          "type": "TOKEN",
-                                          "content": {
-                                            "type": "STRING",
-                                            "value": "sealed"
-                                          }
-                                        },
-                                        {
-                                          "type": "TOKEN",
-                                          "content": {
-                                            "type": "STRING",
-                                            "value": "redef"
-                                          }
-                                        },
-                                        {
-                                          "type": "TOKEN",
-                                          "content": {
-                                            "type": "STRING",
-                                            "value": "open"
-                                          }
-                                        },
-                                        {
-                                          "type": "TOKEN",
-                                          "content": {
-                                            "type": "STRING",
-                                            "value": "override"
-                                          }
-                                        },
-                                        {
-                                          "type": "TOKEN",
-                                          "content": {
-                                            "type": "STRING",
-                                            "value": "common"
-                                          }
-                                        },
-                                        {
-                                          "type": "TOKEN",
-                                          "content": {
-                                            "type": "STRING",
-                                            "value": "specific"
-                                          }
-                                        }
-                                      ]
+                                      "type": "RESERVED",
+                                      "content": {
+                                        "type": "SYMBOL",
+                                        "name": "identifier"
+                                      },
+                                      "context_name": "id"
                                     },
                                     "named": true,
                                     "value": "identifier"
@@ -4813,94 +4485,12 @@
         {
           "type": "ALIAS",
           "content": {
-            "type": "CHOICE",
-            "members": [
-              {
-                "type": "RESERVED",
-                "content": {
-                  "type": "SYMBOL",
-                  "name": "identifier"
-                },
-                "context_name": "id"
-              },
-              {
-                "type": "TOKEN",
-                "content": {
-                  "type": "STRING",
-                  "value": "public"
-                }
-              },
-              {
-                "type": "TOKEN",
-                "content": {
-                  "type": "STRING",
-                  "value": "protected"
-                }
-              },
-              {
-                "type": "TOKEN",
-                "content": {
-                  "type": "STRING",
-                  "value": "private"
-                }
-              },
-              {
-                "type": "TOKEN",
-                "content": {
-                  "type": "STRING",
-                  "value": "internal"
-                }
-              },
-              {
-                "type": "TOKEN",
-                "content": {
-                  "type": "STRING",
-                  "value": "abstract"
-                }
-              },
-              {
-                "type": "TOKEN",
-                "content": {
-                  "type": "STRING",
-                  "value": "sealed"
-                }
-              },
-              {
-                "type": "TOKEN",
-                "content": {
-                  "type": "STRING",
-                  "value": "redef"
-                }
-              },
-              {
-                "type": "TOKEN",
-                "content": {
-                  "type": "STRING",
-                  "value": "open"
-                }
-              },
-              {
-                "type": "TOKEN",
-                "content": {
-                  "type": "STRING",
-                  "value": "override"
-                }
-              },
-              {
-                "type": "TOKEN",
-                "content": {
-                  "type": "STRING",
-                  "value": "common"
-                }
-              },
-              {
-                "type": "TOKEN",
-                "content": {
-                  "type": "STRING",
-                  "value": "specific"
-                }
-              }
-            ]
+            "type": "RESERVED",
+            "content": {
+              "type": "SYMBOL",
+              "name": "identifier"
+            },
+            "context_name": "id"
           },
           "named": true,
           "value": "identifier"
@@ -7769,94 +7359,12 @@
     "_var_binding_pattern": {
       "type": "ALIAS",
       "content": {
-        "type": "CHOICE",
-        "members": [
-          {
-            "type": "RESERVED",
-            "content": {
-              "type": "SYMBOL",
-              "name": "identifier"
-            },
-            "context_name": "id"
-          },
-          {
-            "type": "TOKEN",
-            "content": {
-              "type": "STRING",
-              "value": "public"
-            }
-          },
-          {
-            "type": "TOKEN",
-            "content": {
-              "type": "STRING",
-              "value": "protected"
-            }
-          },
-          {
-            "type": "TOKEN",
-            "content": {
-              "type": "STRING",
-              "value": "private"
-            }
-          },
-          {
-            "type": "TOKEN",
-            "content": {
-              "type": "STRING",
-              "value": "internal"
-            }
-          },
-          {
-            "type": "TOKEN",
-            "content": {
-              "type": "STRING",
-              "value": "abstract"
-            }
-          },
-          {
-            "type": "TOKEN",
-            "content": {
-              "type": "STRING",
-              "value": "sealed"
-            }
-          },
-          {
-            "type": "TOKEN",
-            "content": {
-              "type": "STRING",
-              "value": "redef"
-            }
-          },
-          {
-            "type": "TOKEN",
-            "content": {
-              "type": "STRING",
-              "value": "open"
-            }
-          },
-          {
-            "type": "TOKEN",
-            "content": {
-              "type": "STRING",
-              "value": "override"
-            }
-          },
-          {
-            "type": "TOKEN",
-            "content": {
-              "type": "STRING",
-              "value": "common"
-            }
-          },
-          {
-            "type": "TOKEN",
-            "content": {
-              "type": "STRING",
-              "value": "specific"
-            }
-          }
-        ]
+        "type": "RESERVED",
+        "content": {
+          "type": "SYMBOL",
+          "name": "identifier"
+        },
+        "context_name": "id"
       },
       "named": true,
       "value": "var_binding_pattern"

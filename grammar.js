@@ -702,7 +702,7 @@ const M = {
           seq(
             field(
               'para_name',
-              choice(alias(choice(reserved('id', $.identifier), ...MODIFIER_TOKENS), $.identifier), '_'),
+              choice(alias(reserved('id', $.identifier), $.identifier), '_'),
             ),
             ':',
             field('type', $._type),
@@ -714,7 +714,7 @@ const M = {
     named_parameter: ($) =>
       seq(
         optional(repeat1($.macro_call)),
-        seq(field('para_name', alias(choice(reserved('id', $.identifier), ...MODIFIER_TOKENS), $.identifier)), '!'),
+        seq(field('para_name', alias(reserved('id', $.identifier), $.identifier)), '!'),
         ':',
         field('type', $._type),
         optional(seq('=', field('default_value', $._expression))),
@@ -737,7 +737,7 @@ const M = {
         optional(
           commaSep1Trailing(
             choice(
-              seq(alias(choice(reserved('id', $.identifier), ...MODIFIER_TOKENS), $.identifier), ':', $._expression),
+              seq(alias(reserved('id', $.identifier), $.identifier), ':', $._expression),
               $._expression,
               seq(TOKENS.INOUT, optional(seq($._expression, '.')), reserved('id', $.identifier)),
             ),
@@ -752,7 +752,7 @@ const M = {
       choice(
         $._literal,
         $.array_literal,
-        alias(choice(reserved('id', $.identifier), ...MODIFIER_TOKENS), $.identifier),
+        alias(reserved('id', $.identifier), $.identifier),
         $.parenthesized_expression,
         $.tuple_expression,
         $.range_expression,
@@ -1042,7 +1042,7 @@ const M = {
       choice($.wildcard_pattern, $._var_binding_pattern, alias($._tuple_pattern_irrefutable, $.tuple_pattern)),
 
     _tuple_pattern_irrefutable: ($) => seq('(', commaSep1Trailing($._pattern_irrefutable), ')'),
-    _var_binding_pattern: ($) => alias(choice(reserved('id', $.identifier), ...MODIFIER_TOKENS), $.var_binding_pattern),
+    _var_binding_pattern: ($) => alias(reserved('id', $.identifier), $.var_binding_pattern),
     tuple_pattern: ($) => seq('(', commaSep1Trailing($._pattern), ')'),
 
     enum_pattern: ($) =>
