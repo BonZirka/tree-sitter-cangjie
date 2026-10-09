@@ -4497,6 +4497,10 @@
         },
         {
           "type": "SYMBOL",
+          "name": "type_conv_expr"
+        },
+        {
+          "type": "SYMBOL",
           "name": "parenthesized_expression"
         },
         {
@@ -6804,6 +6808,183 @@
           "name": "lambda_expression"
         }
       ]
+    },
+    "type_conv_expr": {
+      "type": "FIELD",
+      "name": "type",
+      "content": {
+        "type": "CHOICE",
+        "members": [
+          {
+            "type": "ALIAS",
+            "content": {
+              "type": "TOKEN",
+              "content": {
+                "type": "STRING",
+                "value": "Int8"
+              }
+            },
+            "named": true,
+            "value": "Int8"
+          },
+          {
+            "type": "ALIAS",
+            "content": {
+              "type": "TOKEN",
+              "content": {
+                "type": "STRING",
+                "value": "Int16"
+              }
+            },
+            "named": true,
+            "value": "Int16"
+          },
+          {
+            "type": "ALIAS",
+            "content": {
+              "type": "TOKEN",
+              "content": {
+                "type": "STRING",
+                "value": "Int32"
+              }
+            },
+            "named": true,
+            "value": "Int32"
+          },
+          {
+            "type": "ALIAS",
+            "content": {
+              "type": "TOKEN",
+              "content": {
+                "type": "STRING",
+                "value": "Int64"
+              }
+            },
+            "named": true,
+            "value": "Int64"
+          },
+          {
+            "type": "ALIAS",
+            "content": {
+              "type": "TOKEN",
+              "content": {
+                "type": "STRING",
+                "value": "IntNative"
+              }
+            },
+            "named": true,
+            "value": "IntNative"
+          },
+          {
+            "type": "ALIAS",
+            "content": {
+              "type": "TOKEN",
+              "content": {
+                "type": "STRING",
+                "value": "UInt8"
+              }
+            },
+            "named": true,
+            "value": "UInt8"
+          },
+          {
+            "type": "ALIAS",
+            "content": {
+              "type": "TOKEN",
+              "content": {
+                "type": "STRING",
+                "value": "UInt16"
+              }
+            },
+            "named": true,
+            "value": "UInt16"
+          },
+          {
+            "type": "ALIAS",
+            "content": {
+              "type": "TOKEN",
+              "content": {
+                "type": "STRING",
+                "value": "UInt32"
+              }
+            },
+            "named": true,
+            "value": "UInt32"
+          },
+          {
+            "type": "ALIAS",
+            "content": {
+              "type": "TOKEN",
+              "content": {
+                "type": "STRING",
+                "value": "UInt64"
+              }
+            },
+            "named": true,
+            "value": "UInt64"
+          },
+          {
+            "type": "ALIAS",
+            "content": {
+              "type": "TOKEN",
+              "content": {
+                "type": "STRING",
+                "value": "UIntNative"
+              }
+            },
+            "named": true,
+            "value": "UIntNative"
+          },
+          {
+            "type": "ALIAS",
+            "content": {
+              "type": "TOKEN",
+              "content": {
+                "type": "STRING",
+                "value": "Float16"
+              }
+            },
+            "named": true,
+            "value": "Float16"
+          },
+          {
+            "type": "ALIAS",
+            "content": {
+              "type": "TOKEN",
+              "content": {
+                "type": "STRING",
+                "value": "Float32"
+              }
+            },
+            "named": true,
+            "value": "Float32"
+          },
+          {
+            "type": "ALIAS",
+            "content": {
+              "type": "TOKEN",
+              "content": {
+                "type": "STRING",
+                "value": "Float64"
+              }
+            },
+            "named": true,
+            "value": "Float64"
+          },
+          {
+            "type": "ALIAS",
+            "content": {
+              "type": "TOKEN",
+              "content": {
+                "type": "STRING",
+                "value": "Rune"
+              }
+            },
+            "named": true,
+            "value": "Rune"
+          }
+        ]
+      }
     },
     "perform_expression": {
       "type": "SEQ",

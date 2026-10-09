@@ -743,6 +743,7 @@ const M = {
         $._literal,
         $.array_literal,
         alias(reserved('id', $.identifier), $.identifier),
+        $.type_conv_expr,
         $.parenthesized_expression,
         $.tuple_expression,
         $.range_expression,
@@ -943,6 +944,34 @@ const M = {
 
     synchronized_expression: ($) => seq(TOKENS.SYNCHRONIZED, '(', $._expression, ')', $.block),
     spawn_expression: ($) => seq(TOKENS.SPAWN, optional(seq('(', $._expression, ')')), $.lambda_expression),
+
+    // cjc: numeric primitive type names and Rune lead conversion expressions
+    // (`Int8(-95)`, `Rune(65)`, `Float64(1.0)` parse; nested conversions too).
+    // Bool/Unit/Nothing cannot start expressions at all ("expected expression
+    // ... found keyword 'Bool'"). The type name continues as a normal postfix
+    // base (calls and member access, e.g. `Int64.MAX_VALUE` is syntactically
+    // legal); a bare name is accepted where cjc rejects it — degenerate only.
+    type_conv_expr: ($) =>
+      field(
+        'type',
+        choice(
+          alias(TOKENS.INT8, $.Int8),
+          alias(TOKENS.INT16, $.Int16),
+          alias(TOKENS.INT32, $.Int32),
+          alias(TOKENS.INT64, $.Int64),
+          alias(TOKENS.INTNATIVE, $.IntNative),
+          alias(TOKENS.UINT8, $.UInt8),
+          alias(TOKENS.UINT16, $.UInt16),
+          alias(TOKENS.UINT32, $.UInt32),
+          alias(TOKENS.UINT64, $.UInt64),
+          alias(TOKENS.UINTNATIVE, $.UIntNative),
+          alias(TOKENS.FLOAT16, $.Float16),
+          alias(TOKENS.FLOAT32, $.Float32),
+          alias(TOKENS.FLOAT64, $.Float64),
+          alias(TOKENS.RUNE, $.Rune),
+        ),
+      ),
+
     perform_expression: ($) =>
       seq(alias($._perform_dsl, $.perform_keyword), field('argument', $._expression)),
 

@@ -2732,6 +2732,10 @@
           "named": true
         },
         {
+          "type": "type_conv_expr",
+          "named": true
+        },
+        {
           "type": "unsafe_expression",
           "named": true
         },
@@ -3670,6 +3674,74 @@
     }
   },
   {
+    "type": "type_conv_expr",
+    "named": true,
+    "fields": {
+      "type": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "Float16",
+            "named": true
+          },
+          {
+            "type": "Float32",
+            "named": true
+          },
+          {
+            "type": "Float64",
+            "named": true
+          },
+          {
+            "type": "Int16",
+            "named": true
+          },
+          {
+            "type": "Int32",
+            "named": true
+          },
+          {
+            "type": "Int64",
+            "named": true
+          },
+          {
+            "type": "Int8",
+            "named": true
+          },
+          {
+            "type": "IntNative",
+            "named": true
+          },
+          {
+            "type": "Rune",
+            "named": true
+          },
+          {
+            "type": "UInt16",
+            "named": true
+          },
+          {
+            "type": "UInt32",
+            "named": true
+          },
+          {
+            "type": "UInt64",
+            "named": true
+          },
+          {
+            "type": "UInt8",
+            "named": true
+          },
+          {
+            "type": "UIntNative",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
     "type": "type_parameter",
     "named": true,
     "fields": {
@@ -4141,11 +4213,11 @@
   },
   {
     "type": "Bool",
-    "named": false
+    "named": true
   },
   {
     "type": "Bool",
-    "named": true
+    "named": false
   },
   {
     "type": "Float16",
@@ -4165,11 +4237,11 @@
   },
   {
     "type": "Float64",
-    "named": true
+    "named": false
   },
   {
     "type": "Float64",
-    "named": false
+    "named": true
   },
   {
     "type": "Int16",
@@ -4181,11 +4253,11 @@
   },
   {
     "type": "Int32",
-    "named": false
+    "named": true
   },
   {
     "type": "Int32",
-    "named": true
+    "named": false
   },
   {
     "type": "Int64",
@@ -4197,11 +4269,11 @@
   },
   {
     "type": "Int8",
-    "named": true
+    "named": false
   },
   {
     "type": "Int8",
-    "named": false
+    "named": true
   },
   {
     "type": "IntNative",
@@ -4221,11 +4293,11 @@
   },
   {
     "type": "Rune",
-    "named": false
+    "named": true
   },
   {
     "type": "Rune",
-    "named": true
+    "named": false
   },
   {
     "type": "String",
@@ -4257,11 +4329,11 @@
   },
   {
     "type": "UInt64",
-    "named": false
+    "named": true
   },
   {
     "type": "UInt64",
-    "named": true
+    "named": false
   },
   {
     "type": "UInt8",
@@ -4273,11 +4345,11 @@
   },
   {
     "type": "UIntNative",
-    "named": true
+    "named": false
   },
   {
     "type": "UIntNative",
-    "named": false
+    "named": true
   },
   {
     "type": "Unit",
