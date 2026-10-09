@@ -267,9 +267,6 @@ const M = {
     [$._call_tail],
     [$.modifiers, $._modifiers_var],
     [$.modifiers, $._var_decl_tail],
-    [$.modifiers, $._primary_expression],
-    [$._modifiers_var, $._primary_expression],
-    [$.modifiers, $._modifiers_var, $._primary_expression],
   ],
 
   rules: {
