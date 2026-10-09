@@ -392,7 +392,7 @@ main() {
             (quote_close)))))))
 
 ==================
-quote inside interpolation cancels out
+quote inside interpolation stays a quote
 ==================
 
 let i8 = quote($(quote(t)))
@@ -410,11 +410,10 @@ let i9 = quote($(quote($t)))
         (quote_interpolation
           (quote_interp_open)
           (postfix_expression
-            (postfix_expression
-              (identifier))
-            (call_suffix
-              (postfix_expression
-                (identifier))))
+            (quote_expression
+              (quote_keyword)
+              (quote_raw_token)
+              (quote_close)))
           (quote_interp_close))
         (quote_close))))
   (variable_declaration
@@ -426,11 +425,10 @@ let i9 = quote($(quote($t)))
         (quote_interpolation
           (quote_interp_open)
           (postfix_expression
-            (postfix_expression
-              (identifier))
-            (call_suffix
-              (postfix_expression
-                (identifier))))
+            (quote_expression
+              (quote_keyword)
+              (identifier)
+              (quote_close)))
           (quote_interp_close))
         (quote_close)))))
 

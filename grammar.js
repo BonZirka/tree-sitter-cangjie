@@ -130,27 +130,6 @@ const _kwUsed = [
   'specific',
 ];
 
-const _primitiveKeywords = new Set([
-  'Bool',
-  'Rune',
-  'String',
-  'Unit',
-  'Nothing',
-  'Int8',
-  'Int16',
-  'Int32',
-  'Int64',
-  'IntNative',
-  'UInt8',
-  'UInt16',
-  'UInt32',
-  'UInt64',
-  'UIntNative',
-  'Float16',
-  'Float32',
-  'Float64',
-]);
-
 const CONTEXTUAL_KEYWORDS = [
   'public',
   'protected',
@@ -166,6 +145,9 @@ const CONTEXTUAL_KEYWORDS = [
   'features',
   'handle',
   'main',
+  'perform',
+  'resume',
+  'throwing',
 ];
 
 const SOFT_MODIFIER_WORDS = [
@@ -183,12 +165,21 @@ const SOFT_MODIFIER_WORDS = [
 ];
 const MODIFIER_TOKENS = SOFT_MODIFIER_WORDS.map((w) => TOKENS[w.toUpperCase()]);
 
+// cjc 1.3.0 ground truth: primitives are reserved in EVERY identifier
+// position (bindings, params, members, type names); quote/true/false/This
+// likewise; the try-DSL words and modifiers are contextual everywhere.
 const GLOBAL_RESERVED = [
-  ..._kwUsed.filter((w) => !_primitiveKeywords.has(w) && !CONTEXTUAL_KEYWORDS.includes(w)),
+  ..._kwUsed.filter((w) => !CONTEXTUAL_KEYWORDS.includes(w)),
+  'quote',
+  'true',
+  'false',
   'This',
 ];
 const IDENTIFIER_POS_RESERVED = [
-  ..._kwUsed.filter((w) => !_primitiveKeywords.has(w) && !CONTEXTUAL_KEYWORDS.includes(w)),
+  ..._kwUsed.filter((w) => !CONTEXTUAL_KEYWORDS.includes(w)),
+  'quote',
+  'true',
+  'false',
   'This',
 ];
 const NO_RESERVED = [];
@@ -264,6 +255,8 @@ const M = {
     $._generic_lt,
     $._quote_macro_head,
     $._quote_newline,
+    $._perform_dsl,
+    $._resume_dsl,
   ],
 
   supertypes: ($) => [$._literal, $._expression, $._type],
@@ -702,7 +695,7 @@ const M = {
           seq(
             field(
               'para_name',
-              choice(alias(reserved('none', $.identifier), $.identifier), '_'),
+              choice(alias(reserved('id', $.identifier), $.identifier), '_'),
             ),
             ':',
             field('type', $._type),
@@ -714,7 +707,7 @@ const M = {
     named_parameter: ($) =>
       seq(
         optional(repeat1($.macro_call)),
-        seq(field('para_name', alias(reserved('none', $.identifier), $.identifier)), '!'),
+        seq(field('para_name', alias(reserved('id', $.identifier), $.identifier)), '!'),
         ':',
         field('type', $._type),
         optional(seq('=', field('default_value', $._expression))),
@@ -737,7 +730,7 @@ const M = {
         optional(
           commaSep1Trailing(
             choice(
-              seq(alias(reserved('none', $.identifier), $.identifier), ':', $._expression),
+              seq(alias(reserved('id', $.identifier), $.identifier), ':', $._expression),
               $._expression,
               seq(TOKENS.INOUT, optional(seq($._expression, '.')), reserved('id', $.identifier)),
             ),
@@ -752,7 +745,7 @@ const M = {
       choice(
         $._literal,
         $.array_literal,
-        alias(reserved('none', $.identifier), $.identifier),
+        alias(reserved('id', $.identifier), $.identifier),
         $.parenthesized_expression,
         $.tuple_expression,
         $.range_expression,
@@ -942,25 +935,26 @@ const M = {
 
     command_type_pattern: ($) =>
       seq(
-        optional(seq(choice($.wildcard_pattern, $._var_binding_pattern), ':')),
+        // cjc: the effect pattern is strictly `pattern ':' Type` — both
+        // `handle (e)` and `handle (Eff)` are rejected ("expected ':' in
+        // effect type pattern").
+        choice($.wildcard_pattern, $._var_binding_pattern),
+        ':',
         field('type', $._type),
         optional($.tuple_pattern),
       ),
 
     synchronized_expression: ($) => seq(TOKENS.SYNCHRONIZED, '(', $._expression, ')', $.block),
     spawn_expression: ($) => seq(TOKENS.SPAWN, optional(seq('(', $._expression, ')')), $.lambda_expression),
-    perform_expression: ($) => seq(TOKENS.PERFORM, field('argument', $._expression)),
+    perform_expression: ($) =>
+      seq(alias($._perform_dsl, $.perform_keyword), field('argument', $._expression)),
 
     resume_expression: ($) =>
-      prec.left(
-        seq(
-          TOKENS.RESUME,
-          optional(
-            choice(
-              seq(TOKENS.WITH, field('with_argument', $._expression)),
-              seq(TOKENS.THROWING, field('throwing_argument', $._expression)),
-            ),
-          ),
+      seq(
+        alias($._resume_dsl, $.resume_keyword),
+        choice(
+          seq(TOKENS.WITH, field('with_argument', $._expression)),
+          seq(TOKENS.THROWING, field('throwing_argument', $._expression)),
         ),
       ),
     unsafe_expression: ($) => seq(TOKENS.UNSAFE, $.block),
@@ -989,7 +983,13 @@ const M = {
       prec(
         PREC.MACRO_QUOTE,
         seq(
-          alias($._quote_open, $.quote_keyword),
+          // The scanner is the primary path (it emits _quote_open only for
+          // the word `quote` followed by '(', including nested quotes inside
+          // interpolations). The bare TOKENS.QUOTE alternative must stay:
+          // tree-sitter requires every reserved word to exist as a token,
+          // and a captured bare `quote` without '(' then fails on the
+          // missing body — matching cjc's rejection.
+          choice(alias($._quote_open, $.quote_keyword), TOKENS.QUOTE),
           // Newlines after 'quote(' are ignored (spec); every newline
           // after a token is itself the separator quoteToken.
           repeat($._quote_newline),
@@ -1042,7 +1042,7 @@ const M = {
       choice($.wildcard_pattern, $._var_binding_pattern, alias($._tuple_pattern_irrefutable, $.tuple_pattern)),
 
     _tuple_pattern_irrefutable: ($) => seq('(', commaSep1Trailing($._pattern_irrefutable), ')'),
-    _var_binding_pattern: ($) => alias(reserved('none', $.identifier), $.var_binding_pattern),
+    _var_binding_pattern: ($) => alias(reserved('id', $.identifier), $.var_binding_pattern),
     tuple_pattern: ($) => seq('(', commaSep1Trailing($._pattern), ')'),
 
     enum_pattern: ($) =>
@@ -1236,7 +1236,8 @@ const M = {
           /\\./, // permissive: any other escape
         ),
       ),
-    boolean_literal: (_) => token(prec(PREC.TOKEN, choice('true', 'false'))),
+    // Two inline tokens so 'true'/'false' can be reserved like cjc does.
+    boolean_literal: (_) => choice(token('true'), token('false')),
 
     // The delimiters are aliased so queries can color them (anonymous
     // externals are not queryable); content runs keep expression coloring

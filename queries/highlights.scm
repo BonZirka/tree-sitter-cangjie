@@ -231,8 +231,6 @@
     "synchronized"
     "type"
     ; effect handlers
-    "perform"
-    "resume"
     "handle"
     "with"
     "throwing"
@@ -418,5 +416,7 @@
 (macro_attr_close) @punctuation.special
 (quote_keyword) @keyword
 (quote_close) @keyword
+(perform_keyword) @keyword
+(resume_keyword) @keyword
 
 

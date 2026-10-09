@@ -598,6 +598,7 @@ main() {
           (var_binding_pattern))
         initializer: (postfix_expression
           (perform_expression
+            (perform_keyword)
             argument: (postfix_expression
               base: (postfix_expression
                 (identifier))
@@ -609,6 +610,7 @@ main() {
           (var_binding_pattern))
         initializer: (postfix_expression
           (resume_expression
+            (resume_keyword)
             with_argument: (postfix_expression
               (lambda_expression
                 (postfix_expression

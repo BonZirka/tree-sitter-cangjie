@@ -502,6 +502,11 @@
     "fields": {}
   },
   {
+    "type": "boolean_literal",
+    "named": true,
+    "fields": {}
+  },
+  {
     "type": "call_suffix",
     "named": true,
     "fields": {},
@@ -720,7 +725,7 @@
     },
     "children": {
       "multiple": true,
-      "required": false,
+      "required": true,
       "types": [
         {
           "type": "tuple_pattern",
@@ -2573,6 +2578,16 @@
           }
         ]
       }
+    },
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "perform_keyword",
+          "named": true
+        }
+      ]
     }
   },
   {
@@ -3092,6 +3107,16 @@
           }
         ]
       }
+    },
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "resume_keyword",
+          "named": true
+        }
+      ]
     }
   },
   {
@@ -4148,22 +4173,18 @@
   },
   {
     "type": "Int16",
-    "named": false
+    "named": true
   },
   {
     "type": "Int16",
-    "named": true
-  },
-  {
-    "type": "Int32",
-    "named": true
+    "named": false
   },
   {
     "type": "Int32",
     "named": false
   },
   {
-    "type": "Int64",
+    "type": "Int32",
     "named": true
   },
   {
@@ -4171,28 +4192,32 @@
     "named": false
   },
   {
-    "type": "Int8",
-    "named": false
+    "type": "Int64",
+    "named": true
   },
   {
     "type": "Int8",
     "named": true
+  },
+  {
+    "type": "Int8",
+    "named": false
+  },
+  {
+    "type": "IntNative",
+    "named": false
   },
   {
     "type": "IntNative",
     "named": true
   },
   {
-    "type": "IntNative",
+    "type": "Nothing",
     "named": false
   },
   {
     "type": "Nothing",
     "named": true
-  },
-  {
-    "type": "Nothing",
-    "named": false
   },
   {
     "type": "Rune",
@@ -4240,19 +4265,19 @@
   },
   {
     "type": "UInt8",
-    "named": true
+    "named": false
   },
   {
     "type": "UInt8",
-    "named": false
-  },
-  {
-    "type": "UIntNative",
-    "named": false
+    "named": true
   },
   {
     "type": "UIntNative",
     "named": true
+  },
+  {
+    "type": "UIntNative",
+    "named": false
   },
   {
     "type": "Unit",
@@ -4289,10 +4314,6 @@
   {
     "type": "as",
     "named": false
-  },
-  {
-    "type": "boolean_literal",
-    "named": true
   },
   {
     "type": "break",
@@ -4360,6 +4381,10 @@
   },
   {
     "type": "extend",
+    "named": false
+  },
+  {
+    "type": "false",
     "named": false
   },
   {
@@ -4509,11 +4534,11 @@
   },
   {
     "type": "operator",
-    "named": true
+    "named": false
   },
   {
     "type": "operator",
-    "named": false
+    "named": true
   },
   {
     "type": "override",
@@ -4524,8 +4549,8 @@
     "named": false
   },
   {
-    "type": "perform",
-    "named": false
+    "type": "perform_keyword",
+    "named": true
   },
   {
     "type": "private",
@@ -4545,6 +4570,10 @@
   },
   {
     "type": "public",
+    "named": false
+  },
+  {
+    "type": "quote",
     "named": false
   },
   {
@@ -4584,8 +4613,8 @@
     "named": false
   },
   {
-    "type": "resume",
-    "named": false
+    "type": "resume_keyword",
+    "named": true
   },
   {
     "type": "return",
@@ -4653,6 +4682,10 @@
   },
   {
     "type": "throwing",
+    "named": false
+  },
+  {
+    "type": "true",
     "named": false
   },
   {

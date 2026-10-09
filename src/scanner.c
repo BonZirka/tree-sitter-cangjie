@@ -36,6 +36,8 @@ enum TokenType {
     GENERIC_LT,
     QUOTE_MACRO_HEAD,
     QUOTE_NEWLINE,
+    PERFORM_DSL,
+    RESUME_DSL,
 };
 
 #define CTX_NONE 0
@@ -75,7 +77,7 @@ static const FrameInfo INFO[] = {
     [CTX_RAW_STRING] = {false, 0, 0, false, false, false, false, false, false, true},
     [CTX_QUOTE] = {false, QUOTE_CLOSE, ')', false, false, false, false, false, false, false},
     [CTX_QUOTE_PAREN] = {false, QUOTE_PAREN_CLOSE, ')', false, false, false, false, false, false, false},
-    [CTX_QUOTE_INTERP] = {true, QUOTE_INTERP_CLOSE, ')', true, true, true, false, false, false, true},
+    [CTX_QUOTE_INTERP] = {true, QUOTE_INTERP_CLOSE, ')', true, true, true, false, true, false, true},
     [CTX_MACRO_BODY] = {false, 0, 0, false, false, false, false, false, false, true},
     [CTX_MACRO_GROUP] = {false, 0, 0, false, false, false, false, false, false, true},
 };
@@ -97,6 +99,8 @@ static bool scan_block_comment_content(TSLexer *lexer);
 static bool scan_macro_body_open(TSLexer *lexer, Scanner *s);
 static bool scan_macro_at(TSLexer *lexer);
 static bool scan_quote_open(TSLexer *lexer, Scanner *s);
+static bool scan_perform_dsl(TSLexer *lexer);
+static bool scan_resume_dsl(TSLexer *lexer);
 
 static void advance(TSLexer *lexer) { lexer->advance(lexer, false); }
 
@@ -497,6 +501,116 @@ static bool scan_quote_open(TSLexer *lexer, Scanner *s) {
     return true;
 }
 
+// Trivia skipper for speculative trailing-context peeks. Consumes spaces,
+// tabs, newlines, CRs and both comment kinds (block comments nest). Returns
+// false on a bare '/' (division): the trailing context is not trivia then.
+// All consumption past a token's mark_end is discarded and re-lexed by the
+// parser (cf. scan_generic_lt), so declining after arbitrary peeking is safe.
+static bool skip_peek_trivia(TSLexer *lexer) {
+    for (;;) {
+        while (lexer->lookahead == ' ' || lexer->lookahead == '\t' ||
+               lexer->lookahead == '\r' || lexer->lookahead == '\n')
+            skip(lexer);
+        if (lexer->lookahead != '/')
+            return true;
+        advance(lexer);
+        if (lexer->lookahead == '/') {
+            advance(lexer);
+            while (lexer->lookahead != '\n' && lexer->lookahead != 0)
+                advance(lexer);
+            continue;
+        }
+        if (lexer->lookahead == '*') {
+            advance(lexer);
+            int nesting = 1;
+            while (nesting > 0 && lexer->lookahead != 0) {
+                int32_t c = lexer->lookahead;
+                advance(lexer);
+                if (c == '*' && lexer->lookahead == '/') {
+                    advance(lexer);
+                    nesting--;
+                } else if (c == '/' && lexer->lookahead == '*') {
+                    advance(lexer);
+                    nesting++;
+                }
+            }
+            continue;
+        }
+        return false; // bare '/': division, not trivia
+    }
+}
+
+// Conservative superset of the characters that can begin an expression
+// (cf. _primary_expression / unary alternatives). Over-approximating is
+// safe: a false fire yields an error inside perform_expression, while a
+// false decline would break legal `perform\nEff()` ASI.
+static bool is_expression_start_char(int32_t c) {
+    switch (c) {
+    case '"':
+    case '\'':
+    case '(':
+    case '[':
+    case '{':
+    case '-':
+    case '!':
+    case '~':
+    case '&':
+    case '@':
+    case '#':
+    case '`':
+        return true;
+    default:
+        return iswalpha(c) || iswdigit(c) || c == '_';
+    }
+}
+
+// `perform` is a soft keyword: it is the effect-perform prefix only when an
+// expression (the command argument) actually follows, across trivia. The
+// DSL token is offerable exactly where perform_expression is reachable
+// (single grammar occurrence), so valid_symbols is the state-axis gate and
+// this word+peek is the lexical axis. On decline the word re-lexes as a
+// plain identifier (`let x = perform`, `f(perform: 1)`, `class perform {}`).
+static bool scan_perform_dsl(TSLexer *lexer) {
+    if (lexer->lookahead != 'p')
+        return false;
+    advance(lexer);
+    if (!match_word_tail(lexer, "erform", 6))
+        return false;
+    lexer->mark_end(lexer);
+    if (!skip_peek_trivia(lexer))
+        return false;
+    if (!is_expression_start_char(lexer->lookahead))
+        return false;
+    lexer->result_symbol = PERFORM_DSL;
+    return true;
+}
+
+// `resume` is soft like `perform`: the resumption forms are the keyword-infix
+// continuations `with ...` / `throwing ...` (cjc-verified). Bare `resume` and
+// `resume(e)` (a plain call) stay identifiers.
+static bool scan_resume_dsl(TSLexer *lexer) {
+    if (lexer->lookahead != 'r')
+        return false;
+    advance(lexer);
+    if (!match_word_tail(lexer, "esume", 5))
+        return false;
+    lexer->mark_end(lexer);
+    if (!skip_peek_trivia(lexer))
+        return false;
+    bool continuation = false;
+    if (lexer->lookahead == 'w') {
+        advance(lexer);
+        continuation = match_word_tail(lexer, "ith", 3);
+    } else if (lexer->lookahead == 't') {
+        advance(lexer);
+        continuation = match_word_tail(lexer, "hrowing", 7);
+    }
+    if (!continuation)
+        return false;
+    lexer->result_symbol = RESUME_DSL;
+    return true;
+}
+
 static bool scan_quote_content(TSLexer *lexer) {
     bool any = false;
     lexer->result_symbol = QUOTE_CONTENT;
@@ -597,6 +711,10 @@ static bool scan_expr_frame(TSLexer *lexer, Scanner *s, const bool *valid_symbol
         return true;
     }
     if (scan_string_opens(lexer, s, valid_symbols, info->allow_raw))
+        return true;
+    if (valid_symbols[PERFORM_DSL] && scan_perform_dsl(lexer))
+        return true;
+    if (valid_symbols[RESUME_DSL] && scan_resume_dsl(lexer))
         return true;
     if (info->quote_open && valid_symbols[QUOTE_OPEN] && scan_quote_open(lexer, s))
         return true;
@@ -918,6 +1036,11 @@ bool tree_sitter_cangjie_external_scanner_scan(void *payload, TSLexer *lexer, co
         }
         skip_ws(lexer);
         if (scan_string_opens(lexer, s, valid_symbols, true))
+            return true;
+        // Nested quote expressions are legal inside interpolations
+        // (cjc-verified: quote($(quote(t))) compiles); the inner `quote(`
+        // pushes its own CTX_QUOTE frame below this interp frame.
+        if (valid_symbols[QUOTE_OPEN] && scan_quote_open(lexer, s))
             return true;
         return false;
 

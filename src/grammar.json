@@ -3966,7 +3966,7 @@
                             "type": "SYMBOL",
                             "name": "identifier"
                           },
-                          "context_name": "none"
+                          "context_name": "id"
                         },
                         "named": true,
                         "value": "identifier"
@@ -4062,7 +4062,7 @@
                     "type": "SYMBOL",
                     "name": "identifier"
                   },
-                  "context_name": "none"
+                  "context_name": "id"
                 },
                 "named": true,
                 "value": "identifier"
@@ -4273,7 +4273,7 @@
                                   "type": "SYMBOL",
                                   "name": "identifier"
                                 },
-                                "context_name": "none"
+                                "context_name": "id"
                               },
                               "named": true,
                               "value": "identifier"
@@ -4358,7 +4358,7 @@
                                         "type": "SYMBOL",
                                         "name": "identifier"
                                       },
-                                      "context_name": "none"
+                                      "context_name": "id"
                                     },
                                     "named": true,
                                     "value": "identifier"
@@ -4490,7 +4490,7 @@
               "type": "SYMBOL",
               "name": "identifier"
             },
-            "context_name": "none"
+            "context_name": "id"
           },
           "named": true,
           "value": "identifier"
@@ -6701,31 +6701,18 @@
           "type": "CHOICE",
           "members": [
             {
-              "type": "SEQ",
-              "members": [
-                {
-                  "type": "CHOICE",
-                  "members": [
-                    {
-                      "type": "SYMBOL",
-                      "name": "wildcard_pattern"
-                    },
-                    {
-                      "type": "SYMBOL",
-                      "name": "_var_binding_pattern"
-                    }
-                  ]
-                },
-                {
-                  "type": "STRING",
-                  "value": ":"
-                }
-              ]
+              "type": "SYMBOL",
+              "name": "wildcard_pattern"
             },
             {
-              "type": "BLANK"
+              "type": "SYMBOL",
+              "name": "_var_binding_pattern"
             }
           ]
+        },
+        {
+          "type": "STRING",
+          "value": ":"
         },
         {
           "type": "FIELD",
@@ -6822,11 +6809,13 @@
       "type": "SEQ",
       "members": [
         {
-          "type": "TOKEN",
+          "type": "ALIAS",
           "content": {
-            "type": "STRING",
-            "value": "perform"
-          }
+            "type": "SYMBOL",
+            "name": "_perform_dsl"
+          },
+          "named": true,
+          "value": "perform_keyword"
         },
         {
           "type": "FIELD",
@@ -6839,73 +6828,63 @@
       ]
     },
     "resume_expression": {
-      "type": "PREC_LEFT",
-      "value": 0,
-      "content": {
-        "type": "SEQ",
-        "members": [
-          {
-            "type": "TOKEN",
-            "content": {
-              "type": "STRING",
-              "value": "resume"
-            }
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_resume_dsl"
           },
-          {
-            "type": "CHOICE",
-            "members": [
-              {
-                "type": "CHOICE",
-                "members": [
-                  {
-                    "type": "SEQ",
-                    "members": [
-                      {
-                        "type": "TOKEN",
-                        "content": {
-                          "type": "STRING",
-                          "value": "with"
-                        }
-                      },
-                      {
-                        "type": "FIELD",
-                        "name": "with_argument",
-                        "content": {
-                          "type": "SYMBOL",
-                          "name": "_expression"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "type": "SEQ",
-                    "members": [
-                      {
-                        "type": "TOKEN",
-                        "content": {
-                          "type": "STRING",
-                          "value": "throwing"
-                        }
-                      },
-                      {
-                        "type": "FIELD",
-                        "name": "throwing_argument",
-                        "content": {
-                          "type": "SYMBOL",
-                          "name": "_expression"
-                        }
-                      }
-                    ]
+          "named": true,
+          "value": "resume_keyword"
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SEQ",
+              "members": [
+                {
+                  "type": "TOKEN",
+                  "content": {
+                    "type": "STRING",
+                    "value": "with"
                   }
-                ]
-              },
-              {
-                "type": "BLANK"
-              }
-            ]
-          }
-        ]
-      }
+                },
+                {
+                  "type": "FIELD",
+                  "name": "with_argument",
+                  "content": {
+                    "type": "SYMBOL",
+                    "name": "_expression"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "SEQ",
+              "members": [
+                {
+                  "type": "TOKEN",
+                  "content": {
+                    "type": "STRING",
+                    "value": "throwing"
+                  }
+                },
+                {
+                  "type": "FIELD",
+                  "name": "throwing_argument",
+                  "content": {
+                    "type": "SYMBOL",
+                    "name": "_expression"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
     },
     "unsafe_expression": {
       "type": "SEQ",
@@ -7046,13 +7025,25 @@
         "type": "SEQ",
         "members": [
           {
-            "type": "ALIAS",
-            "content": {
-              "type": "SYMBOL",
-              "name": "_quote_open"
-            },
-            "named": true,
-            "value": "quote_keyword"
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "ALIAS",
+                "content": {
+                  "type": "SYMBOL",
+                  "name": "_quote_open"
+                },
+                "named": true,
+                "value": "quote_keyword"
+              },
+              {
+                "type": "TOKEN",
+                "content": {
+                  "type": "STRING",
+                  "value": "quote"
+                }
+              }
+            ]
           },
           {
             "type": "REPEAT",
@@ -7364,7 +7355,7 @@
           "type": "SYMBOL",
           "name": "identifier"
         },
-        "context_name": "none"
+        "context_name": "id"
       },
       "named": true,
       "value": "var_binding_pattern"
@@ -9623,24 +9614,23 @@
       }
     },
     "boolean_literal": {
-      "type": "TOKEN",
-      "content": {
-        "type": "PREC",
-        "value": 46,
-        "content": {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "STRING",
-              "value": "true"
-            },
-            {
-              "type": "STRING",
-              "value": "false"
-            }
-          ]
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "TOKEN",
+          "content": {
+            "type": "STRING",
+            "value": "true"
+          }
+        },
+        {
+          "type": "TOKEN",
+          "content": {
+            "type": "STRING",
+            "value": "false"
+          }
         }
-      }
+      ]
     },
     "string_literal": {
       "type": "CHOICE",
@@ -10307,6 +10297,14 @@
     {
       "type": "SYMBOL",
       "name": "_quote_newline"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "_perform_dsl"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "_resume_dsl"
     }
   ],
   "inline": [
@@ -10329,6 +10327,10 @@
       },
       {
         "type": "STRING",
+        "value": "Bool"
+      },
+      {
+        "type": "STRING",
         "value": "case"
       },
       {
@@ -10346,6 +10348,10 @@
       {
         "type": "STRING",
         "value": "continue"
+      },
+      {
+        "type": "STRING",
+        "value": "Rune"
       },
       {
         "type": "STRING",
@@ -10381,6 +10387,18 @@
       },
       {
         "type": "STRING",
+        "value": "Float16"
+      },
+      {
+        "type": "STRING",
+        "value": "Float32"
+      },
+      {
+        "type": "STRING",
+        "value": "Float64"
+      },
+      {
+        "type": "STRING",
         "value": "if"
       },
       {
@@ -10409,6 +10427,26 @@
       },
       {
         "type": "STRING",
+        "value": "Int8"
+      },
+      {
+        "type": "STRING",
+        "value": "Int16"
+      },
+      {
+        "type": "STRING",
+        "value": "Int32"
+      },
+      {
+        "type": "STRING",
+        "value": "Int64"
+      },
+      {
+        "type": "STRING",
+        "value": "IntNative"
+      },
+      {
+        "type": "STRING",
         "value": "let"
       },
       {
@@ -10422,6 +10460,10 @@
       {
         "type": "STRING",
         "value": "match"
+      },
+      {
+        "type": "STRING",
+        "value": "Nothing"
       },
       {
         "type": "STRING",
@@ -10461,19 +10503,7 @@
       },
       {
         "type": "STRING",
-        "value": "perform"
-      },
-      {
-        "type": "STRING",
-        "value": "resume"
-      },
-      {
-        "type": "STRING",
         "value": "with"
-      },
-      {
-        "type": "STRING",
-        "value": "throwing"
       },
       {
         "type": "STRING",
@@ -10497,6 +10527,30 @@
       },
       {
         "type": "STRING",
+        "value": "Unit"
+      },
+      {
+        "type": "STRING",
+        "value": "UInt8"
+      },
+      {
+        "type": "STRING",
+        "value": "UInt16"
+      },
+      {
+        "type": "STRING",
+        "value": "UInt32"
+      },
+      {
+        "type": "STRING",
+        "value": "UInt64"
+      },
+      {
+        "type": "STRING",
+        "value": "UIntNative"
+      },
+      {
+        "type": "STRING",
         "value": "var"
       },
       {
@@ -10506,6 +10560,18 @@
       {
         "type": "STRING",
         "value": "while"
+      },
+      {
+        "type": "STRING",
+        "value": "quote"
+      },
+      {
+        "type": "STRING",
+        "value": "true"
+      },
+      {
+        "type": "STRING",
+        "value": "false"
       },
       {
         "type": "STRING",
@@ -10523,6 +10589,10 @@
       },
       {
         "type": "STRING",
+        "value": "Bool"
+      },
+      {
+        "type": "STRING",
         "value": "case"
       },
       {
@@ -10540,6 +10610,10 @@
       {
         "type": "STRING",
         "value": "continue"
+      },
+      {
+        "type": "STRING",
+        "value": "Rune"
       },
       {
         "type": "STRING",
@@ -10575,6 +10649,18 @@
       },
       {
         "type": "STRING",
+        "value": "Float16"
+      },
+      {
+        "type": "STRING",
+        "value": "Float32"
+      },
+      {
+        "type": "STRING",
+        "value": "Float64"
+      },
+      {
+        "type": "STRING",
         "value": "if"
       },
       {
@@ -10603,6 +10689,26 @@
       },
       {
         "type": "STRING",
+        "value": "Int8"
+      },
+      {
+        "type": "STRING",
+        "value": "Int16"
+      },
+      {
+        "type": "STRING",
+        "value": "Int32"
+      },
+      {
+        "type": "STRING",
+        "value": "Int64"
+      },
+      {
+        "type": "STRING",
+        "value": "IntNative"
+      },
+      {
+        "type": "STRING",
         "value": "let"
       },
       {
@@ -10616,6 +10722,10 @@
       {
         "type": "STRING",
         "value": "match"
+      },
+      {
+        "type": "STRING",
+        "value": "Nothing"
       },
       {
         "type": "STRING",
@@ -10655,19 +10765,7 @@
       },
       {
         "type": "STRING",
-        "value": "perform"
-      },
-      {
-        "type": "STRING",
-        "value": "resume"
-      },
-      {
-        "type": "STRING",
         "value": "with"
-      },
-      {
-        "type": "STRING",
-        "value": "throwing"
       },
       {
         "type": "STRING",
@@ -10691,6 +10789,30 @@
       },
       {
         "type": "STRING",
+        "value": "Unit"
+      },
+      {
+        "type": "STRING",
+        "value": "UInt8"
+      },
+      {
+        "type": "STRING",
+        "value": "UInt16"
+      },
+      {
+        "type": "STRING",
+        "value": "UInt32"
+      },
+      {
+        "type": "STRING",
+        "value": "UInt64"
+      },
+      {
+        "type": "STRING",
+        "value": "UIntNative"
+      },
+      {
+        "type": "STRING",
         "value": "var"
       },
       {
@@ -10700,6 +10822,18 @@
       {
         "type": "STRING",
         "value": "while"
+      },
+      {
+        "type": "STRING",
+        "value": "quote"
+      },
+      {
+        "type": "STRING",
+        "value": "true"
+      },
+      {
+        "type": "STRING",
+        "value": "false"
       },
       {
         "type": "STRING",
