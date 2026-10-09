@@ -2648,6 +2648,74 @@
       "required": false,
       "types": [
         {
+          "type": "Bool",
+          "named": true
+        },
+        {
+          "type": "Float16",
+          "named": true
+        },
+        {
+          "type": "Float32",
+          "named": true
+        },
+        {
+          "type": "Float64",
+          "named": true
+        },
+        {
+          "type": "Int16",
+          "named": true
+        },
+        {
+          "type": "Int32",
+          "named": true
+        },
+        {
+          "type": "Int64",
+          "named": true
+        },
+        {
+          "type": "Int8",
+          "named": true
+        },
+        {
+          "type": "IntNative",
+          "named": true
+        },
+        {
+          "type": "Nothing",
+          "named": true
+        },
+        {
+          "type": "Rune",
+          "named": true
+        },
+        {
+          "type": "UInt16",
+          "named": true
+        },
+        {
+          "type": "UInt32",
+          "named": true
+        },
+        {
+          "type": "UInt64",
+          "named": true
+        },
+        {
+          "type": "UInt8",
+          "named": true
+        },
+        {
+          "type": "UIntNative",
+          "named": true
+        },
+        {
+          "type": "Unit",
+          "named": true
+        },
+        {
           "type": "_expression",
           "named": true
         },
@@ -3682,6 +3750,10 @@
         "required": true,
         "types": [
           {
+            "type": "Bool",
+            "named": true
+          },
+          {
             "type": "Float16",
             "named": true
           },
@@ -3714,6 +3786,10 @@
             "named": true
           },
           {
+            "type": "Nothing",
+            "named": true
+          },
+          {
             "type": "Rune",
             "named": true
           },
@@ -3736,9 +3812,23 @@
           {
             "type": "UIntNative",
             "named": true
+          },
+          {
+            "type": "Unit",
+            "named": true
           }
         ]
       }
+    },
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "call_suffix",
+          "named": true
+        }
+      ]
     }
   },
   {

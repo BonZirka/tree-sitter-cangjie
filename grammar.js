@@ -501,9 +501,16 @@ const M = {
 
     // ===== members & functions =====
     function_definition: ($) =>
+      prec.right(seq(optional($.modifiers), $._function_tail)),
+    // Block-scope functions carry no modifiers (cjc: "unexpected modifier
+    // 'private' on function declaration in main function body") — keeping
+    // them out of the local rule also removes the modifier tokens from
+    // statement-start states, so soft words like `open` lex as identifiers
+    // in call position (`unsafe { open(p, oflag) }`).
+    _local_function_definition: ($) => $._function_tail,
+    _function_tail: ($) =>
       prec.right(
         seq(
-          optional($.modifiers),
           TOKENS.FUNC,
           field('name', alias(reserved('id', $.identifier), $.func_name)),
           optional($.type_parameters),
@@ -654,7 +661,11 @@ const M = {
     _expression_or_declarations: ($) =>
       repeat1(
         seq(
-          choice(alias($._local_variable_declaration, $.variable_declaration), $.function_definition, $._expression),
+          choice(
+            alias($._local_variable_declaration, $.variable_declaration),
+            alias($._local_function_definition, $.function_definition),
+            $._expression,
+          ),
           repeat(terminator($)),
         ),
       ),
@@ -744,6 +755,7 @@ const M = {
         $.array_literal,
         alias(reserved('id', $.identifier), $.identifier),
         $.type_conv_expr,
+        $._type_name_expr,
         $.parenthesized_expression,
         $.tuple_expression,
         $.range_expression,
@@ -945,31 +957,38 @@ const M = {
     synchronized_expression: ($) => seq(TOKENS.SYNCHRONIZED, '(', $._expression, ')', $.block),
     spawn_expression: ($) => seq(TOKENS.SPAWN, optional(seq('(', $._expression, ')')), $.lambda_expression),
 
-    // cjc: numeric primitive type names and Rune lead conversion expressions
-    // (`Int8(-95)`, `Rune(65)`, `Float64(1.0)` parse; nested conversions too).
-    // Bool/Unit/Nothing cannot start expressions at all ("expected expression
-    // ... found keyword 'Bool'"). The type name continues as a normal postfix
-    // base (calls and member access, e.g. `Int64.MAX_VALUE` is syntactically
-    // legal); a bare name is accepted where cjc rejects it — degenerate only.
+    // Primitive type names are expression starters: any member can exist via
+    // `extend`, so `Bool.parse(x)`, `Int64.MAX_VALUE`, `Nothing.foo()` are all
+    // postfix chains over the bare name.
+    _type_name_expr: ($) =>
+      choice(
+        alias(TOKENS.INT8, $.Int8),
+        alias(TOKENS.INT16, $.Int16),
+        alias(TOKENS.INT32, $.Int32),
+        alias(TOKENS.INT64, $.Int64),
+        alias(TOKENS.INTNATIVE, $.IntNative),
+        alias(TOKENS.UINT8, $.UInt8),
+        alias(TOKENS.UINT16, $.UInt16),
+        alias(TOKENS.UINT32, $.UInt32),
+        alias(TOKENS.UINT64, $.UInt64),
+        alias(TOKENS.UINTNATIVE, $.UIntNative),
+        alias(TOKENS.FLOAT16, $.Float16),
+        alias(TOKENS.FLOAT32, $.Float32),
+        alias(TOKENS.FLOAT64, $.Float64),
+        alias(TOKENS.RUNE, $.Rune),
+        alias(TOKENS.BOOL, $.Bool),
+        alias(TOKENS.UNIT, $.Unit),
+        alias(TOKENS.NOTHING, $.Nothing),
+      ),
+
+    // A type conversion exists iff the type name is followed by '(' expr ')'
+    // (`Int8(-95)`, `UInt16(Int8(-3))`); everything else is a plain postfix
+    // chain over the bare name. prec(1): the conversion shift beats the
+    // bare-starter reduce at '('.
     type_conv_expr: ($) =>
-      field(
-        'type',
-        choice(
-          alias(TOKENS.INT8, $.Int8),
-          alias(TOKENS.INT16, $.Int16),
-          alias(TOKENS.INT32, $.Int32),
-          alias(TOKENS.INT64, $.Int64),
-          alias(TOKENS.INTNATIVE, $.IntNative),
-          alias(TOKENS.UINT8, $.UInt8),
-          alias(TOKENS.UINT16, $.UInt16),
-          alias(TOKENS.UINT32, $.UInt32),
-          alias(TOKENS.UINT64, $.UInt64),
-          alias(TOKENS.UINTNATIVE, $.UIntNative),
-          alias(TOKENS.FLOAT16, $.Float16),
-          alias(TOKENS.FLOAT32, $.Float32),
-          alias(TOKENS.FLOAT64, $.Float64),
-          alias(TOKENS.RUNE, $.Rune),
-        ),
+      prec(
+        1,
+        seq(field('type', $._type_name_expr), $.call_suffix),
       ),
 
     perform_expression: ($) =>

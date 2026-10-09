@@ -616,6 +616,18 @@ static bool scan_quote_content(TSLexer *lexer) {
     lexer->result_symbol = QUOTE_CONTENT;
     while (lexer->lookahead != 0) {
         char c = (char)lexer->lookahead;
+        if (c == '/' ) {
+            // A line comment inside a quote body is raw content to EOL:
+            // apostrophes/quotes inside it (they're) must not start strings.
+            advance(lexer);
+            any = true;
+            if (lexer->lookahead == '/') {
+                while (lexer->lookahead != 0 && lexer->lookahead != '\n' && lexer->lookahead != '\r') {
+                    advance(lexer);
+                }
+            }
+            continue;
+        }
         if (c == '\n' || c == '\r') {
             // Every newline inside a quote body is its own token; whether it is
             // a visible separator quoteToken or ignored trivia is decided by the
@@ -764,6 +776,18 @@ static bool scan_macro_body_content(TSLexer *lexer, Scanner *s) {
             }
             advance(lexer);
             any = true;
+            continue;
+        }
+        if (c == '/') {
+            // Line comment inside a macro body: raw content to EOL, so an
+            // apostrophe inside it cannot start a string token.
+            advance(lexer);
+            any = true;
+            if (lexer->lookahead == '/') {
+                while (lexer->lookahead != 0 && lexer->lookahead != '\n' && lexer->lookahead != '\r') {
+                    advance(lexer);
+                }
+            }
             continue;
         }
         if (c == '#' || c == '"' || c == '\'' || c == '\\') {
