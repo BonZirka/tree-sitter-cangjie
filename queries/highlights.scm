@@ -350,19 +350,6 @@
                 (identifier) @function)))
     [(call_suffix) (lambda_expression)])
 
-; Numeric casts look like bare calls: Int64(x), Float64(y), Rune(n).
-; Placed after the callee rules above so it wins by order, not priority.
-((
-    (postfix_expression
-        (postfix_expression
-            (identifier) @type.builtin)
-        (call_suffix)))
- (#any-of? @type.builtin
-    "Int8" "Int16" "Int32" "Int64" "IntNative"
-    "UInt8" "UInt16" "UInt32" "UInt64" "UIntNative"
-    "Float16" "Float32" "Float64"
-    "Rune"))
-
 ; VArray<T, $N> — matched by name; after the callee refinements so the
 ; construction call VArray<Int64, $N>() still colors as the builtin type.
 (user_type (identifier) @type.builtin (#eq? @type.builtin "VArray"))

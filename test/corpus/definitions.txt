@@ -384,3 +384,97 @@ main(args: Array<String>): Int32 {
         (jump_expression
           (postfix_expression
             (integer_literal)))))))
+
+================================================================================
+block-scope function without modifiers, soft modifier word as call callee
+================================================================================
+
+func f(): Int64 {
+    func g(): Int64 { return 1 }
+    unsafe { open(p, oflag) }
+    return g()
+}
+
+----------------------------------------------------------------------------------
+
+(source_file
+  (function_definition
+    name: (func_name)
+    parameters: (parameter_list)
+    return_type: (return_type
+      type: (Int64))
+    body: (block
+      (function_definition
+        name: (func_name)
+        parameters: (parameter_list)
+        return_type: (return_type
+          type: (Int64))
+        body: (block
+          (postfix_expression
+            (jump_expression
+              (postfix_expression
+                (integer_literal))))))
+      (postfix_expression
+        (unsafe_expression
+          (block
+            (postfix_expression
+              base: (postfix_expression
+                (identifier))
+              suffix: (call_suffix
+                (postfix_expression
+                  (identifier))
+                (postfix_expression
+                  (identifier)))))))
+      (postfix_expression
+        (jump_expression
+          (postfix_expression
+            base: (postfix_expression
+              (identifier))
+            suffix: (call_suffix)))))))
+
+================================================================================
+soft modifier word at statement start is an identifier
+================================================================================
+
+func f(): Int64 {
+    private
+    func g(): Int64 { return 1 }
+    override(p, oflag)
+    return g()
+}
+
+----------------------------------------------------------------------------------
+
+(source_file
+  (function_definition
+    (func_name)
+    (parameter_list)
+    (return_type
+      (Int64))
+    (block
+      (postfix_expression
+        (identifier))
+      (function_definition
+        (func_name)
+        (parameter_list)
+        (return_type
+          (Int64))
+        (block
+          (postfix_expression
+            (jump_expression
+              (postfix_expression
+                (integer_literal))))))
+      (postfix_expression
+        (postfix_expression
+          (identifier))
+        (call_suffix
+          (postfix_expression
+            (identifier))
+          (postfix_expression
+            (identifier))))
+      (postfix_expression
+        (jump_expression
+          (postfix_expression
+            (postfix_expression
+              (identifier))
+            (call_suffix)))))))

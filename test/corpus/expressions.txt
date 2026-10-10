@@ -681,3 +681,98 @@ class D <: C {
                 (identifier)))
             value: (postfix_expression
               (integer_literal))))))))
+
+================================================================================
+primitive type names as expression bases and conversions
+================================================================================
+
+main() {
+    let a = Int64(5)
+    let b = UInt16(Int8(-3))
+    let c = Int64.MAX_VALUE
+    let d = Bool.parse("1")
+    let e = Nothing.foo()
+    let f = Int64(5).foo()
+    let g = Int64<Int32>(x)
+}
+
+----------------------------------------------------------------------------------
+
+(source_file
+  (main_definition
+    (parameter_list)
+    (block
+      (variable_declaration
+        (variable_name
+          (var_binding_pattern))
+        (postfix_expression
+          (type_conv_expr
+            (Int64)
+            (postfix_expression
+              (integer_literal)))))
+      (variable_declaration
+        (variable_name
+          (var_binding_pattern))
+        (postfix_expression
+          (type_conv_expr
+            (UInt16)
+            (postfix_expression
+              (type_conv_expr
+                (Int8)
+                (unary_expression
+                  (postfix_expression
+                    (integer_literal))))))))
+      (variable_declaration
+        (variable_name
+          (var_binding_pattern))
+        (postfix_expression
+          (Int64)
+          (field_access
+            (identifier))))
+      (variable_declaration
+        (variable_name
+          (var_binding_pattern))
+        (postfix_expression
+          (postfix_expression
+            (Bool)
+            (field_access
+              (identifier)))
+          (call_suffix
+            (postfix_expression
+              (string_literal
+                (string_start)
+                (string_content)
+                (string_end))))))
+      (variable_declaration
+        (variable_name
+          (var_binding_pattern))
+        (postfix_expression
+          (postfix_expression
+            (Nothing)
+            (field_access
+              (identifier)))
+          (call_suffix)))
+      (variable_declaration
+        (variable_name
+          (var_binding_pattern))
+        (postfix_expression
+          (postfix_expression
+            (postfix_expression
+              (type_conv_expr
+                (Int64)
+                (postfix_expression
+                  (integer_literal))))
+            (field_access
+              (identifier)))
+          (call_suffix)))
+      (variable_declaration
+        (variable_name
+          (var_binding_pattern))
+        (postfix_expression
+          (postfix_expression
+            (Int64)
+            (type_arguments
+              (Int32)))
+          (call_suffix
+            (postfix_expression
+              (identifier))))))))
