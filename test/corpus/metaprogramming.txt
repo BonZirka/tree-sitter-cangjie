@@ -853,7 +853,8 @@ func test2(n!: Int64 = @sourceLine()) { println(n) }
       (variable_declaration
         (variable_name
           (var_binding_pattern))
-        (String)
+        (user_type
+          (identifier))
         (postfix_expression
           (macro_expression
             (macro_call_sigil)
@@ -864,7 +865,8 @@ func test2(n!: Int64 = @sourceLine()) { println(n) }
       (variable_declaration
         (variable_name
           (var_binding_pattern))
-        (String)
+        (user_type
+          (identifier))
         (postfix_expression
           (macro_expression
             (macro_call_sigil)

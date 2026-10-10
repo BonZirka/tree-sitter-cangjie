@@ -112,10 +112,6 @@
         "named": true
       },
       {
-        "type": "String",
-        "named": true
-      },
-      {
         "type": "Thistype",
         "named": true
       },
@@ -4311,19 +4307,19 @@
   },
   {
     "type": "Float16",
-    "named": true
+    "named": false
   },
   {
     "type": "Float16",
-    "named": false
-  },
-  {
-    "type": "Float32",
     "named": true
   },
   {
     "type": "Float32",
     "named": false
+  },
+  {
+    "type": "Float32",
+    "named": true
   },
   {
     "type": "Float64",
@@ -4351,19 +4347,19 @@
   },
   {
     "type": "Int64",
-    "named": false
+    "named": true
   },
   {
     "type": "Int64",
-    "named": true
-  },
-  {
-    "type": "Int8",
     "named": false
   },
   {
     "type": "Int8",
     "named": true
+  },
+  {
+    "type": "Int8",
+    "named": false
   },
   {
     "type": "IntNative",
@@ -4375,11 +4371,11 @@
   },
   {
     "type": "Nothing",
-    "named": true
+    "named": false
   },
   {
     "type": "Nothing",
-    "named": false
+    "named": true
   },
   {
     "type": "Rune",
@@ -4388,14 +4384,6 @@
   {
     "type": "Rune",
     "named": false
-  },
-  {
-    "type": "String",
-    "named": false
-  },
-  {
-    "type": "String",
-    "named": true
   },
   {
     "type": "Thistype",
@@ -4403,19 +4391,19 @@
   },
   {
     "type": "UInt16",
-    "named": false
+    "named": true
   },
   {
     "type": "UInt16",
-    "named": true
-  },
-  {
-    "type": "UInt32",
     "named": false
   },
   {
     "type": "UInt32",
     "named": true
+  },
+  {
+    "type": "UInt32",
+    "named": false
   },
   {
     "type": "UInt64",
@@ -4427,14 +4415,10 @@
   },
   {
     "type": "UInt8",
-    "named": false
+    "named": true
   },
   {
     "type": "UInt8",
-    "named": true
-  },
-  {
-    "type": "UIntNative",
     "named": false
   },
   {
@@ -4442,12 +4426,16 @@
     "named": true
   },
   {
-    "type": "Unit",
+    "type": "UIntNative",
     "named": false
   },
   {
     "type": "Unit",
     "named": true
+  },
+  {
+    "type": "Unit",
+    "named": false
   },
   {
     "type": "[",
@@ -4696,11 +4684,11 @@
   },
   {
     "type": "operator",
-    "named": false
+    "named": true
   },
   {
     "type": "operator",
-    "named": true
+    "named": false
   },
   {
     "type": "override",

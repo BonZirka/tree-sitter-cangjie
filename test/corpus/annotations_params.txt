@@ -78,7 +78,8 @@ class P {
               (macro_call_sigil)
               (macro_name))
             (identifier)
-            (String)))))))
+            (user_type
+              (identifier))))))))
 
 ==================
 bare Range and Array types
@@ -142,10 +143,12 @@ main() {
     (parameter_list
       (parameter
         (identifier)
-        (String))
+        (user_type
+          (identifier)))
       (parameter
         (identifier)
-        (String)))
+        (user_type
+          (identifier))))
     (return_type
       (Unit))
     (block))

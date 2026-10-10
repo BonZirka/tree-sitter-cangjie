@@ -21,7 +21,8 @@ main() {
         type: (user_type
           (identifier)
           (type_arguments
-            (String)
+            (user_type
+              (identifier))
             (user_type
               (identifier)
               (type_arguments
@@ -35,7 +36,8 @@ main() {
           (var_binding_pattern))
         type: (tuple_type
           type: (Int64)
-          type: (String))
+          type: (user_type
+            (identifier)))
         initializer: (postfix_expression
           (tuple_expression
             (postfix_expression
@@ -268,7 +270,8 @@ main() {
           (var_binding_pattern))
         type: (prefix_type
           type: (prefix_type
-            type: (String)))
+            type: (user_type
+              (identifier))))
         initializer: (postfix_expression
           (identifier)))
       (variable_declaration
@@ -302,7 +305,8 @@ main() {
           (var_binding_pattern))
         type: (arrow_type
           (Int64)
-          (String)
+          (user_type
+            (identifier))
           type: (Bool))
         initializer: (postfix_expression
           (identifier)))
@@ -334,7 +338,8 @@ main() {
         type: (user_type
           (identifier)
           (type_arguments
-            (String)
+            (user_type
+              (identifier))
             (user_type
               (identifier)
               (type_arguments

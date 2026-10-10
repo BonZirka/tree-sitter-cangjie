@@ -3585,13 +3585,6 @@
             "type": "STRING",
             "value": "Nothing"
           }
-        },
-        {
-          "type": "TOKEN",
-          "content": {
-            "type": "STRING",
-            "value": "String"
-          }
         }
       ]
     },
@@ -8160,18 +8153,6 @@
           },
           "named": true,
           "value": "Nothing"
-        },
-        {
-          "type": "ALIAS",
-          "content": {
-            "type": "TOKEN",
-            "content": {
-              "type": "STRING",
-              "value": "String"
-            }
-          },
-          "named": true,
-          "value": "String"
         },
         {
           "type": "ALIAS",

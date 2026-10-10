@@ -312,7 +312,8 @@ let name: String = "x"
   (variable_declaration
     name: (variable_name
       (var_binding_pattern))
-    type: (String)
+    type: (user_type
+      (identifier))
     initializer: (postfix_expression
       (string_literal
         (string_start)
@@ -376,7 +377,8 @@ main(args: Array<String>): Int32 {
         type: (user_type
           (identifier)
           (type_arguments
-            (String)))))
+            (user_type
+              (identifier))))))
     (return_type
       type: (Int32))
     (block

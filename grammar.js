@@ -671,7 +671,6 @@ const M = {
       choice(
         seq(optional($.type_parameters), $._name, optional($.type_arguments)),
         ...primitiveTokens(),
-        token('String'),
       ),
 
     block: ($) => seq('{', optional($._expression_or_declarations), '}'),
@@ -1121,7 +1120,6 @@ const M = {
         $.tuple_type,
         $.prefix_type,
         ...primitiveTypeNodes($),
-        alias(token('String'), $.String),
         alias(TOKENS.THISTYPE, $.Thistype),
         $.user_type,
         $.const_generic,

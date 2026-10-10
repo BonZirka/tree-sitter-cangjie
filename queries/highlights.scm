@@ -239,7 +239,9 @@
 ] @keyword
 
 ; Hard-keyword primitive types (reserved words in Cangjie).
-; NOTE: String is NOT here — it is an ordinary (soft) type name.
+; NOTE: soft builtin type names (String, VArray, ...) are ordinary
+; identifiers, so they are not listed here — they fall through to the
+; generic `(user_type (identifier) @type)` rules below.
 [
     (Int8)
     (Int16)
@@ -260,9 +262,6 @@
     (Nothing)
     (Thistype)
 ] @type.builtin
-
-; Soft builtin type: ordinary identifier-like name
-(String) @type
 
 ; ===== Operators & punctuation =====
 
