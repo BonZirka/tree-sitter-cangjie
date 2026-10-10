@@ -109,12 +109,12 @@ class C {
             name: (identifier)))
         parameters: (parameter_list)
         return_type: (return_type
-          type: (user_type
+          type: (type_name
             (identifier)))
         (generic_constraints
           (generic_constraint
             (identifier)
-            (user_type
+            (type_name
               (identifier))))
         body: (block
           (postfix_expression

@@ -10,7 +10,7 @@ let a0: Tokens = quote(==)
   (variable_declaration
     (variable_name
       (var_binding_pattern))
-    (user_type
+    (type_name
       (identifier))
     (postfix_expression
       (quote_expression
@@ -30,7 +30,7 @@ let a1: Tokens = quote(2+3)
   (variable_declaration
     (variable_name
       (var_binding_pattern))
-    (user_type
+    (type_name
       (identifier))
     (postfix_expression
       (quote_expression
@@ -50,7 +50,7 @@ let a2: Tokens = quote(2) + quote(+) + quote(3)
   (variable_declaration
     (variable_name
       (var_binding_pattern))
-    (user_type
+    (type_name
       (identifier))
     (binary_expression
       (binary_expression
@@ -82,7 +82,7 @@ let a4: Tokens = quote(select * from Users where id=100086)
   (variable_declaration
     (variable_name
       (var_binding_pattern))
-    (user_type
+    (type_name
       (identifier))
     (postfix_expression
       (quote_expression
@@ -104,7 +104,7 @@ let a3: Tokens = quote(main(): Int64 {
   (variable_declaration
     (variable_name
       (var_binding_pattern))
-    (user_type
+    (type_name
       (identifier))
     (postfix_expression
       (quote_expression
@@ -131,7 +131,7 @@ let b1: Tokens = quote(quote(x))
   (variable_declaration
     (variable_name
       (var_binding_pattern))
-    (user_type
+    (type_name
       (identifier))
     (postfix_expression
       (quote_expression
@@ -159,7 +159,7 @@ var b = 4
   (variable_declaration
     (variable_name
       (var_binding_pattern))
-    (user_type
+    (type_name
       (identifier))
     (postfix_expression
       (quote_expression
@@ -184,7 +184,7 @@ let e2: Tokens = quote(a \) b)
   (variable_declaration
     (variable_name
       (var_binding_pattern))
-    (user_type
+    (type_name
       (identifier))
     (postfix_expression
       (quote_expression
@@ -194,7 +194,7 @@ let e2: Tokens = quote(a \) b)
   (variable_declaration
     (variable_name
       (var_binding_pattern))
-    (user_type
+    (type_name
       (identifier))
     (postfix_expression
       (quote_expression
@@ -217,7 +217,7 @@ let e4: Tokens = quote(\$)
   (variable_declaration
     (variable_name
       (var_binding_pattern))
-    (user_type
+    (type_name
       (identifier))
     (postfix_expression
       (quote_expression
@@ -227,7 +227,7 @@ let e4: Tokens = quote(\$)
   (variable_declaration
     (variable_name
       (var_binding_pattern))
-    (user_type
+    (type_name
       (identifier))
     (postfix_expression
       (quote_expression
@@ -444,7 +444,7 @@ let m1: Tokens = quote(@SayHi("say hi"))
   (variable_declaration
     (variable_name
       (var_binding_pattern))
-    (user_type
+    (type_name
       (identifier))
     (postfix_expression
       (quote_expression
@@ -470,7 +470,7 @@ let m2: Tokens = quote(@PlusOne($x))
   (variable_declaration
     (variable_name
       (var_binding_pattern))
-    (user_type
+    (type_name
       (identifier))
     (postfix_expression
       (quote_expression
@@ -493,7 +493,7 @@ let m4: Tokens = quote(1 + @PlusOne(x) * 2)
   (variable_declaration
     (variable_name
       (var_binding_pattern))
-    (user_type
+    (type_name
       (identifier))
     (postfix_expression
       (quote_expression
@@ -532,10 +532,10 @@ public macro bar(x: Tokens): Tokens { return quote($x) }
     (macro_name)
     (macro_parameter
       (identifier)
-      (user_type
+      (type_name
         (identifier)))
     (return_type
-      (user_type
+      (type_name
         (identifier)))
     (block
       (postfix_expression
@@ -545,10 +545,10 @@ public macro bar(x: Tokens): Tokens { return quote($x) }
     (macro_name)
     (macro_parameter
       (identifier)
-      (user_type
+      (type_name
         (identifier)))
     (return_type
-      (user_type
+      (type_name
         (identifier)))
     (block
       (postfix_expression
@@ -573,14 +573,14 @@ public macro Joint(attr: Tokens, x: Tokens): Tokens { attr + x }
     (macro_name)
     (macro_parameter
       (identifier)
-      (user_type
+      (type_name
         (identifier)))
     (macro_parameter
       (identifier)
-      (user_type
+      (type_name
         (identifier)))
     (return_type
-      (user_type
+      (type_name
         (identifier)))
     (block
       (binary_expression
@@ -603,10 +603,10 @@ public macro PlusOne(input: Tokens): Tokens { quote(($input + 1)) }
     (macro_name)
     (macro_parameter
       (identifier)
-      (user_type
+      (type_name
         (identifier)))
     (return_type
-      (user_type
+      (type_name
         (identifier)))
     (block
       (postfix_expression
@@ -853,7 +853,7 @@ func test2(n!: Int64 = @sourceLine()) { println(n) }
       (variable_declaration
         (variable_name
           (var_binding_pattern))
-        (user_type
+        (type_name
           (identifier))
         (postfix_expression
           (macro_expression
@@ -865,7 +865,7 @@ func test2(n!: Int64 = @sourceLine()) { println(n) }
       (variable_declaration
         (variable_name
           (var_binding_pattern))
-        (user_type
+        (type_name
           (identifier))
         (postfix_expression
           (macro_expression
@@ -1128,10 +1128,10 @@ public macro M(input: Tokens): Tokens {
     (macro_name)
     (macro_parameter
       (identifier)
-      (user_type
+      (type_name
         (identifier)))
     (return_type
-      (user_type
+      (type_name
         (identifier)))
     (block
       (postfix_expression
@@ -1167,10 +1167,10 @@ public macro M2(input: Tokens): Tokens {
     (macro_name)
     (macro_parameter
       (identifier)
-      (user_type
+      (type_name
         (identifier)))
     (return_type
-      (user_type
+      (type_name
         (identifier)))
     (block
       (postfix_expression

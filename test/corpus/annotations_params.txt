@@ -78,7 +78,7 @@ class P {
               (macro_call_sigil)
               (macro_name))
             (identifier)
-            (user_type
+            (type_name
               (identifier))))))))
 
 ==================
@@ -100,27 +100,27 @@ func f(r: Range, a: Array): Range {
     (enum_name)
     (enum_body
       (identifier)
-      (user_type
+      (type_name
         (identifier))))
   (function_definition
     (func_name)
     (parameter_list
       (parameter
         (identifier)
-        (user_type
+        (type_name
           (identifier)))
       (parameter
         (identifier)
-        (user_type
+        (type_name
           (identifier))))
     (return_type
-      (user_type
+      (type_name
         (identifier)))
     (block
       (variable_declaration
         (variable_name
           (var_binding_pattern))
-        (user_type
+        (type_name
           (identifier))
         (postfix_expression
           (identifier))))))
@@ -143,11 +143,11 @@ main() {
     (parameter_list
       (parameter
         (identifier)
-        (user_type
+        (type_name
           (identifier)))
       (parameter
         (identifier)
-        (user_type
+        (type_name
           (identifier))))
     (return_type
       (Unit))

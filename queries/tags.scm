@@ -29,6 +29,6 @@
   base: (postfix_expression (identifier) @name)
   suffix: (type_arguments)) @reference.call
 
-(user_type (identifier) @name) @reference.type
+(type_name (identifier) @name) @reference.type
 (extend_type (identifier) @name) @reference.type
 (enum_constructor) @name @reference.class

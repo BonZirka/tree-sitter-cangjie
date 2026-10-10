@@ -1121,11 +1121,11 @@ const M = {
         $.prefix_type,
         ...primitiveTypeNodes($),
         alias(TOKENS.THISTYPE, $.Thistype),
-        $.user_type,
+        $.type_name,
         $.const_generic,
       ),
 
-    user_type: ($) => prec.right(seq($._name, optional($.type_arguments))),
+    type_name: ($) => prec.right(seq($._name, optional($.type_arguments))),
 
     arrow_type: ($) => seq('(', optional($._named_or_type_list), ')', token('->'), field('type', $._type)),
 

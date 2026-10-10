@@ -156,7 +156,7 @@
         "named": true
       },
       {
-        "type": "user_type",
+        "type": "type_name",
         "named": true
       }
     ]
@@ -3828,6 +3828,29 @@
     }
   },
   {
+    "type": "type_name",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        },
+        {
+          "type": "scoped_identifier",
+          "named": true
+        },
+        {
+          "type": "type_arguments",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "type_parameter",
     "named": true,
     "fields": {
@@ -3980,29 +4003,6 @@
       "types": [
         {
           "type": "block",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "user_type",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "identifier",
-          "named": true
-        },
-        {
-          "type": "scoped_identifier",
-          "named": true
-        },
-        {
-          "type": "type_arguments",
           "named": true
         }
       ]

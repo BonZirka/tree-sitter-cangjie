@@ -197,10 +197,10 @@ macro mymacro(x: Expr): Expr {
     name: (macro_name)
     parameters: (macro_parameter
       name: (identifier)
-      type: (user_type
+      type: (type_name
         (identifier)))
     return_type: (return_type
-      type: (user_type
+      type: (type_name
         (identifier)))
     body: (block
       (postfix_expression
@@ -312,7 +312,7 @@ let name: String = "x"
   (variable_declaration
     name: (variable_name
       (var_binding_pattern))
-    type: (user_type
+    type: (type_name
       (identifier))
     initializer: (postfix_expression
       (string_literal
@@ -374,10 +374,10 @@ main(args: Array<String>): Int32 {
     (parameter_list
       (parameter
         para_name: (identifier)
-        type: (user_type
+        type: (type_name
           (identifier)
           (type_arguments
-            (user_type
+            (type_name
               (identifier))))))
     (return_type
       type: (Int32))

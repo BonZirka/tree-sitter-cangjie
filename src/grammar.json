@@ -8168,7 +8168,7 @@
         },
         {
           "type": "SYMBOL",
-          "name": "user_type"
+          "name": "type_name"
         },
         {
           "type": "SYMBOL",
@@ -8176,7 +8176,7 @@
         }
       ]
     },
-    "user_type": {
+    "type_name": {
       "type": "PREC_RIGHT",
       "value": 0,
       "content": {
