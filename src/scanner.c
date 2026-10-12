@@ -534,11 +534,19 @@ static bool scan_quote_open(TSLexer *lexer, Scanner *s) {
 // false on a bare '/' (division): the trailing context is not trivia then.
 // All consumption past a token's mark_end is discarded and re-lexed by the
 // parser (cf. scan_generic_lt), so declining after arbitrary peeking is safe.
+// Peek past a token's mark_end over whitespace and comments, leaving the
+// lookahead on the first significant character. Every consumed character
+// goes through advance() — never skip(): the runtime moves token_start past
+// every skipped char (lexer.c: `if (skip) token_start = current`), so a
+// skip after mark_end pushes the start past the marked end and the token
+// gets clamped to zero width (its node would span nothing and highlight
+// captures on it would color nothing). The runtime rewinds to mark_end when
+// the token is accepted, so the peeked trivia is re-lexed normally.
 static bool skip_peek_trivia(TSLexer *lexer) {
     for (;;) {
         while (lexer->lookahead == ' ' || lexer->lookahead == '\t' ||
                lexer->lookahead == '\r' || lexer->lookahead == '\n')
-            skip(lexer);
+            advance(lexer);
         if (lexer->lookahead != '/')
             return true;
         advance(lexer);
@@ -605,10 +613,12 @@ static bool scan_perform_dsl(TSLexer *lexer) {
     if (!match_word_tail(lexer, "erform", 6))
         return false;
     lexer->mark_end(lexer);
-    TSLexer l = *lexer;
-    if (!skip_peek_trivia(&l))
+    // Peek past the mark on the real lexer: the runtime rewinds to mark_end
+    // when the token is accepted, and a struct copy cannot work — the runtime
+    // does not update the copy's lookahead, so skip_peek_trivia would spin.
+    if (!skip_peek_trivia(lexer))
         return false;
-    if (!is_expression_start_char(l.lookahead))
+    if (!is_expression_start_char(lexer->lookahead))
         return false;
     lexer->result_symbol = PERFORM_DSL;
     return true;
@@ -624,16 +634,16 @@ static bool scan_resume_dsl(TSLexer *lexer) {
     if (!match_word_tail(lexer, "esume", 5))
         return false;
     lexer->mark_end(lexer);
-    TSLexer l = *lexer;
-    if (!skip_peek_trivia(&l))
+    // Peek past the mark on the real lexer (see scan_perform_dsl).
+    if (!skip_peek_trivia(lexer))
         return false;
     bool continuation = false;
-    if (l.lookahead == 'w') {
-        advance(&l);
-        continuation = match_word_tail(&l, "ith", 3);
-    } else if (l.lookahead == 't') {
-        advance(&l);
-        continuation = match_word_tail(&l, "hrowing", 7);
+    if (lexer->lookahead == 'w') {
+        advance(lexer);
+        continuation = match_word_tail(lexer, "ith", 3);
+    } else if (lexer->lookahead == 't') {
+        advance(lexer);
+        continuation = match_word_tail(lexer, "hrowing", 7);
     }
     if (!continuation)
         return false;
