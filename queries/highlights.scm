@@ -261,13 +261,15 @@
 (macro_package_declaration package_name: (scoped_identifier) @module)
 
 ; Import paths and aliases: import std.math.* as M — the path may be a
-; single identifier or a dotted chain.
+; single identifier or a dotted chain. The package header's name joins the
+; module family.
 (import_list package_name: [(scoped_identifier) (identifier)] @module)
 (package_full package_name: [(scoped_identifier) (identifier)] @module)
 (package_group package_name: [(scoped_identifier) (identifier)] @module)
 (sub_group_of_package package_name: [(scoped_identifier) (identifier)] @module)
 (package_alias package_name: [(scoped_identifier) (identifier)] @module)
 (package_alias alias: (identifier) @module)
+(package_declaration package_name: [(scoped_identifier) (identifier)] @module)
 
 ; ===== Attributes & macros =====
 ; Cangjie cannot semantically separate annotations from macro calls — both
@@ -335,6 +337,7 @@
 ] @keyword.operator
 
 "import" @keyword.import
+"package" @keyword.import
 "spawn" @keyword.coroutine
 
 ; Bindings and everything without a closer family

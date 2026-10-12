@@ -1,3 +1,7 @@
+package demo
+//^ @keyword.import
+//       ^ @module
+
 import std.math.*
 //^ @keyword.import
 //     ^ @module
