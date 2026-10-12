@@ -1,13 +1,17 @@
+package demo
+//^ @keyword.import
+//       ^ @module
+
 import std.math.*
-//^ @keyword
+//^ @keyword.import
 //     ^ @module
-//              ^ @operator
+//              ^ @punctuation.special
 import std.io as Io
 //     ^ @module
 //               ^ @module
 
 class Shape<T> <: Pane {
-//^ @keyword
+//^ @keyword.type
 //    ^ @type
 //          ^ @type
 //             ^ @operator
@@ -15,19 +19,19 @@ class Shape<T> <: Pane {
 
     let area: Float64 = 1.5
 //  ^ @keyword
-//      ^ @variable
+//      ^ @variable.member
 //            ^ @type.builtin
 //                    ^ @operator
-//                      ^ @number
+//                      ^ @number.float
 
     func scale<F, R>(k: F, v: Int64): Unit where F <: Number {
-//  ^ @keyword
+//  ^ @keyword.function
 //       ^ @function
 //             ^ @type
 //                ^ @type
-//                   ^ @parameter
+//                   ^ @variable.parameter
 //             ^ @type
-//                         ^ @parameter
+//                         ^ @variable.parameter
 //                            ^ @type.builtin
 //                                    ^ @type.builtin
 //                                         ^ @keyword
@@ -36,10 +40,10 @@ class Shape<T> <: Pane {
 //                                                    ^ @type
         this.area = k ?? 1.5
 //      ^ @variable.builtin
-//           ^ @property
+//           ^ @variable.member
 //                ^ @operator
 //                    ^ @operator
-//                       ^ @number
+//                       ^ @number.float
         let msg = "pi=${k} end"
 //      ^ @keyword
 //          ^ @variable
@@ -49,40 +53,40 @@ class Shape<T> <: Pane {
         let q = quote(var $v = $(w.x))
 //              ^ @keyword
 //                        ^ @variable.builtin
-//                         ^ @parameter
+//                         ^ @variable.parameter
 //                             ^ @variable.builtin
-//                                 ^ @property
+//                                 ^ @variable.member
 //                                  ^ @variable.builtin
     }
 }
 
 enum Color { Red | Green }
-//^ @keyword
+//^ @keyword.type
 //   ^ @type
 //           ^ @constant
-//               ^ @operator
+//               ^ @punctuation.delimiter
 //                 ^ @constant
 
 main() {
-//^ @keyword
+//^ @function
     let f = obj.field()
 //  ^ @keyword
 //      ^ @variable
-//              ^ @function
+//              ^ @function.method.call
 }
 
 macro mk(x: Expr) { @body(1) }
 //^ @keyword
 //    ^ @function.macro
-//                  ^ @punctuation.special
+//                  ^ @function.macro
 //                   ^ @function.macro
-//                       ^ @punctuation.special
-//                         ^ @punctuation.special
+//                           ^ @function.macro
+//                            ^ @markup.raw
 
   @Attr[flag = true]
-//^ @punctuation.special
+//^ @function.macro
 // ^ @function.macro
-//     ^ @punctuation.special
+//     ^ @function.macro
 //      ^ @markup.raw
 
 let r = quote(1 + @PlusOne(x) * 2)

@@ -136,3 +136,63 @@ let s = "${@f(1)}"
                 (macro_input_close))))
           (interp_close))
         (string_end)))))
+
+================================================================================
+comments inside quote and macro bodies are raw content
+================================================================================
+
+main() {
+    let q = quote( // they're fine
+        Foo )
+    let r = quote( /* it's (odd) */ Foo )
+    let m = @M[ // they're ] fine
+        Bar ]
+    let n = @M[ /* it's ] */ Bar ]
+}
+
+----------------------------------------------------------------------------------
+
+(source_file
+  (main_definition
+    (parameter_list)
+    (block
+      (variable_declaration
+        (variable_name
+          (var_binding_pattern))
+        (postfix_expression
+          (quote_expression
+            (quote_keyword)
+            (quote_raw_token)
+            (quote_newline)
+            (quote_raw_token)
+            (quote_close))))
+      (variable_declaration
+        (variable_name
+          (var_binding_pattern))
+        (postfix_expression
+          (quote_expression
+            (quote_keyword)
+            (quote_raw_token)
+            (quote_close))))
+      (variable_declaration
+        (variable_name
+          (var_binding_pattern))
+        (postfix_expression
+          (macro_expression
+            (macro_call_sigil)
+            (macro_name)
+            (macro_attribute_body
+              (macro_attr_open)
+              (macro_raw_token)
+              (macro_attr_close)))))
+      (variable_declaration
+        (variable_name
+          (var_binding_pattern))
+        (postfix_expression
+          (macro_expression
+            (macro_call_sigil)
+            (macro_name)
+            (macro_attribute_body
+              (macro_attr_open)
+              (macro_raw_token)
+              (macro_attr_close))))))))

@@ -18,11 +18,13 @@ main() {
       (variable_declaration
         name: (variable_name
           (var_binding_pattern))
-        type: (user_type
+        type: (type_name
           (identifier)
           (type_arguments
-            (String)
-            (generic_type
+            (type_name
+              (identifier))
+            (type_name
+              (identifier)
               (type_arguments
                 (Int64)))))
         initializer: (postfix_expression
@@ -34,7 +36,8 @@ main() {
           (var_binding_pattern))
         type: (tuple_type
           type: (Int64)
-          type: (String))
+          type: (type_name
+            (identifier)))
         initializer: (postfix_expression
           (tuple_expression
             (postfix_expression
@@ -68,7 +71,7 @@ main() {
     let fixed: VArray<Int64, $3> = VArray<Int64, $3>(1, 2, 3)
     let flag: Bool = true
     let ch: Rune = r'a'
-    let none: Nothing = throw Nothing()
+    let none: Nothing = throw Exception()
 }
 
 ---
@@ -80,7 +83,7 @@ main() {
       (variable_declaration
         name: (variable_name
           (var_binding_pattern))
-        type: (user_type
+        type: (type_name
           (identifier)
           (type_arguments
             (Int64)
@@ -150,29 +153,29 @@ public operator func +(lhs: Vec, rhs: Vec): Vec {
       (parameter
         para_name: (identifier)
         type: (arrow_type
-          (user_type
+          (type_name
             (identifier))
-          type: (user_type
+          type: (type_name
             (identifier))))
       (parameter
         para_name: (identifier)
         type: (arrow_type
-          (user_type
+          (type_name
             (identifier))
-          type: (user_type
+          type: (type_name
             (identifier)))))
     return_type: (return_type
       type: (arrow_type
-        (user_type
+        (type_name
           (identifier))
-        type: (user_type
+        type: (type_name
           (identifier))))
     (generic_constraints
       (generic_constraint
         (identifier)
-        (user_type
+        (type_name
           (identifier))
-        (user_type
+        (type_name
           (identifier))))
     body: (block
       (postfix_expression
@@ -182,7 +185,7 @@ public operator func +(lhs: Vec, rhs: Vec): Vec {
               (lambda_parameters
                 (lambda_parameter
                   (var_binding_pattern)
-                  (user_type
+                  (type_name
                     (identifier))))
               (postfix_expression
                 base: (postfix_expression
@@ -200,14 +203,14 @@ public operator func +(lhs: Vec, rhs: Vec): Vec {
     parameters: (parameter_list
       (parameter
         para_name: (identifier)
-        type: (user_type
+        type: (type_name
           (identifier)))
       (parameter
         para_name: (identifier)
-        type: (user_type
+        type: (type_name
           (identifier))))
     return_type: (return_type
-      type: (user_type
+      type: (type_name
         (identifier)))
     body: (block
       (postfix_expression
@@ -267,13 +270,15 @@ main() {
           (var_binding_pattern))
         type: (prefix_type
           type: (prefix_type
-            type: (String)))
+            type: (type_name
+              (identifier))))
         initializer: (postfix_expression
           (identifier)))
       (variable_declaration
         name: (variable_name
           (var_binding_pattern))
-        type: (generic_type
+        type: (type_name
+          (identifier)
           (type_arguments
             (prefix_type
               type: (Int64))))
@@ -300,7 +305,8 @@ main() {
           (var_binding_pattern))
         type: (arrow_type
           (Int64)
-          (String)
+          (type_name
+            (identifier))
           type: (Bool))
         initializer: (postfix_expression
           (identifier)))
@@ -329,17 +335,19 @@ main() {
       (variable_declaration
         name: (variable_name
           (var_binding_pattern))
-        type: (user_type
+        type: (type_name
           (identifier)
           (type_arguments
-            (String)
-            (user_type
+            (type_name
+              (identifier))
+            (type_name
               (identifier)
               (type_arguments
                 (Int64)
-                (generic_type
+                (type_name
+                  (identifier)
                   (type_arguments
-                    (user_type
+                    (type_name
                       (identifier)
                       (type_arguments
                         (Bool)))))))))
@@ -367,7 +375,7 @@ class Store<T> where T <: Item {
     (generic_constraints
       (generic_constraint
         (identifier)
-        (user_type
+        (type_name
           (identifier))))
     body: (declaration_body
       (function_definition
@@ -378,16 +386,16 @@ class Store<T> where T <: Item {
         parameters: (parameter_list
           (parameter
             para_name: (identifier)
-            type: (user_type
+            type: (type_name
               (identifier))))
         return_type: (return_type
           type: (prefix_type
-            type: (user_type
+            type: (type_name
               (identifier))))
         (generic_constraints
           (generic_constraint
             (identifier)
-            (user_type
+            (type_name
               (identifier))))
         body: (block
           (postfix_expression

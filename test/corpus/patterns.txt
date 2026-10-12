@@ -33,7 +33,8 @@ main() {
           (case_pattern
             (type_pattern
               (var_binding_pattern)
-              (String))
+              (type_name
+                (identifier)))
             (postfix_expression
               base: (postfix_expression
                 (identifier))

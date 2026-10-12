@@ -21,7 +21,6 @@
 
 ; Expressions that introduce bindings or nest scopes
 (lambda_expression) @local.scope
-(lambda_expression) @local.scope
 (for_in_expression) @local.scope
 (while_expression) @local.scope
 (do_while_expression) @local.scope

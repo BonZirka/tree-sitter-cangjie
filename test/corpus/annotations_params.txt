@@ -78,7 +78,8 @@ class P {
               (macro_call_sigil)
               (macro_name))
             (identifier)
-            (String)))))))
+            (type_name
+              (identifier))))))))
 
 ==================
 bare Range and Array types
@@ -99,23 +100,28 @@ func f(r: Range, a: Array): Range {
     (enum_name)
     (enum_body
       (identifier)
-      (generic_type)))
+      (type_name
+        (identifier))))
   (function_definition
     (func_name)
     (parameter_list
       (parameter
         (identifier)
-        (generic_type))
+        (type_name
+          (identifier)))
       (parameter
         (identifier)
-        (generic_type)))
+        (type_name
+          (identifier))))
     (return_type
-      (generic_type))
+      (type_name
+        (identifier)))
     (block
       (variable_declaration
         (variable_name
           (var_binding_pattern))
-        (generic_type)
+        (type_name
+          (identifier))
         (postfix_expression
           (identifier))))))
 
@@ -137,10 +143,12 @@ main() {
     (parameter_list
       (parameter
         (identifier)
-        (String))
+        (type_name
+          (identifier)))
       (parameter
         (identifier)
-        (String)))
+        (type_name
+          (identifier))))
     (return_type
       (Unit))
     (block))

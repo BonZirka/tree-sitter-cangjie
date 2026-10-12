@@ -30,7 +30,6 @@
 
 ; Lambdas and permissive blocks
 (lambda_expression) @fold
-(lambda_expression) @fold
 (synchronized_expression) @fold
 (unsafe_expression) @fold
 
