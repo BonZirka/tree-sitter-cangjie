@@ -65,9 +65,9 @@
 
 ; ===== Parameters =====
 
-(parameter para_name: (identifier) @variable.parameter)
-(named_parameter para_name: (identifier) @variable.parameter)
-(unnamed_member_param para_name: (identifier) @variable.parameter)
+(parameter parameter_name: (identifier) @variable.parameter)
+(named_parameter parameter_name: (identifier) @variable.parameter)
+(unnamed_member_parameter parameter_name: (identifier) @variable.parameter)
 (lambda_parameter (var_binding_pattern) @variable.parameter)
 (property_definition setter: (identifier) @variable.parameter)
 (macro_parameter name: (identifier) @variable.parameter)
@@ -248,8 +248,8 @@
     name: (variable_name (var_binding_pattern) @constant))
 
 ; Prop accessor keywords: get()/set()
-(getter_keyword) @keyword
-(setter_keyword) @keyword
+(get_keyword) @keyword
+(set_keyword) @keyword
 
 ; The '...' member-param wildcard (java: "..." → @punctuation.delimiter)
 (ellipsis_parameter) @punctuation.delimiter

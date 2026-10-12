@@ -36,13 +36,13 @@
 
 ; Parameters
 (parameter
-  para_name: (identifier) @local.definition)
+  parameter_name: (identifier) @local.definition)
 
 (named_parameter
-  para_name: (identifier) @local.definition)
+  parameter_name: (identifier) @local.definition)
 
-(unnamed_member_param
-  para_name: (identifier) @local.definition)
+(unnamed_member_parameter
+  parameter_name: (identifier) @local.definition)
 
 (macro_parameter
   name: (identifier) @local.definition)

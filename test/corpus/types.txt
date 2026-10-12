@@ -151,14 +151,14 @@ public operator func +(lhs: Vec, rhs: Vec): Vec {
         name: (identifier)))
     parameters: (parameter_list
       (parameter
-        para_name: (identifier)
+        parameter_name: (identifier)
         type: (arrow_type
           (type_name
             (identifier))
           type: (type_name
             (identifier))))
       (parameter
-        para_name: (identifier)
+        parameter_name: (identifier)
         type: (arrow_type
           (type_name
             (identifier))
@@ -202,11 +202,11 @@ public operator func +(lhs: Vec, rhs: Vec): Vec {
     name: (operator)
     parameters: (parameter_list
       (parameter
-        para_name: (identifier)
+        parameter_name: (identifier)
         type: (type_name
           (identifier)))
       (parameter
-        para_name: (identifier)
+        parameter_name: (identifier)
         type: (type_name
           (identifier))))
     return_type: (return_type
@@ -385,7 +385,7 @@ class Store<T> where T <: Item {
             name: (identifier)))
         parameters: (parameter_list
           (parameter
-            para_name: (identifier)
+            parameter_name: (identifier)
             type: (type_name
               (identifier))))
         return_type: (return_type

@@ -706,7 +706,7 @@ main() {
         (variable_name
           (var_binding_pattern))
         (postfix_expression
-          (type_conv_expr
+          (type_conversion_expression
             (Int64)
             (postfix_expression
               (integer_literal)))))
@@ -714,10 +714,10 @@ main() {
         (variable_name
           (var_binding_pattern))
         (postfix_expression
-          (type_conv_expr
+          (type_conversion_expression
             (UInt16)
             (postfix_expression
-              (type_conv_expr
+              (type_conversion_expression
                 (Int8)
                 (unary_expression
                   (postfix_expression
@@ -758,7 +758,7 @@ main() {
         (postfix_expression
           (postfix_expression
             (postfix_expression
-              (type_conv_expr
+              (type_conversion_expression
                 (Int64)
                 (postfix_expression
                   (integer_literal))))

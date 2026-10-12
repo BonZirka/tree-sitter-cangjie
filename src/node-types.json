@@ -2174,7 +2174,7 @@
     "fields": {}
   },
   {
-    "type": "named_member_param",
+    "type": "named_member_parameter",
     "named": true,
     "fields": {},
     "children": {
@@ -2210,7 +2210,7 @@
           }
         ]
       },
-      "para_name": {
+      "parameter_name": {
         "multiple": false,
         "required": true,
         "types": [
@@ -2459,7 +2459,7 @@
     "type": "parameter",
     "named": true,
     "fields": {
-      "para_name": {
+      "parameter_name": {
         "multiple": false,
         "required": false,
         "types": [
@@ -2796,7 +2796,7 @@
           "named": true
         },
         {
-          "type": "type_conv_expr",
+          "type": "type_conversion_expression",
           "named": true
         },
         {
@@ -2851,7 +2851,7 @@
           "named": true
         },
         {
-          "type": "primary_init_param_list",
+          "type": "primary_init_parameter_list",
           "named": true
         },
         {
@@ -2862,7 +2862,7 @@
     }
   },
   {
-    "type": "primary_init_param_list",
+    "type": "primary_init_parameter_list",
     "named": true,
     "fields": {},
     "children": {
@@ -2870,7 +2870,7 @@
       "required": false,
       "types": [
         {
-          "type": "named_member_param",
+          "type": "named_member_parameter",
           "named": true
         },
         {
@@ -2882,7 +2882,7 @@
           "named": true
         },
         {
-          "type": "unnamed_member_param",
+          "type": "unnamed_member_parameter",
           "named": true
         }
       ]
@@ -2909,7 +2909,7 @@
             "named": true
           },
           {
-            "type": "getter_keyword",
+            "type": "get_keyword",
             "named": true
           }
         ]
@@ -2945,7 +2945,7 @@
             "named": true
           },
           {
-            "type": "setter_keyword",
+            "type": "set_keyword",
             "named": true
           }
         ]
@@ -3738,7 +3738,7 @@
     }
   },
   {
-    "type": "type_conv_expr",
+    "type": "type_conversion_expression",
     "named": true,
     "fields": {
       "argument": {
@@ -3940,7 +3940,7 @@
     "fields": {}
   },
   {
-    "type": "unnamed_member_param",
+    "type": "unnamed_member_parameter",
     "named": true,
     "fields": {
       "default_value": {
@@ -3953,7 +3953,7 @@
           }
         ]
       },
-      "para_name": {
+      "parameter_name": {
         "multiple": false,
         "required": true,
         "types": [
@@ -4566,7 +4566,7 @@
     "named": true
   },
   {
-    "type": "getter_keyword",
+    "type": "get_keyword",
     "named": true
   },
   {
@@ -4779,7 +4779,7 @@
     "named": false
   },
   {
-    "type": "setter_keyword",
+    "type": "set_keyword",
     "named": true
   },
   {

@@ -109,7 +109,7 @@ main() {
         name: (func_name)
         parameters: (parameter_list
           (parameter
-            para_name: (identifier)
+            parameter_name: (identifier)
             type: (Int64)))
         return_type: (return_type
           type: (Int64))
@@ -153,7 +153,7 @@ public abstract class Base {
         (modifiers)
         name: (property_name)
         type: (Bool)
-        getter: (getter_keyword)
+        getter: (get_keyword)
         getter: (block
           (postfix_expression
             (boolean_literal)))))))
@@ -172,7 +172,7 @@ public operator func [](idx: Int64): Int64 { return 0 }
     name: (operator)
     parameters: (parameter_list
       (parameter
-        para_name: (identifier)
+        parameter_name: (identifier)
         type: (Int64)))
     return_type: (return_type
       type: (Int64))
@@ -283,7 +283,7 @@ class C {
       (init
         parameters: (parameter_list
           (parameter
-            para_name: (identifier)
+            parameter_name: (identifier)
             type: (Int64)))
         body: (block))
       (init
@@ -292,7 +292,7 @@ class C {
         body: (block))
       (primary_init
         (class_name)
-        (primary_init_param_list)))))
+        (primary_init_parameter_list)))))
 
 ==================
 const and let variable declarations
@@ -354,7 +354,7 @@ class Registry {
         (modifiers)
         name: (property_name)
         type: (Bool)
-        getter: (getter_keyword)
+        getter: (get_keyword)
         getter: (block
           (postfix_expression
             (boolean_literal)))))))
@@ -373,7 +373,7 @@ main(args: Array<String>): Int32 {
   (main_definition
     (parameter_list
       (parameter
-        para_name: (identifier)
+        parameter_name: (identifier)
         type: (type_name
           (identifier)
           (type_arguments

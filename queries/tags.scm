@@ -16,8 +16,8 @@
   (variable_name
     (var_binding_pattern)) @name) @definition.variable
 
-(parameter para_name: (identifier) @name) @definition.parameter
-(named_parameter para_name: (identifier) @name) @definition.parameter
+(parameter parameter_name: (identifier) @name) @definition.parameter
+(named_parameter parameter_name: (identifier) @name) @definition.parameter
 
 ; References
 

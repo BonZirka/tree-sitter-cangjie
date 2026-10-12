@@ -35,179 +35,142 @@ const PREC = {
   ARRAY: 38,
   MEMBER: 40,
   MACRO_QUOTE: 44,
-  TOKEN: 46,
   INIT: -1,
   STATIC_INIT: -2,
 };
 
-const _kw = (s) => Object.fromEntries(s.split(/\s+/).map((w) => [w.toUpperCase(), token(w)]));
-const _kwWords =
-  'as break Bool case catch class const continue Rune do else enum extend features for from func finally foreign handle Float16 Float32 Float64 if in is init inout import interface Int8 Int16 Int32 Int64 IntNative let mut main macro match Nothing operator prop package quote return spawn super static struct synchronized perform resume with throwing try this true type throw unsafe Unit UInt8 UInt16 UInt32 UInt64 UIntNative var where while public protected internal private abstract sealed redef open override common specific';
-const TOKENS = {
-  ..._kw(_kwWords),
-  NOT_IN: token('!in'),
-  THISTYPE: token('This'),
-};
-
-const _kwUsed = [
-  'as',
-  'break',
-  'Bool',
-  'case',
-  'catch',
-  'class',
-  'const',
-  'continue',
-  'Rune',
-  'do',
-  'else',
-  'enum',
-  'extend',
-  'features',
-  'for',
-  'func',
-  'finally',
-  'foreign',
-  'handle',
-  'Float16',
-  'Float32',
-  'Float64',
-  'if',
-  'in',
-  'is',
-  'init',
-  'inout',
-  'import',
-  'interface',
-  'Int8',
-  'Int16',
-  'Int32',
-  'Int64',
-  'IntNative',
-  'let',
-  'mut',
-  'main',
-  'macro',
-  'match',
-  'Nothing',
-  'operator',
-  'prop',
-  'package',
-  'return',
-  'spawn',
-  'super',
-  'static',
-  'struct',
-  'synchronized',
-  'perform',
-  'resume',
-  'with',
-  'throwing',
-  'try',
-  'this',
-  'type',
-  'throw',
-  'unsafe',
-  'Unit',
-  'UInt8',
-  'UInt16',
-  'UInt32',
-  'UInt64',
-  'UIntNative',
-  'var',
-  'where',
-  'while',
-  'public',
-  'protected',
-  'internal',
-  'private',
-  'abstract',
-  'sealed',
-  'redef',
-  'open',
-  'override',
-  'common',
-  'specific',
+// Single source of truth for every keyword-like word. The classification is
+// validated against the cjc frontend by probing the word in identifier
+// positions (`let <w>`, `class <w> {}`, param, member, field access,
+// named-arg label). cjc dev builds all report version 1.0.0, so this pins no
+// particular release; `kind` records the result:
+//   hard       reserved in every identifier position
+//   primitive  hard, and additionally a built-in type name
+//   literal    hard, produced by a dedicated literal rule (true / false)
+//   contextual usable as an identifier everywhere (soft keyword)
+//   modifier   contextual declaration modifier
+// `token` overrides the derived TOKENS key (default: upper-cased word) and
+// `node` is the primitive alias node.
+const KEYWORDS = [
+  // hard keywords
+  { w: 'as', kind: 'hard' },
+  { w: 'break', kind: 'hard' },
+  { w: 'case', kind: 'hard' },
+  { w: 'catch', kind: 'hard' },
+  { w: 'class', kind: 'hard' },
+  { w: 'const', kind: 'hard' },
+  { w: 'continue', kind: 'hard' },
+  { w: 'do', kind: 'hard' },
+  { w: 'else', kind: 'hard' },
+  { w: 'enum', kind: 'hard' },
+  { w: 'extend', kind: 'hard' },
+  { w: 'finally', kind: 'hard' },
+  { w: 'for', kind: 'hard' },
+  { w: 'foreign', kind: 'hard' },
+  { w: 'func', kind: 'hard' },
+  { w: 'if', kind: 'hard' },
+  { w: 'import', kind: 'hard' },
+  { w: 'in', kind: 'hard' },
+  { w: 'init', kind: 'hard' },
+  { w: 'inout', kind: 'hard' },
+  { w: 'interface', kind: 'hard' },
+  { w: 'is', kind: 'hard' },
+  { w: 'let', kind: 'hard' },
+  { w: 'macro', kind: 'hard' },
+  { w: 'match', kind: 'hard' },
+  { w: 'mut', kind: 'hard' },
+  { w: 'operator', kind: 'hard' },
+  { w: 'package', kind: 'hard' },
+  { w: 'prop', kind: 'hard' },
+  { w: 'quote', kind: 'hard' },
+  { w: 'return', kind: 'hard' },
+  { w: 'spawn', kind: 'hard' },
+  { w: 'static', kind: 'hard' },
+  { w: 'struct', kind: 'hard' },
+  { w: 'super', kind: 'hard' },
+  { w: 'synchronized', kind: 'hard' },
+  { w: 'this', kind: 'hard' },
+  { w: 'throw', kind: 'hard' },
+  { w: 'try', kind: 'hard' },
+  { w: 'type', kind: 'hard' },
+  { w: 'unsafe', kind: 'hard' },
+  { w: 'var', kind: 'hard' },
+  { w: 'where', kind: 'hard' },
+  { w: 'while', kind: 'hard' },
+  { w: 'with', kind: 'hard' },
+  // `main` is hard as well, but cjc accepts it as a function name (`func main`,
+  // nested, or a method) — the exception lives in `_function_tail`.
+  { w: 'main', kind: 'hard' },
+  // reserved literals / special names
+  { w: 'true', kind: 'literal' },
+  { w: 'false', kind: 'literal' },
+  { w: 'This', kind: 'hard', token: 'THISTYPE' },
+  // built-in primitive type names (hard)
+  { w: 'Int8', kind: 'primitive', node: 'Int8' },
+  { w: 'Int16', kind: 'primitive', node: 'Int16' },
+  { w: 'Int32', kind: 'primitive', node: 'Int32' },
+  { w: 'Int64', kind: 'primitive', node: 'Int64' },
+  { w: 'IntNative', kind: 'primitive', node: 'IntNative' },
+  { w: 'UInt8', kind: 'primitive', node: 'UInt8' },
+  { w: 'UInt16', kind: 'primitive', node: 'UInt16' },
+  { w: 'UInt32', kind: 'primitive', node: 'UInt32' },
+  { w: 'UInt64', kind: 'primitive', node: 'UInt64' },
+  { w: 'UIntNative', kind: 'primitive', node: 'UIntNative' },
+  { w: 'Float16', kind: 'primitive', node: 'Float16' },
+  { w: 'Float32', kind: 'primitive', node: 'Float32' },
+  { w: 'Float64', kind: 'primitive', node: 'Float64' },
+  { w: 'Rune', kind: 'primitive', node: 'Rune' },
+  { w: 'Bool', kind: 'primitive', node: 'Bool' },
+  { w: 'Unit', kind: 'primitive', node: 'Unit' },
+  { w: 'Nothing', kind: 'primitive', node: 'Nothing' },
+  // contextual effect-handler words (valid identifiers everywhere)
+  { w: 'features', kind: 'contextual' },
+  { w: 'handle', kind: 'contextual' },
+  { w: 'perform', kind: 'contextual' },
+  { w: 'resume', kind: 'contextual' },
+  { w: 'throwing', kind: 'contextual' },
+  // contextual accessor keywords — only special inside `prop` blocks, valid
+  // identifiers everywhere else
+  { w: 'get', kind: 'contextual' },
+  { w: 'set', kind: 'contextual' },
+  // soft declaration modifiers
+  { w: 'public', kind: 'modifier' },
+  { w: 'protected', kind: 'modifier' },
+  { w: 'private', kind: 'modifier' },
+  { w: 'internal', kind: 'modifier' },
+  { w: 'abstract', kind: 'modifier' },
+  { w: 'sealed', kind: 'modifier' },
+  { w: 'redef', kind: 'modifier' },
+  { w: 'open', kind: 'modifier' },
+  { w: 'override', kind: 'modifier' },
+  { w: 'common', kind: 'modifier' },
+  { w: 'specific', kind: 'modifier' },
 ];
 
-const CONTEXTUAL_KEYWORDS = [
-  'public',
-  'protected',
-  'private',
-  'internal',
-  'abstract',
-  'sealed',
-  'redef',
-  'open',
-  'override',
-  'common',
-  'specific',
-  'features',
-  'handle',
-  'main',
-  'perform',
-  'resume',
-  'throwing',
-];
+const tokenKey = (k) => k.token ?? k.w.toUpperCase();
+const words = (...kinds) => KEYWORDS.filter((k) => kinds.includes(k.kind)).map((k) => k.w);
 
-const SOFT_MODIFIER_WORDS = [
-  'public',
-  'protected',
-  'private',
-  'internal',
-  'abstract',
-  'sealed',
-  'redef',
-  'open',
-  'override',
-  'common',
-  'specific',
-];
-const MODIFIER_TOKENS = SOFT_MODIFIER_WORDS.map((w) => TOKENS[w.toUpperCase()]);
+const TOKENS = Object.fromEntries(
+  KEYWORDS.filter((k) => k.kind !== 'literal').map((k) => [tokenKey(k), token(k.w)]),
+);
+TOKENS.NOT_IN = token('!in');
+
+const SOFT_MODIFIER_WORDS = words('modifier');
+const MODIFIER_TOKENS = KEYWORDS.filter((k) => k.kind === 'modifier').map((k) => TOKENS[tokenKey(k)]);
 
 // The hard-keyword primitive types, one list for three users: the type
 // world (`_type`), extend targets (`extend_type`) and expression position
 // (`_hard_keyword_types`).
-const PRIMITIVE_TYPES = [
-  ['INT8', 'Int8'],
-  ['INT16', 'Int16'],
-  ['INT32', 'Int32'],
-  ['INT64', 'Int64'],
-  ['INTNATIVE', 'IntNative'],
-  ['UINT8', 'UInt8'],
-  ['UINT16', 'UInt16'],
-  ['UINT32', 'UInt32'],
-  ['UINT64', 'UInt64'],
-  ['UINTNATIVE', 'UIntNative'],
-  ['FLOAT16', 'Float16'],
-  ['FLOAT32', 'Float32'],
-  ['FLOAT64', 'Float64'],
-  ['RUNE', 'Rune'],
-  ['BOOL', 'Bool'],
-  ['UNIT', 'Unit'],
-  ['NOTHING', 'Nothing'],
-];
+const PRIMITIVE_TYPES = KEYWORDS.filter((k) => k.kind === 'primitive').map((k) => [tokenKey(k), k.node]);
 
 const primitiveTokens = () => PRIMITIVE_TYPES.map(([token]) => TOKENS[token]);
 const primitiveTypeNodes = ($) => PRIMITIVE_TYPES.map(([token, node]) => alias(TOKENS[token], $[node]));
 
-// cjc 1.3.0 ground truth: primitives are reserved in EVERY identifier
-// position (bindings, params, members, type names); quote/true/false/This
-// likewise; the try-DSL words and modifiers are contextual everywhere.
-const GLOBAL_RESERVED = [
-  ..._kwUsed.filter((w) => !CONTEXTUAL_KEYWORDS.includes(w)),
-  'quote',
-  'true',
-  'false',
-  'This',
-];
-const IDENTIFIER_POS_RESERVED = [
-  ..._kwUsed.filter((w) => !CONTEXTUAL_KEYWORDS.includes(w)),
-  'quote',
-  'true',
-  'false',
-  'This',
-];
+// cjc ground truth (validated by probing identifier positions): hard words,
+// primitives and literals cannot be read as identifiers in ANY position;
+// `main` is included here too (its one exception is the function-name
+// position, see `_function_tail`); contextual words and modifiers are.
+const GLOBAL_RESERVED = words('hard', 'primitive', 'literal');
 const NO_RESERVED = [];
 
 const sep1 = (rule, sep) => seq(rule, repeat(seq(sep, rule)));
@@ -243,7 +206,6 @@ const M = {
 
   reserved: {
     default: ($) => GLOBAL_RESERVED,
-    id: ($) => IDENTIFIER_POS_RESERVED,
     none: ($) => NO_RESERVED,
     modifier: ($) => SOFT_MODIFIER_WORDS,
   },
@@ -292,7 +254,7 @@ const M = {
   conflicts: ($) => [
     [$._call_tail],
     [$.modifiers, $._modifiers_var],
-    [$.modifiers, $._var_decl_tail],
+    [$.modifiers, $._variable_declaration_tail],
   ],
 
   rules: {
@@ -347,7 +309,7 @@ const M = {
         choice($._import_packages, $.package_group, $.sub_group_of_package),
         terminator($),
       ),
-    package_alias: ($) => seq(field('package_name', $._name), TOKENS.AS, field('alias', reserved('id', $.identifier))),
+    package_alias: ($) => seq(field('package_name', $._name), TOKENS.AS, field('alias', reserved('default', $.identifier))),
     package_full: ($) => seq(field('package_name', $._name), '.', token('*')),
     package_group: ($) => seq('{', seq($._import_packages, repeat(seq(',', $._import_packages))), optional(','), '}'),
     sub_group_of_package: ($) => seq(field('package_name', $._name), '.', $.package_group),
@@ -422,7 +384,7 @@ const M = {
 
     macro_parameter: ($) =>
       seq(
-        field('name', reserved('id', $.identifier)),
+        field('name', reserved('default', $.identifier)),
         optional('!'),
         ':',
         field('type', $._type),
@@ -430,24 +392,24 @@ const M = {
       ),
     _macro_name: ($) =>
       alias(
-        prec.right(seq(repeat(seq(reserved('id', $.identifier), '.')), reserved('id', $.identifier))),
+        prec.right(seq(repeat(seq(reserved('default', $.identifier), '.')), reserved('default', $.identifier))),
         $.macro_name,
       ),
 
     class_definition: ($) => seq(typeHeader($, TOKENS.CLASS, $._class_name), field('body', $.declaration_body)),
     struct_definition: ($) =>
       seq(
-        typeHeader($, TOKENS.STRUCT, alias(reserved('id', $.identifier), $.struct_name)),
+        typeHeader($, TOKENS.STRUCT, alias(reserved('default', $.identifier), $.struct_name)),
         field('body', $.declaration_body),
       ),
 
     interface_definition: ($) =>
       seq(
-        typeHeader($, TOKENS.INTERFACE, alias(reserved('id', $.identifier), $.interface_name)),
+        typeHeader($, TOKENS.INTERFACE, alias(reserved('default', $.identifier), $.interface_name)),
         field('body', $.declaration_body),
       ),
     enum_definition: ($) =>
-      seq(typeHeader($, TOKENS.ENUM, alias(reserved('id', $.identifier), $.enum_name)), field('body', $.enum_body)),
+      seq(typeHeader($, TOKENS.ENUM, alias(reserved('default', $.identifier), $.enum_name)), field('body', $.enum_body)),
     enum_body: ($) =>
       seq(
         '{',
@@ -458,7 +420,7 @@ const M = {
             choice(
               seq(
                 optional(repeat1($.macro_call)),
-                reserved('id', $.identifier),
+                reserved('default', $.identifier),
                 optional(seq('(', commaSep1Trailing($._type), ')')),
               ),
               token('...'),
@@ -477,7 +439,7 @@ const M = {
       seq(
         optional($.modifiers),
         TOKENS.TYPE,
-        field('name', alias(reserved('id', $.identifier), $.type_alias_name)),
+        field('name', alias(reserved('default', $.identifier), $.type_alias_name)),
         optional($.type_parameters),
         '=',
         field('type', $._type),
@@ -512,7 +474,7 @@ const M = {
       ),
 
     declaration_body: ($) => seq('{', optional($._declaration_list), '}'),
-    _class_name: ($) => alias(reserved('id', $.identifier), $.class_name),
+    _class_name: ($) => alias(reserved('default', $.identifier), $.class_name),
     generic_constraints: ($) =>
       prec.right(
         seq(
@@ -523,7 +485,11 @@ const M = {
         ),
       ),
     generic_constraint: ($) =>
-      seq(choice($.identifier, alias(TOKENS.THISTYPE, $.Thistype)), token('<:'), sep1($._type, '&')),
+      seq(
+        choice(reserved('default', $.identifier), alias(TOKENS.THISTYPE, $.Thistype)),
+        token('<:'),
+        sep1($._type, '&'),
+      ),
 
     // ===== members & functions =====
     function_definition: ($) => seq(optional($.modifiers), $._function_tail),
@@ -538,7 +504,10 @@ const M = {
       prec.right(
         seq(
           TOKENS.FUNC,
-          field('name', alias(reserved('id', $.identifier), $.func_name)),
+          // `main` is a hard keyword, but cjc still accepts it as a function
+          // name (top-level, nested, or a method) — this is its only identifier
+          // position, so it is whitelisted here rather than made contextual.
+          field('name', alias(choice(reserved('default', $.identifier), TOKENS.MAIN), $.func_name)),
           optional($.type_parameters),
           field('parameters', $.parameter_list),
           optional(field('return_type', $.return_type)),
@@ -591,20 +560,20 @@ const M = {
       seq(
         optional($.modifiers),
         TOKENS.PROP,
-        field('name', alias(reserved('id', $.identifier), $.property_name)),
+        field('name', alias(reserved('default', $.identifier), $.property_name)),
         ':',
         field('type', $._type),
         optional(
           seq(
             '{',
-            optional(field('getter', seq(alias(reserved('none', $.identifier), $.getter_keyword), '(', ')', $.block))),
+            optional(field('getter', seq(alias(TOKENS.GET, $.get_keyword), '(', ')', $.block))),
             optional(
               field(
                 'setter',
                 seq(
-                  alias(reserved('none', $.identifier), $.setter_keyword),
+                  alias(TOKENS.SET, $.set_keyword),
                   '(',
-                  reserved('none', $.identifier),
+                  reserved('default', $.identifier),
                   ')',
                   $.block,
                 ),
@@ -631,7 +600,7 @@ const M = {
       seq(
         optional($.modifiers),
         $._class_name,
-        $.primary_init_param_list,
+        $.primary_init_parameter_list,
         '{',
         optional(
           // A primary constructor body is a function body, so locals only:
@@ -645,17 +614,17 @@ const M = {
         ),
         '}',
       ),
-    primary_init_param_list: ($) =>
+    primary_init_parameter_list: ($) =>
       seq(
         '(',
         optional(
-          commaSep1Trailing(choice($.parameter, $.named_parameter, $.unnamed_member_param, $.named_member_param)),
+          commaSep1Trailing(choice($.parameter, $.named_parameter, $.unnamed_member_parameter, $.named_member_parameter)),
         ),
         ')',
       ),
     // A member parameter may carry annotations before its modifiers
     // (`@M[x] public let a!: T`), as a plain parameter does.
-    named_member_param: ($) =>
+    named_member_parameter: ($) =>
       seq(optional(repeat1($.macro_call)), optional($.modifiers), choice(TOKENS.LET, TOKENS.VAR), $.named_parameter),
 
     finalizer: ($) => seq('~', TOKENS.INIT, '(', ')', $.block),
@@ -663,9 +632,11 @@ const M = {
     return_type: ($) => seq(':', field('type', $._type)),
 
     _super_interfaces: ($) =>
-      seq(
-        optional(seq($._super_interfaces, '&')),
-        seq(alias($._name, $.super_or_interface), optional($.type_arguments)),
+      prec.left(
+        seq(
+          optional(seq($._super_interfaces, '&')),
+          seq(alias($._name, $.super_or_interface), optional($.type_arguments)),
+        ),
       ),
     extend_type: ($) =>
       choice(
@@ -692,8 +663,8 @@ const M = {
         ),
       ),
 
-    _local_variable_declaration: ($) => $._var_decl_tail,
-    _var_decl_tail: ($) =>
+    _local_variable_declaration: ($) => $._variable_declaration_tail,
+    _variable_declaration_tail: ($) =>
       seq(
         choice(TOKENS.LET, TOKENS.VAR, TOKENS.CONST),
         field('name', alias($._pattern_irrefutable, $.variable_name)),
@@ -702,7 +673,7 @@ const M = {
           seq('=', field('initializer', $._expression)),
         ),
       ),
-    variable_declaration: ($) => seq(optional($._modifiers_var), $._var_decl_tail),
+    variable_declaration: ($) => seq(optional($._modifiers_var), $._variable_declaration_tail),
     // ===== parameters & calls =====
     parameter_list: ($) =>
       seq(
@@ -723,10 +694,7 @@ const M = {
         optional(repeat1($.macro_call)),
         choice(
           seq(
-            field(
-              'para_name',
-              choice(alias(reserved('id', $.identifier), $.identifier), '_'),
-            ),
+            field('parameter_name', choice(reserved('default', $.identifier), '_')),
             ':',
             field('type', $._type),
           ),
@@ -737,17 +705,17 @@ const M = {
     named_parameter: ($) =>
       seq(
         optional(repeat1($.macro_call)),
-        seq(field('para_name', alias(reserved('id', $.identifier), $.identifier)), '!'),
+        seq(field('parameter_name', reserved('default', $.identifier)), '!'),
         ':',
         field('type', $._type),
         optional(seq('=', field('default_value', $._expression))),
       ),
-    unnamed_member_param: ($) =>
+    unnamed_member_parameter: ($) =>
       seq(
         optional(repeat1($.macro_call)),
         optional($.modifiers),
         choice(TOKENS.LET, TOKENS.VAR),
-        field('para_name', choice(reserved('id', $.identifier), '_')),
+        field('parameter_name', choice(reserved('default', $.identifier), '_')),
         ':',
         field('type', $._type),
         optional(seq('=', field('default_value', $._expression))),
@@ -760,9 +728,9 @@ const M = {
         optional(
           commaSep1Trailing(
             choice(
-              seq(alias(reserved('id', $.identifier), $.identifier), ':', $._expression),
+              seq(alias(reserved('default', $.identifier), $.identifier), ':', $._expression),
               $._expression,
-              seq(TOKENS.INOUT, optional(seq($._expression, '.')), reserved('id', $.identifier)),
+              seq(TOKENS.INOUT, optional(seq($._expression, '.')), reserved('default', $.identifier)),
             ),
           ),
         ),
@@ -775,8 +743,8 @@ const M = {
       choice(
         $._literal,
         $.array_literal,
-        alias(reserved('id', $.identifier), $.identifier),
-        $.type_conv_expr,
+        alias(reserved('default', $.identifier), $.identifier),
+        $.type_conversion_expression,
         $.parenthesized_expression,
         $.tuple_expression,
         $.range_expression,
@@ -952,7 +920,7 @@ const M = {
       ),
 
     resource_specifications: ($) => commaSep1Trailing($.resource_specification),
-    resource_specification: ($) => seq(reserved('id', $.identifier), optional(seq(':', $._type)), '=', $._expression),
+    resource_specification: ($) => seq(reserved('default', $.identifier), optional(seq(':', $._type)), '=', $._expression),
 
     catch_clause: ($) =>
       seq(
@@ -980,7 +948,7 @@ const M = {
 
     // The hard-keyword primitives in expression position. They can never be
     // callees (they are reserved words), so `T(...)` is a conversion and
-    // `T.m` / `T::m` / `T<Ts>(...)` member chains — see type_conv_expr and the
+    // `T.m` / `T::m` / `T<Ts>(...)` member chains — see type_conversion_expression and the
     // type-name base in postfix_expression. Soft builtin type names (`String`,
     // `VArray`, ...) are deliberately NOT here: they are ordinary identifiers,
     // so `String(x)` is an ordinary call on a name, exactly as in cjc.
@@ -991,7 +959,7 @@ const M = {
     // reusing `call_suffix`: a conversion is not a call, and keeping '(' out
     // of `_member_suffix` below means the two productions never overlap, so
     // the parser has nothing to disambiguate (no precedence games).
-    type_conv_expr: ($) => seq(field('type', $._hard_keyword_types), '(', field('argument', $._expression), ')'),
+    type_conversion_expression: ($) => seq(field('type', $._hard_keyword_types), '(', field('argument', $._expression), ')'),
 
     perform_expression: ($) =>
       seq(alias($._perform_dsl, $.perform_keyword), field('argument', $._expression)),
@@ -1012,19 +980,21 @@ const M = {
 
     _dollar_identifier: ($) => seq('$', reserved('none', $.identifier)),
 
+    // The `@name`/`@name!` head (optionally with an attribute body) shared by
+    // macro calls and macro expressions; the only difference between them is
+    // the trailing input body that turns a call into an expression.
+    _macro_head: ($) =>
+      seq(
+        alias($._macro_at, $.macro_call_sigil),
+        optional('!'),
+        $._macro_name,
+        optional(alias($._macro_attr_body, $.macro_attribute_body)),
+      ),
+
     // Macro parameters are RAW TOKEN STREAMS (spec); loses to
     // quote_expression, wins over decorators via prec.dynamic.
     macro_expression: ($) =>
-      prec.dynamic(
-        -1,
-        seq(
-          alias($._macro_at, $.macro_call_sigil),
-          optional('!'),
-          $._macro_name,
-          optional(alias($._macro_attr_body, $.macro_attribute_body)),
-          optional(alias($._macro_input_body, $.macro_call_body)),
-        ),
-      ),
+      prec.dynamic(-1, seq($._macro_head, optional(alias($._macro_input_body, $.macro_call_body)))),
 
     quote_expression: ($) =>
       prec(
@@ -1089,18 +1059,18 @@ const M = {
       choice($.wildcard_pattern, $._var_binding_pattern, alias($._tuple_pattern_irrefutable, $.tuple_pattern)),
 
     _tuple_pattern_irrefutable: ($) => seq('(', commaSep1Trailing($._pattern_irrefutable), ')'),
-    _var_binding_pattern: ($) => alias(reserved('id', $.identifier), $.var_binding_pattern),
+    _var_binding_pattern: ($) => alias(reserved('default', $.identifier), $.var_binding_pattern),
     tuple_pattern: ($) => seq('(', commaSep1Trailing($._pattern), ')'),
 
     enum_pattern: ($) =>
       choice(
         seq(
           seq($._name, optional($.type_arguments), '.'),
-          field('constructor', alias(reserved('id', $.identifier), $.enum_constructor)),
+          field('constructor', alias(reserved('default', $.identifier), $.enum_constructor)),
           optional(field('arguments', $.enum_pattern_arguments)),
         ),
         seq(
-          field('constructor', alias(reserved('id', $.identifier), $.enum_constructor)),
+          field('constructor', alias(reserved('default', $.identifier), $.enum_constructor)),
           field('arguments', $.enum_pattern_arguments),
         ),
       ),
@@ -1144,17 +1114,18 @@ const M = {
 
     _type_list: ($) => commaSep1Trailing($._type),
 
-    _named_or_type_list: ($) => commaSep1Trailing(choice(seq(reserved('id', $.identifier), ':', $._type), $._type)),
+    _named_or_type_list: ($) => commaSep1Trailing(choice(seq(reserved('default', $.identifier), ':', $._type), $._type)),
 
     type_parameters: ($) => seq('<', commaSep1Trailing($.type_parameter), '>'),
 
-    type_parameter: ($) => seq(field('name', reserved('id', $.identifier))),
+    type_parameter: ($) => seq(field('name', reserved('default', $.identifier))),
 
     // ===== names & suffixes =====
-    _name: ($) => choice(reserved('id', $.identifier), $.scoped_identifier),
-    scoped_identifier: ($) => seq(field('scope', $._name), '.', field('name', reserved('id', $.identifier))),
-    field_access: ($) => seq('.', reserved('id', $.identifier)),
-    scope_resolution: ($) => seq('::', reserved('id', $.identifier)),
+    _name: ($) => choice(reserved('default', $.identifier), $.scoped_identifier),
+    scoped_identifier: ($) =>
+      prec.left(seq(field('scope', $._name), '.', field('name', reserved('default', $.identifier)))),
+    field_access: ($) => seq('.', reserved('default', $.identifier)),
+    scope_resolution: ($) => seq('::', reserved('default', $.identifier)),
     index_access: ($) =>
       seq(
         '[',
@@ -1169,7 +1140,7 @@ const M = {
     inc_or_dec: (_) => token(choice('++', '--')),
 
     // Member-ish suffixes: what a chain base can be followed by. '(' is
-    // absent on purpose — `T(args)` is a type_conv_expr, not a call on T,
+    // absent on purpose — `T(args)` is a type_conversion_expression, not a call on T,
     // so the type-name base and the conversion never compete.
     _member_suffix: ($) =>
       choice(
@@ -1188,6 +1159,11 @@ const M = {
           PREC.MEMBER,
           seq(field('base', $._hard_keyword_types), field('suffix', $._member_suffix)),
         ),
+        // NOTE: the primitive-type base above reuses `_member_suffix`, which is
+        // a strict subset of this list. The asymmetry is deliberate: a bare
+        // type name may be qualified or generic (`Int64.MAX_VALUE`,
+        // `Array<T>`), but `T(args)` is a type_conversion_expression parsed elsewhere, so
+        // it never needs call/index/inc-dec/lambda suffixes.
         prec.right(
           PREC.MEMBER,
           seq(
@@ -1327,16 +1303,7 @@ const M = {
 
     unit_literal: (_) => seq('(', ')'),
 
-    macro_call: ($) =>
-      prec(
-        1,
-        seq(
-          alias($._macro_at, $.macro_call_sigil),
-          optional('!'),
-          $._macro_name,
-          optional(alias($._macro_attr_body, $.macro_attribute_body)),
-        ),
-      ),
+    macro_call: ($) => prec(1, $._macro_head),
 
     _macro_attr_body: ($) =>
       prec.right(

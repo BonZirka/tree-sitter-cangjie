@@ -56,8 +56,8 @@ class P {
     (declaration_body
       (primary_init
         (class_name)
-        (primary_init_param_list
-          (named_member_param
+        (primary_init_parameter_list
+          (named_member_parameter
             (macro_call
               (macro_call_sigil)
               (macro_name)
@@ -73,7 +73,7 @@ class P {
             (named_parameter
               (identifier)
               (Int64)))
-          (unnamed_member_param
+          (unnamed_member_parameter
             (macro_call
               (macro_call_sigil)
               (macro_name))

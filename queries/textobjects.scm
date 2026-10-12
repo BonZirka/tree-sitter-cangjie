@@ -38,5 +38,5 @@
   (type_parameter (identifier) @parameter.inside)
   (lambda_parameters (lambda_parameter) @parameter.inside)
   (parameter_list)
-  (primary_init_param_list)
+  (primary_init_parameter_list)
 ] @parameter.around
