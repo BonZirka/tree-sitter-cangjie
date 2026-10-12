@@ -1,7 +1,7 @@
 import std.math.*
 //^ @keyword.import
 //     ^ @module
-//              ^ @operator
+//              ^ @punctuation.special
 import std.io as Io
 //     ^ @module
 //               ^ @module
@@ -15,7 +15,7 @@ class Shape<T> <: Pane {
 
     let area: Float64 = 1.5
 //  ^ @keyword
-//      ^ @variable
+//      ^ @variable.member
 //            ^ @type.builtin
 //                    ^ @operator
 //                      ^ @number.float
@@ -60,7 +60,7 @@ enum Color { Red | Green }
 //^ @keyword.type
 //   ^ @type
 //           ^ @constant
-//               ^ @operator
+//               ^ @punctuation.delimiter
 //                 ^ @constant
 
 main() {

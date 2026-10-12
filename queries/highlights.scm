@@ -233,8 +233,19 @@
 ; enum_constructor is an aliased identifier node itself, not a parent.
 (enum_constructor) @constant
 
+; Class/struct/interface members are syntactically visible (declaration_body
+; parents), so they color as members, not plain variables — capture the same
+; innermost var_binding_pattern node as the general rule above so the later
+; pattern wins the range; placed before the const rule so member consts still
+; win @constant below.
+(declaration_body
+    (variable_declaration
+        name: (variable_name (var_binding_pattern) @variable.member)))
+
 ; const declarations (rust: const_item name → @constant)
-(variable_declaration "const" name: (variable_name) @constant)
+(variable_declaration
+    "const"
+    name: (variable_name (var_binding_pattern) @constant))
 
 ; Prop accessor keywords: get()/set()
 (getter_keyword) @keyword
@@ -439,6 +450,11 @@
         "<"
         ">"
     ] @punctuation.delimiter)
+
+; Not operators: the enum-constructor separator and the import wildcard
+; (cjls leaves both unmarked; zed's highlights.zed.scm does the same).
+(enum_body "|" @punctuation.delimiter)
+(package_full "*" @punctuation.special)
 
 ; ===== Macro quote(...) DSL =====
 ; Refinements over the punctuation above: delimiters inside quote(...) are
