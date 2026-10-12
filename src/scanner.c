@@ -605,9 +605,10 @@ static bool scan_perform_dsl(TSLexer *lexer) {
     if (!match_word_tail(lexer, "erform", 6))
         return false;
     lexer->mark_end(lexer);
-    if (!skip_peek_trivia(lexer))
+    TSLexer l = *lexer;
+    if (!skip_peek_trivia(&l))
         return false;
-    if (!is_expression_start_char(lexer->lookahead))
+    if (!is_expression_start_char(l.lookahead))
         return false;
     lexer->result_symbol = PERFORM_DSL;
     return true;
@@ -623,15 +624,16 @@ static bool scan_resume_dsl(TSLexer *lexer) {
     if (!match_word_tail(lexer, "esume", 5))
         return false;
     lexer->mark_end(lexer);
-    if (!skip_peek_trivia(lexer))
+    TSLexer l = *lexer;
+    if (!skip_peek_trivia(&l))
         return false;
     bool continuation = false;
-    if (lexer->lookahead == 'w') {
-        advance(lexer);
-        continuation = match_word_tail(lexer, "ith", 3);
-    } else if (lexer->lookahead == 't') {
-        advance(lexer);
-        continuation = match_word_tail(lexer, "hrowing", 7);
+    if (l.lookahead == 'w') {
+        advance(&l);
+        continuation = match_word_tail(&l, "ith", 3);
+    } else if (l.lookahead == 't') {
+        advance(&l);
+        continuation = match_word_tail(&l, "hrowing", 7);
     }
     if (!continuation)
         return false;

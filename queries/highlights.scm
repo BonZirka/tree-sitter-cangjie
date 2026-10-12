@@ -349,10 +349,6 @@
                 (identifier) @function)))
     [(call_suffix) (lambda_expression)])
 
-; VArray<T, $N> — matched by name; after the callee refinements so the
-; construction call VArray<Int64, $N>() still colors as the builtin type.
-(type_name (identifier) @type.builtin (#eq? @type.builtin "VArray"))
-
 ; ===== Macro quote(...) DSL =====
 ; Refinements over the operator list above: delimiters inside quote(...) are
 ; verbatim template text, not code punctuation.
