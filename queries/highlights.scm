@@ -259,22 +259,17 @@
 (package_alias alias: (identifier) @module)
 
 ; ===== Attributes & macros =====
-; Cangjie's `@Name(...)` is both annotation and macro invocation (one node).
-; The @ sigil colors as an attribute (kotlin: `"@" @attribute`); the name
-; refines @function.macro to @attribute on invocation sites, keeping
-; definition sites (@macro_name below) as macros.
+; Cangjie cannot semantically separate annotations from macro calls — both
+; are `@Name(...)` macro heads — so they color as one family (julia precedent:
+; the sigil joins the macro color). The input/attribute body delimiters join
+; the family too, so the whole head @Name(...) reads as one macro unit; only
+; the raw argument stream inside stays verbatim.
 
-(macro_call_sigil) @attribute
-; Both standalone annotations (@Deprecated) and call-shaped invocations are
-; macro heads — refine their names in both parents.
-(macro_expression (macro_name) @attribute)
-(macro_call (macro_name) @attribute)
-; Macro input/attribute body delimiters join the @-sigil's family so the
-; whole call head @Name(...) reads as one unit.
-(macro_input_open) @attribute
-(macro_input_close) @attribute
-(macro_attr_open) @attribute
-(macro_attr_close) @attribute
+(macro_call_sigil) @function.macro
+(macro_input_open) @function.macro
+(macro_input_close) @function.macro
+(macro_attr_open) @function.macro
+(macro_attr_close) @function.macro
 
 ; ===== Keywords =====
 

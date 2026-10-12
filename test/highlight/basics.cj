@@ -74,15 +74,15 @@ main() {
 macro mk(x: Expr) { @body(1) }
 //^ @keyword
 //    ^ @function.macro
-//                  ^ @attribute
-//                   ^ @attribute
-//                       ^ @attribute
-//                         ^ @attribute
+//                  ^ @function.macro
+//                   ^ @function.macro
+//                           ^ @function.macro
+//                            ^ @markup.raw
 
   @Attr[flag = true]
-//^ @attribute
-// ^ @attribute
-//     ^ @attribute
+//^ @function.macro
+// ^ @function.macro
+//     ^ @function.macro
 //      ^ @markup.raw
 
 let r = quote(1 + @PlusOne(x) * 2)
