@@ -5,7 +5,7 @@
 //<- @comment
 
 main() {
-//^ @keyword
+//^ @function
     let s = "text // not a comment"
 //  ^ @keyword
 //           ^ @string
