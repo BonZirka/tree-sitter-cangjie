@@ -12,9 +12,16 @@
   (function_definition (block) @function.inside)
   (operator_function_definition (block) @function.inside)
   (main_definition (block) @function.inside)
-  (property_definition) ; TODO
   (macro_definition (block) @function.inside)
   (init (block) @function.inside)
+] @function.around
+
+; Property accessors: the get()/set() bodies are function bodies; the whole
+; prop declaration stands in for function-around (no node spans just the
+; accessor keyword through its block).
+[
+  (property_definition (block) @function.inside)
+  (property_definition)
 ] @function.around
 
 ; Comments

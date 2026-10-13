@@ -12,10 +12,6 @@
 
 (init) @indent.begin
 
-; NOTE: whole-node capture — a `(static_init (block))` child pattern trips an
-; assertion in the tree-sitter 0.25 query compiler (ts_query__analyze_patterns).
-(static_init) @indent.begin
-
 (function_definition
   (block) @indent.begin
 )

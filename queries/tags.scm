@@ -7,10 +7,17 @@
 (enum_body enum_constant: (identifier) @name) @definition.class
 (function_definition (func_name) @name) @definition.function
 (operator_function_definition name: (_) @name) @definition.function
+(main_definition "main" @name) @definition.function
 (primary_init (class_name) @name) @definition.constructor
 (macro_definition (macro_name) @name) @definition.macro
 (type_alias (type_alias_name) @name) @definition.type
 (property_definition (property_name) @name) @definition.property
+
+; Member fields (declaration_body parents) tag as fields; plain local
+; bindings stay variables.
+(declaration_body
+    (variable_declaration
+        (variable_name (var_binding_pattern)) @name)) @definition.field
 
 (variable_declaration
   (variable_name

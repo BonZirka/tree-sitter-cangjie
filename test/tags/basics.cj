@@ -8,7 +8,7 @@ enum Color {
 struct Money {
 //     ^definition.struct
     let cents: Int64
-//      ^definition.variable
+//      ^definition.field
 }
 
 class Account {

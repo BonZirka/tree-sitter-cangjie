@@ -1038,10 +1038,6 @@
                 },
                 {
                   "type": "SYMBOL",
-                  "name": "static_init"
-                },
-                {
-                  "type": "SYMBOL",
                   "name": "finalizer"
                 },
                 {
@@ -2230,10 +2226,6 @@
               },
               {
                 "type": "SYMBOL",
-                "name": "static_init"
-              },
-              {
-                "type": "SYMBOL",
                 "name": "primary_init"
               },
               {
@@ -3006,103 +2998,52 @@
       ]
     },
     "init": {
-      "type": "PREC",
-      "value": -1,
-      "content": {
-        "type": "SEQ",
-        "members": [
-          {
-            "type": "CHOICE",
-            "members": [
-              {
-                "type": "SYMBOL",
-                "name": "modifiers"
-              },
-              {
-                "type": "BLANK"
-              }
-            ]
-          },
-          {
-            "type": "TOKEN",
-            "content": {
-              "type": "STRING",
-              "value": "init"
-            }
-          },
-          {
-            "type": "FIELD",
-            "name": "parameters",
-            "content": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "CHOICE",
+          "members": [
+            {
               "type": "SYMBOL",
-              "name": "parameter_list"
+              "name": "modifiers"
+            },
+            {
+              "type": "BLANK"
             }
-          },
-          {
-            "type": "CHOICE",
-            "members": [
-              {
-                "type": "FIELD",
-                "name": "body",
-                "content": {
-                  "type": "SYMBOL",
-                  "name": "block"
-                }
-              },
-              {
-                "type": "BLANK"
-              }
-            ]
-          }
-        ]
-      }
-    },
-    "static_init": {
-      "type": "PREC",
-      "value": -2,
-      "content": {
-        "type": "SEQ",
-        "members": [
-          {
-            "type": "TOKEN",
-            "content": {
-              "type": "STRING",
-              "value": "static"
-            }
-          },
-          {
-            "type": "TOKEN",
-            "content": {
-              "type": "STRING",
-              "value": "init"
-            }
-          },
-          {
+          ]
+        },
+        {
+          "type": "TOKEN",
+          "content": {
             "type": "STRING",
-            "value": "("
-          },
-          {
-            "type": "STRING",
-            "value": ")"
-          },
-          {
-            "type": "CHOICE",
-            "members": [
-              {
-                "type": "FIELD",
-                "name": "body",
-                "content": {
-                  "type": "SYMBOL",
-                  "name": "block"
-                }
-              },
-              {
-                "type": "BLANK"
-              }
-            ]
+            "value": "init"
           }
-        ]
-      }
+        },
+        {
+          "type": "FIELD",
+          "name": "parameters",
+          "content": {
+            "type": "SYMBOL",
+            "name": "parameter_list"
+          }
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "FIELD",
+              "name": "body",
+              "content": {
+                "type": "SYMBOL",
+                "name": "block"
+              }
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        }
+      ]
     },
     "primary_init": {
       "type": "SEQ",
@@ -10384,7 +10325,8 @@
         "members": [
           {
             "type": "PATTERN",
-            "value": "[a-zA-Z_][a-zA-Z0-9_]*"
+            "value": "[\\p{XID_Start}_][\\p{XID_Continue}_]*",
+            "flags": "u"
           },
           {
             "type": "SEQ",
@@ -10395,7 +10337,7 @@
               },
               {
                 "type": "PATTERN",
-                "value": "[a-zA-Z_][a-zA-Z0-9_]*"
+                "value": "[\\p{XID_Start}_][\\p{XID_Continue}_]*"
               },
               {
                 "type": "STRING",

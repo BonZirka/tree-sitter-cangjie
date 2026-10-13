@@ -35,8 +35,6 @@ const PREC = {
   ARRAY: 38,
   MEMBER: 40,
   MACRO_QUOTE: 44,
-  INIT: -1,
-  STATIC_INIT: -2,
 };
 
 // Single source of truth for every keyword-like word. The classification is
@@ -364,7 +362,6 @@ const M = {
               $.operator_function_definition,
               $.property_definition,
               $.init,
-              $.static_init,
               $.finalizer,
               $.primary_init,
             ),
@@ -464,7 +461,6 @@ const M = {
             $.operator_function_definition,
             $.property_definition,
             $.init,
-            $.static_init,
             $.primary_init,
             $.finalizer,
             $.decorated_declaration,
@@ -585,17 +581,12 @@ const M = {
       ),
 
     init: ($) =>
-      prec(
-        PREC.INIT,
-        seq(
-          optional($.modifiers),
-          TOKENS.INIT,
-          field('parameters', $.parameter_list),
-          optional(field('body', $.block)),
-        ),
+      seq(
+        optional($.modifiers),
+        TOKENS.INIT,
+        field('parameters', $.parameter_list),
+        optional(field('body', $.block)),
       ),
-    static_init: ($) =>
-      prec(PREC.STATIC_INIT, seq(TOKENS.STATIC, TOKENS.INIT, '(', ')', optional(field('body', $.block)))),
     primary_init: ($) =>
       seq(
         optional($.modifiers),
@@ -1327,7 +1318,22 @@ const M = {
       choice(alias($._macro_body_content, $.macro_raw_token), $.escape_sequence, $.string_literal, $.rune_literal),
 
     block_comment: ($) => seq('/*', $._block_comment_content),
-    identifier: (_) => token(choice(/[a-zA-Z_][a-zA-Z0-9_]*/, seq('`', /[a-zA-Z_][a-zA-Z0-9_]*/, '`'))),
+    // cjc lexer ground truth (Lexer.cpp ScanIdentifierOrKeyword): a bare
+    // identifier starts with XID_Start or '_' and continues with
+    // XID_Continue; the scanned value is NFC-normalized (a semantic pass —
+    // tree-sitter keeps the source bytes). The backticked form accepts the
+    // same charset: a raw identifier that escapes keywords (the '`'s keep
+    // the value from matching any keyword in the word-capture runtime).
+    // cjc additionally lexes `a-b.c` (separators inside backticks) as a
+    // PACKAGE_IDENTIFIER token for import paths; the grammar's package
+    // rules use plain identifiers, so that shape stays unsupported.
+    identifier: (_) =>
+      token(
+        choice(
+          /[\p{XID_Start}_][\p{XID_Continue}_]*/u,
+          seq('`', /[\p{XID_Start}_][\p{XID_Continue}_]*/, '`'),
+        ),
+      ),
   },
 };
 
