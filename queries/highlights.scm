@@ -36,10 +36,6 @@
 (rune_literal) @character
 (byte_literal) @character
 
-; The unit () must be captured AFTER the punctuation list: its '(' ')' are
-; @punctuation.bracket on the same range, and the last capture wins.
-(unit_literal) @constant.builtin
-
 ; ===== Variables =====
 
 ; `_` in parameter/lambda positions (capture model: @variable.parameter.builtin
@@ -123,15 +119,18 @@
             suffix: (scope_resolution (identifier) @function.call))
     suffix: (type_arguments))
 
-;   trailing lambda:  list.map { x => x }  /  a.b { ... }
+;   trailing lambda:  f { ... }  /  a { ... }  /  a.b { ... }  /  a.b.c { ... }
+; The callee is the last suffix of the base chain before the lambda: for a
+; bare callee the identifier sits directly under the base postfix; for a
+; member chain it is the field_access that is the base's own suffix — at any
+; chain depth, so one pattern covers a.b and a.b.c alike.
 (postfix_expression
-    (postfix_expression (identifier) @function.call)
+    base: (postfix_expression (identifier) @function.call)
     (lambda_expression))
 
 (postfix_expression
-    (postfix_expression
-        (postfix_expression
-            (field_access (identifier) @function.method.call)))
+    base: (postfix_expression
+            suffix: (field_access (identifier) @function.method.call))
     (lambda_expression))
 
 ; ===== Names =====
@@ -150,6 +149,11 @@
 ; kotlin: typealias name → @type.definition
 (type_alias_name) @type.definition
 (func_name) @function
+; Member functions live in type and extend bodies (declaration_body /
+; enum_body); local and nested functions stay @function — the capture model
+; separates method definitions from plain function definitions.
+(declaration_body (function_definition (func_name) @function.method))
+(enum_body (function_definition (func_name) @function.method))
 ; main is the entry function's name (the token only occurs in main_definition;
 ; expression-position mains are bridge-aliased identifier nodes).
 (main_definition "main" @function)
@@ -242,10 +246,23 @@
     (variable_declaration
         name: (variable_name (var_binding_pattern) @variable.member)))
 
+; Decorated member fields nest inside decorated_declaration — the pattern
+; above sees only direct children, so the same capture through the wrapper.
+(declaration_body
+    (decorated_declaration
+        (variable_declaration
+            name: (variable_name (var_binding_pattern) @variable.member))))
+
 ; const declarations (rust: const_item name → @constant)
 (variable_declaration
     "const"
     name: (variable_name (var_binding_pattern) @constant))
+
+; Decorated consts (member or top-level) need the same wrapper hop.
+(decorated_declaration
+    (variable_declaration
+        "const"
+        name: (variable_name (var_binding_pattern) @constant)))
 
 ; Prop accessor keywords: get()/set()
 (get_keyword) @keyword
@@ -438,6 +455,15 @@
     ":"
     "::"
 ] @punctuation.delimiter
+
+; The unit () must sit AFTER the bracket list, and capture the '(' ')' tokens
+; themselves: a parent-node capture loses to the nested token capture in the
+; CLI renderer, but a same-range capture on the same tokens wins by order.
+(unit_literal
+    [
+        "("
+        ")"
+    ] @constant.builtin)
 
 ; Generic angle brackets read as delimiters, not comparison operators
 ; (kotlin: type_arguments/type_parameters "<"/">" → @punctuation.delimiter).

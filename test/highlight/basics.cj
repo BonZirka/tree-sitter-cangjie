@@ -26,7 +26,7 @@ class Shape<T> <: Pane {
 
     func scale<F, R>(k: F, v: Int64): Unit where F <: Number {
 //  ^ @keyword.function
-//       ^ @function
+//       ^ @function.method
 //             ^ @type
 //                ^ @type
 //                   ^ @variable.parameter
@@ -92,3 +92,28 @@ macro mk(x: Expr) { @body(1) }
 let r = quote(1 + @PlusOne(x) * 2)
 //                     ^ @function.macro
 //               ^ @markup.raw
+
+class Box {
+    @Deprecated let y: Int64 = 0
+//                  ^ @variable.member
+    const c = 1
+//        ^ @constant
+    @Anno const d = 2
+//              ^ @constant
+    let u = ()
+//          ^ @constant.builtin
+    func m() {}
+//       ^ @function.method
+    static func sm() {}
+//              ^ @function.method
+}
+
+main() {
+    let s = f { x => x }
+//          ^ @function.call
+    let t = p.q { x => x }
+//            ^ @function.method.call
+    let v = a.b.c { x => x }
+//            ^ @variable.member
+//              ^ @function.method.call
+}
