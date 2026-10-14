@@ -1,0 +1,32 @@
+================================================================================
+Unicode identifiers: bare XID names, raw `keyword` escape (cjc lexer ground
+truth; the value is NFC-normalized by the compiler, tree-sitter keeps bytes)
+
+main() {
+    let 你好 = 1
+    let `type` = 2
+    return 你好 + `type`
+}
+
+--------------------------------------------------------------------------------
+
+    (main_definition
+      (parameter_list)
+      (block
+        (variable_declaration
+          name: (variable_name
+            (var_binding_pattern))
+          initializer: (postfix_expression
+            (integer_literal)))
+        (variable_declaration
+          name: (variable_name
+            (var_binding_pattern))
+          initializer: (postfix_expression
+            (integer_literal)))
+        (postfix_expression
+          (jump_expression
+            (binary_expression
+              left: (postfix_expression
+                (identifier))
+              right: (postfix_expression
+                (identifier))))))))

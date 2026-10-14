@@ -400,17 +400,17 @@ const M = {
     class_definition: ($) => seq(typeHeader($, TOKENS.CLASS, $._class_name), field('body', $.declaration_body)),
     struct_definition: ($) =>
       seq(
-        typeHeader($, TOKENS.STRUCT, alias(reserved('default', $.identifier), $.struct_name)),
+        typeHeader($, TOKENS.STRUCT, choice(alias(reserved('default', $.identifier), $.struct_name), alias($.unicode_identifier, $.struct_name), alias($.raw_identifier, $.struct_name))),
         field('body', $.declaration_body),
       ),
 
     interface_definition: ($) =>
       seq(
-        typeHeader($, TOKENS.INTERFACE, alias(reserved('default', $.identifier), $.interface_name)),
+        typeHeader($, TOKENS.INTERFACE, choice(alias(reserved('default', $.identifier), $.interface_name), alias($.unicode_identifier, $.interface_name), alias($.raw_identifier, $.interface_name))),
         field('body', $.declaration_body),
       ),
     enum_definition: ($) =>
-      seq(typeHeader($, TOKENS.ENUM, alias(reserved('default', $.identifier), $.enum_name)), field('body', $.enum_body)),
+      seq(typeHeader($, TOKENS.ENUM, choice(alias(reserved('default', $.identifier), $.enum_name), alias($.unicode_identifier, $.enum_name), alias($.raw_identifier, $.enum_name))), field('body', $.enum_body)),
     enum_body: ($) =>
       seq(
         '{',
@@ -440,7 +440,7 @@ const M = {
       seq(
         optional($.modifiers),
         TOKENS.TYPE,
-        field('name', alias(reserved('default', $.identifier), $.type_alias_name)),
+        field('name', choice(alias(reserved('default', $.identifier), $.type_alias_name), alias($.unicode_identifier, $.type_alias_name), alias($.raw_identifier, $.type_alias_name))),
         optional($.type_parameters),
         '=',
         field('type', $._type),
@@ -474,7 +474,7 @@ const M = {
       ),
 
     declaration_body: ($) => seq('{', optional($._declaration_list), '}'),
-    _class_name: ($) => alias(reserved('default', $.identifier), $.class_name),
+    _class_name: ($) => choice(alias(reserved('default', $.identifier), $.class_name), alias($.unicode_identifier, $.class_name), alias($.raw_identifier, $.class_name)),
     generic_constraints: ($) =>
       prec.right(
         seq(
@@ -560,7 +560,7 @@ const M = {
       seq(
         optional($.modifiers),
         TOKENS.PROP,
-        field('name', alias(reserved('default', $.identifier), $.property_name)),
+        field('name', choice(alias(reserved('default', $.identifier), $.property_name), alias($.unicode_identifier, $.property_name), alias($.raw_identifier, $.property_name))),
         ':',
         field('type', $._type),
         optional(
@@ -689,7 +689,7 @@ const M = {
         optional(repeat1($.macro_call)),
         choice(
           seq(
-            field('parameter_name', choice(reserved('default', $.identifier), '_')),
+            choice(field('parameter_name', choice(reserved('default', $.identifier), '_')), alias($.unicode_identifier, $.identifier), alias($.raw_identifier, $.identifier)),
             ':',
             field('type', $._type),
           ),
@@ -710,7 +710,7 @@ const M = {
         optional(repeat1($.macro_call)),
         optional($.modifiers),
         choice(TOKENS.LET, TOKENS.VAR),
-        field('parameter_name', choice(reserved('default', $.identifier), '_')),
+        choice(field('parameter_name', choice(reserved('default', $.identifier), '_')), alias($.unicode_identifier, $.identifier), alias($.raw_identifier, $.identifier)),
         ':',
         field('type', $._type),
         optional(seq('=', field('default_value', $._expression))),
@@ -738,7 +738,11 @@ const M = {
       choice(
         $._literal,
         $.array_literal,
-        alias(reserved('default', $.identifier), $.identifier),
+        choice(
+          alias(reserved('default', $.identifier), $.identifier),
+          alias($.unicode_identifier, $.identifier),
+          alias($.raw_identifier, $.identifier),
+        ),
         $.type_conversion_expression,
         $.parenthesized_expression,
         $.tuple_expression,
@@ -1054,7 +1058,12 @@ const M = {
       choice($.wildcard_pattern, $._var_binding_pattern, alias($._tuple_pattern_irrefutable, $.tuple_pattern)),
 
     _tuple_pattern_irrefutable: ($) => seq('(', commaSep1Trailing($._pattern_irrefutable), ')'),
-    _var_binding_pattern: ($) => alias(reserved('default', $.identifier), $.var_binding_pattern),
+    _var_binding_pattern: ($) =>
+      choice(
+        alias(reserved('default', $.identifier), $.var_binding_pattern),
+        alias($.unicode_identifier, $.var_binding_pattern),
+        alias($.raw_identifier, $.var_binding_pattern),
+      ),
     tuple_pattern: ($) => seq('(', commaSep1Trailing($._pattern), ')'),
 
     enum_pattern: ($) =>
@@ -1116,10 +1125,24 @@ const M = {
     type_parameter: ($) => seq(field('name', reserved('default', $.identifier))),
 
     // ===== names & suffixes =====
-    _name: ($) => choice(reserved('default', $.identifier), $.scoped_identifier),
+    _name: ($) =>
+      choice(
+        reserved('default', $.identifier),
+        alias($.unicode_identifier, $.identifier),
+        alias($.raw_identifier, $.identifier),
+        $.scoped_identifier,
+      ),
     scoped_identifier: ($) =>
       prec.left(seq(field('scope', $._name), '.', field('name', reserved('default', $.identifier)))),
-    field_access: ($) => seq('.', reserved('default', $.identifier)),
+    field_access: ($) =>
+      seq(
+        '.',
+        choice(
+          reserved('default', $.identifier),
+          alias($.unicode_identifier, $.identifier),
+          alias($.raw_identifier, $.identifier),
+        ),
+      ),
     scope_resolution: ($) => seq('::', reserved('default', $.identifier)),
     index_access: ($) =>
       seq(
@@ -1322,22 +1345,28 @@ const M = {
       choice(alias($._macro_body_content, $.macro_raw_token), $.escape_sequence, $.string_literal, $.rune_literal),
 
     block_comment: ($) => seq('/*', $._block_comment_content),
-    // cjc lexer ground truth (Lexer.cpp ScanIdentifierOrKeyword): a bare
-    // identifier starts with XID_Start or '_' and continues with
-    // XID_Continue; the scanned value is NFC-normalized (a semantic pass —
-    // tree-sitter keeps the source bytes). The backticked form accepts the
-    // same charset: a raw identifier that escapes keywords (the '`'s keep
-    // the value from matching any keyword in the word-capture runtime).
-    // cjc additionally lexes `a-b.c` (separators inside backticks) as a
-    // PACKAGE_IDENTIFIER token for import paths; the grammar's package
-    // rules use plain identifiers, so that shape stays unsupported.
-    identifier: (_) =>
-      token(
-        choice(
-          /[\p{XID_Start}_][\p{XID_Continue}_]*/u,
-          seq('`', /[\p{XID_Start}_][\p{XID_Continue}_]*/, '`'),
-        ),
-      ),
+    // cjc lexer ground truth (Lexer.cpp ScanIdentifierOrKeyword): bare
+    // identifiers are XID_Start/XID_Continue (NFC-normalized by the
+    // compiler; tree-sitter keeps source bytes) and keywords are
+    // ASCII-only, so a non-ASCII word can never be a keyword.
+    //
+    // tree-sitter constraint: the `word` token must compile to character
+    // sets for the keyword-capture machinery, which means the ASCII-only
+    // regex WITHOUT the `u` flag — a \p{...} class, explicit unicode
+    // ranges, or the u flag itself silently kill keyword conversion
+    // (Int64 lexes as a plain identifier and type conversions collapse).
+    // So `identifier` stays the ASCII word token (plus the ASCII raw
+    // escape), and unicode/backticked-unicode shapes are separate tokens
+    // that the IDENT/NONE_IDENT helpers join at every identifier position.
+    // They are their own node types (aliasing them to the word symbol
+    // overflows the generator's word analysis) — queries capture them
+    // alongside (identifier). They are never keyword-captured — exactly
+    // cjc's semantics. cjc additionally
+    // lexes `a-b.c` (separators inside backticks) as a PACKAGE_IDENTIFIER
+    // token for import paths, which the package rules don't model.
+    identifier: (_) => token(choice(/[a-zA-Z_][a-zA-Z0-9_]*/, seq('`', /[a-zA-Z_][a-zA-Z0-9_]*/, '`'))),
+    unicode_identifier: ($) => token(/[\p{XID_Start}_][\p{XID_Continue}_]*/u),
+    raw_identifier: ($) => token(seq('`', /[\p{XID_Start}_][\p{XID_Continue}_]*/u, '`')),
   },
 };
 

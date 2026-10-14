@@ -2481,6 +2481,10 @@
       "required": false,
       "types": [
         {
+          "type": "identifier",
+          "named": true
+        },
+        {
           "type": "macro_call",
           "named": true
         },
@@ -3931,7 +3935,7 @@
       },
       "parameter_name": {
         "multiple": false,
-        "required": true,
+        "required": false,
         "types": [
           {
             "type": "_",
@@ -3958,6 +3962,10 @@
       "multiple": true,
       "required": false,
       "types": [
+        {
+          "type": "identifier",
+          "named": true
+        },
         {
           "type": "macro_call",
           "named": true
