@@ -319,7 +319,11 @@ const M = {
 
     feature_id: ($) => sep1(reserved('none', $.identifier), '.'),
 
-    main_definition: ($) => seq(TOKENS.MAIN, $.parameter_list, optional($.return_type), $.block),
+    // cjc accepts `unsafe main() {}` (type_cast_0.cj) — main takes the same
+    // modifier run as any function; validity of each modifier is the
+    // semantic pass's job.
+    main_definition: ($) =>
+      seq(optional($.modifiers), TOKENS.MAIN, $.parameter_list, optional($.return_type), $.block),
 
     // ===== declarations =====
     modifiers: ($) =>

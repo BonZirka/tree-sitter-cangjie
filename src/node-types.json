@@ -2116,6 +2116,10 @@
           "named": true
         },
         {
+          "type": "modifiers",
+          "named": true
+        },
+        {
           "type": "parameter_list",
           "named": true
         },
