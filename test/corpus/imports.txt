@@ -1,0 +1,35 @@
+================================================================================
+Raw package paths in imports: backticked segments with '-', wildcards and the
+:: separator (cjc PACKAGE_IDENTIFIER; a raw LAST segment is a parse error)
+
+import `my-pkg`.x
+import `my-pkg.sub` as M
+import `my-pkg`.*
+import std::io.*
+package a::b
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (import_list
+    package_name: (scoped_identifier
+      scope: (package_identifier)
+      name: (identifier)))
+  (import_list
+    package_name: (scoped_identifier
+      scope: (package_identifier)
+      name: (identifier))
+    alias: (identifier))
+  (package_full
+    package_name: (package_identifier))
+  (import_list
+    package_name: (scoped_identifier
+      scope: (identifier)
+      name: (identifier)))
+  (package_declaration
+    package_name: (scoped_identifier
+      scope: (identifier)
+      name: (identifier)))
+  (main_definition
+    (parameter_list)
+    (block)))

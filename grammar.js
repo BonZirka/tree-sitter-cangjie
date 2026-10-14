@@ -308,9 +308,9 @@ const M = {
         terminator($),
       ),
     package_alias: ($) => seq(field('package_name', $._name), TOKENS.AS, field('alias', reserved('default', $.identifier))),
-    package_full: ($) => seq(field('package_name', $._name), '.', token('*')),
+    package_full: ($) => seq(field('package_name', choice($._name, $.package_identifier)), '.', token('*')),
     package_group: ($) => seq('{', seq($._import_packages, repeat(seq(',', $._import_packages))), optional(','), '}'),
-    sub_group_of_package: ($) => seq(field('package_name', $._name), '.', $.package_group),
+    sub_group_of_package: ($) => seq(field('package_name', choice($._name, $.package_identifier)), '.', $.package_group),
 
     features_directive: ($) =>
       prec.right(seq(optional(repeat1($.macro_call)), TOKENS.FEATURES, $.features_set, repeat1(terminator($)))),
@@ -1135,7 +1135,13 @@ const M = {
         $.scoped_identifier,
       ),
     scoped_identifier: ($) =>
-      prec.left(seq(field('scope', $._name), '.', field('name', reserved('default', $.identifier)))),
+      prec.left(
+        seq(
+          field('scope', choice($._name, $.package_identifier)),
+          choice('.', '::'),
+          field('name', reserved('default', $.identifier)),
+        ),
+      ),
     field_access: ($) =>
       seq(
         '.',
@@ -1369,6 +1375,15 @@ const M = {
     identifier: (_) => token(choice(/[a-zA-Z_][a-zA-Z0-9_]*/, seq('`', /[a-zA-Z_][a-zA-Z0-9_]*/, '`'))),
     unicode_identifier: ($) => token(/[\p{XID_Start}_][\p{XID_Continue}_]*/u),
     raw_identifier: ($) => token(seq('`', /[\p{XID_Start}_][\p{XID_Continue}_]*/u, '`')),
+    // cjc's PACKAGE_IDENTIFIER (ScanBackquotedIdentifier): a backticked
+    // import-path segment whose content may contain '-' and '.' — used as a
+    // NON-LAST segment of import paths (`import `my-pkg`.x`); the compiler
+    // diagnoses a raw LAST segment, which the scoped chain enforces
+    // structurally (its tail is always a plain identifier). Also accepted
+    // before import wildcards (`import `my-pkg`.*`). The :: separator is
+    // import/package-header syntax, not type syntax; scoped_identifier
+    // over-accepts it in type chains for simplicity.
+    package_identifier: ($) => token(seq('`', /[\p{XID_Continue}.\- ]+/u, '`')),
   },
 };
 
