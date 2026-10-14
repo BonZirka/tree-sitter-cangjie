@@ -637,6 +637,8 @@ const M = {
       choice(
         seq(optional($.type_parameters), $._name, optional($.type_arguments)),
         ...primitiveTokens(),
+        // cjc accepts extends of optional types (`extend ?Int64 { ... }`)
+        $.prefix_type,
       ),
 
     block: ($) => seq('{', optional($._expression_or_declarations), '}'),

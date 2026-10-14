@@ -1178,6 +1178,10 @@
           "named": true
         },
         {
+          "type": "prefix_type",
+          "named": true
+        },
+        {
           "type": "scoped_identifier",
           "named": true
         },
