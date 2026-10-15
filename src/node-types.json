@@ -1580,7 +1580,7 @@
     "fields": {},
     "children": {
       "multiple": true,
-      "required": true,
+      "required": false,
       "types": [
         {
           "type": "_expression",
@@ -2476,10 +2476,6 @@
       "multiple": true,
       "required": false,
       "types": [
-        {
-          "type": "identifier",
-          "named": true
-        },
         {
           "type": "macro_call",
           "named": true
@@ -3939,7 +3935,7 @@
       },
       "parameter_name": {
         "multiple": false,
-        "required": false,
+        "required": true,
         "types": [
           {
             "type": "_",
@@ -3966,10 +3962,6 @@
       "multiple": true,
       "required": false,
       "types": [
-        {
-          "type": "identifier",
-          "named": true
-        },
         {
           "type": "macro_call",
           "named": true

@@ -156,13 +156,30 @@ TOKENS.NOT_IN = token('!in');
 const SOFT_MODIFIER_WORDS = words('modifier');
 const MODIFIER_TOKENS = KEYWORDS.filter((k) => k.kind === 'modifier').map((k) => TOKENS[tokenKey(k)]);
 
-// The hard-keyword primitive types, one list for three users: the type
-// world (`_type`), extend targets (`extend_type`) and expression position
+// A modifier run: the contextual modifier words plus the always-legal extra
+// tokens. Declaration positions take `const` too; the alias used for local
+// variable declarations omits it, so `const x` binds through the tail instead
+// of the modifier run.
+const modifierChoice = (...extra) => choice(...extra, ...MODIFIER_TOKENS.map((t) => reserved('modifier', t)));
+
+// The hard-keyword primitive types, one list for two users: the type world
+// (`_type`, extend targets included) and expression position
 // (`_hard_keyword_types`).
 const PRIMITIVE_TYPES = KEYWORDS.filter((k) => k.kind === 'primitive').map((k) => [tokenKey(k), k.node]);
 
-const primitiveTokens = () => PRIMITIVE_TYPES.map(([token]) => TOKENS[token]);
 const primitiveTypeNodes = ($) => PRIMITIVE_TYPES.map(([token, node]) => alias(TOKENS[token], $[node]));
+
+// The identifier alternative at a named position. cjc's ScanIdentifierOrKeyword
+// accepts XID names and backtick escapes at EVERY identifier position, so each
+// position joins the ASCII word, the unicode word and the raw (backticked)
+// token under the position's node name. `reserved` keeps hard words out; the
+// unicode/raw tokens are never keyword-captured, exactly cjc's semantics.
+const ident = ($, node) =>
+  choice(
+    alias(reserved('default', $.identifier), $[node]),
+    alias($.unicode_identifier, $[node]),
+    alias($.raw_identifier, $[node]),
+  );
 
 // cjc ground truth (validated by probing identifier positions): hard words,
 // primitives and literals cannot be read as identifiers in ANY position;
@@ -301,19 +318,19 @@ const M = {
       ),
     import_list: ($) =>
       seq(
-        optional(repeat1($.macro_call)),
+        repeat($.macro_call),
         optional($.modifiers),
         TOKENS.IMPORT,
         choice($._import_packages, $.package_group, $.sub_group_of_package),
         terminator($),
       ),
-    package_alias: ($) => seq(field('package_name', $._name), TOKENS.AS, field('alias', reserved('default', $.identifier))),
+    package_alias: ($) => seq(field('package_name', $._name), TOKENS.AS, field('alias', ident($, 'identifier'))),
     package_full: ($) => seq(field('package_name', choice($._name, $.package_identifier)), '.', token('*')),
     package_group: ($) => seq('{', seq($._import_packages, repeat(seq(',', $._import_packages))), optional(','), '}'),
     sub_group_of_package: ($) => seq(field('package_name', choice($._name, $.package_identifier)), '.', $.package_group),
 
     features_directive: ($) =>
-      prec.right(seq(optional(repeat1($.macro_call)), TOKENS.FEATURES, $.features_set, repeat1(terminator($)))),
+      prec.right(seq(repeat($.macro_call), TOKENS.FEATURES, $.features_set, repeat1(terminator($)))),
 
     features_set: ($) => seq('{', commaSep1Trailing($.feature_id), '}'),
 
@@ -326,27 +343,9 @@ const M = {
       seq(optional($.modifiers), TOKENS.MAIN, $.parameter_list, optional($.return_type), $.block),
 
     // ===== declarations =====
-    modifiers: ($) =>
-      prec.left(
-        repeat1(
-          choice(
-            ...MODIFIER_TOKENS.map((t) => reserved('modifier', t)),
-            TOKENS.STATIC,
-            TOKENS.CONST,
-            TOKENS.MUT,
-            TOKENS.UNSAFE,
-          ),
-        ),
-      ),
+    modifiers: ($) => prec.left(repeat1(modifierChoice(TOKENS.STATIC, TOKENS.CONST, TOKENS.MUT, TOKENS.UNSAFE))),
     _modifiers_var: ($) =>
-      alias(
-        prec.left(
-          repeat1(
-            choice(...MODIFIER_TOKENS.map((t) => reserved('modifier', t)), TOKENS.STATIC, TOKENS.MUT, TOKENS.UNSAFE),
-          ),
-        ),
-        $.modifiers,
-      ),
+      alias(prec.left(repeat1(modifierChoice(TOKENS.STATIC, TOKENS.MUT, TOKENS.UNSAFE))), $.modifiers),
     decorated_declaration: ($) =>
       prec.dynamic(
         1,
@@ -385,32 +384,32 @@ const M = {
 
     macro_parameter: ($) =>
       seq(
-        field('name', reserved('default', $.identifier)),
+        field('name', ident($, 'identifier')),
         optional('!'),
         ':',
         field('type', $._type),
         optional(seq('=', field('default_value', $._expression))),
       ),
     _macro_name: ($) =>
+      // The whole chain is aliased to one macro_name node, so ident()'s
+      // inner aliases cannot be used here (nested aliases make the generator
+      // drop the outer one); unicode/raw names surface as their own tokens.
       alias(
-        prec.right(seq(repeat(seq(reserved('default', $.identifier), '.')), reserved('default', $.identifier))),
+        prec.right(
+          seq(
+            repeat(seq(reserved('default', $.identifier), '.')),
+            choice(reserved('default', $.identifier), $.unicode_identifier, $.raw_identifier),
+          ),
+        ),
         $.macro_name,
       ),
 
     class_definition: ($) => seq(typeHeader($, TOKENS.CLASS, $._class_name), field('body', $.declaration_body)),
-    struct_definition: ($) =>
-      seq(
-        typeHeader($, TOKENS.STRUCT, choice(alias(reserved('default', $.identifier), $.struct_name), alias($.unicode_identifier, $.struct_name), alias($.raw_identifier, $.struct_name))),
-        field('body', $.declaration_body),
-      ),
+    struct_definition: ($) => seq(typeHeader($, TOKENS.STRUCT, ident($, 'struct_name')), field('body', $.declaration_body)),
 
     interface_definition: ($) =>
-      seq(
-        typeHeader($, TOKENS.INTERFACE, choice(alias(reserved('default', $.identifier), $.interface_name), alias($.unicode_identifier, $.interface_name), alias($.raw_identifier, $.interface_name))),
-        field('body', $.declaration_body),
-      ),
-    enum_definition: ($) =>
-      seq(typeHeader($, TOKENS.ENUM, choice(alias(reserved('default', $.identifier), $.enum_name), alias($.unicode_identifier, $.enum_name), alias($.raw_identifier, $.enum_name))), field('body', $.enum_body)),
+      seq(typeHeader($, TOKENS.INTERFACE, ident($, 'interface_name')), field('body', $.declaration_body)),
+    enum_definition: ($) => seq(typeHeader($, TOKENS.ENUM, ident($, 'enum_name')), field('body', $.enum_body)),
     enum_body: ($) =>
       seq(
         '{',
@@ -420,8 +419,8 @@ const M = {
             'enum_constant',
             choice(
               seq(
-                optional(repeat1($.macro_call)),
-                reserved('default', $.identifier),
+                repeat($.macro_call),
+                ident($, 'identifier'),
                 optional(seq('(', commaSep1Trailing($._type), ')')),
               ),
               token('...'),
@@ -440,7 +439,7 @@ const M = {
       seq(
         optional($.modifiers),
         TOKENS.TYPE,
-        field('name', choice(alias(reserved('default', $.identifier), $.type_alias_name), alias($.unicode_identifier, $.type_alias_name), alias($.raw_identifier, $.type_alias_name))),
+        field('name', ident($, 'type_alias_name')),
         optional($.type_parameters),
         '=',
         field('type', $._type),
@@ -458,7 +457,7 @@ const M = {
     _declaration_list: ($) =>
       repeat1(
         seq(
-          optional(repeat1(token(';'))),
+          repeat(token(';')),
           choice(
             $.variable_declaration,
             $.function_definition,
@@ -474,19 +473,19 @@ const M = {
       ),
 
     declaration_body: ($) => seq('{', optional($._declaration_list), '}'),
-    _class_name: ($) => choice(alias(reserved('default', $.identifier), $.class_name), alias($.unicode_identifier, $.class_name), alias($.raw_identifier, $.class_name)),
+    _class_name: ($) => ident($, 'class_name'),
     generic_constraints: ($) =>
       prec.right(
         seq(
           TOKENS.WHERE,
           $.generic_constraint,
-          repeat(seq(',', optional(repeat1(terminator($))), $.generic_constraint)),
+          repeat(seq(',', repeat(terminator($)), $.generic_constraint)),
           optional(','),
         ),
       ),
     generic_constraint: ($) =>
       seq(
-        choice(reserved('default', $.identifier), alias(TOKENS.THISTYPE, $.Thistype)),
+        choice(ident($, 'identifier'), alias(TOKENS.THISTYPE, $.Thistype)),
         token('<:'),
         sep1($._type, '&'),
       ),
@@ -507,7 +506,7 @@ const M = {
           // `main` is a hard keyword, but cjc still accepts it as a function
           // name (top-level, nested, or a method) — this is its only identifier
           // position, so it is whitelisted here rather than made contextual.
-          field('name', alias(choice(reserved('default', $.identifier), TOKENS.MAIN), $.func_name)),
+          field('name', alias(choice(reserved('default', $.identifier), $.unicode_identifier, $.raw_identifier, TOKENS.MAIN), $.func_name)),
           optional($.type_parameters),
           field('parameters', $.parameter_list),
           optional(field('return_type', $.return_type)),
@@ -560,7 +559,7 @@ const M = {
       seq(
         optional($.modifiers),
         TOKENS.PROP,
-        field('name', choice(alias(reserved('default', $.identifier), $.property_name), alias($.unicode_identifier, $.property_name), alias($.raw_identifier, $.property_name))),
+        field('name', ident($, 'property_name')),
         ':',
         field('type', $._type),
         optional(
@@ -568,16 +567,10 @@ const M = {
             '{',
             optional(field('getter', seq(alias(TOKENS.GET, $.get_keyword), '(', ')', $.block))),
             optional(
-              field(
-                'setter',
-                seq(
-                  alias(TOKENS.SET, $.set_keyword),
-                  '(',
-                  reserved('default', $.identifier),
-                  ')',
-                  $.block,
+                field(
+                  'setter',
+                  seq(alias(TOKENS.SET, $.set_keyword), '(', ident($, 'identifier'), ')', $.block),
                 ),
-              ),
             ),
             '}',
           ),
@@ -602,7 +595,11 @@ const M = {
           // cjc rejects modifiers on declarations inside it, same as any block.
           repeat(
             seq(
-              choice($._expression, $.variable_declaration, alias($._local_function_definition, $.function_definition)),
+              choice(
+                $._expression,
+                alias($._local_variable_declaration, $.variable_declaration),
+                alias($._local_function_definition, $.function_definition),
+              ),
               optional(terminator($)),
             ),
           ),
@@ -620,7 +617,7 @@ const M = {
     // A member parameter may carry annotations before its modifiers
     // (`@M[x] public let a!: T`), as a plain parameter does.
     named_member_parameter: ($) =>
-      seq(optional(repeat1($.macro_call)), optional($.modifiers), choice(TOKENS.LET, TOKENS.VAR), $.named_parameter),
+      seq(repeat($.macro_call), optional($.modifiers), choice(TOKENS.LET, TOKENS.VAR), $.named_parameter),
 
     finalizer: ($) => seq('~', TOKENS.INIT, '(', ')', $.block),
 
@@ -686,10 +683,10 @@ const M = {
 
     parameter: ($) =>
       seq(
-        optional(repeat1($.macro_call)),
+        repeat($.macro_call),
         choice(
           seq(
-            choice(field('parameter_name', choice(reserved('default', $.identifier), '_')), alias($.unicode_identifier, $.identifier), alias($.raw_identifier, $.identifier)),
+            field('parameter_name', choice(ident($, 'identifier'), token('_'))),
             ':',
             field('type', $._type),
           ),
@@ -699,18 +696,18 @@ const M = {
       ),
     named_parameter: ($) =>
       seq(
-        optional(repeat1($.macro_call)),
-        seq(field('parameter_name', reserved('default', $.identifier)), '!'),
+        repeat($.macro_call),
+        seq(field('parameter_name', ident($, 'identifier')), '!'),
         ':',
         field('type', $._type),
         optional(seq('=', field('default_value', $._expression))),
       ),
     unnamed_member_parameter: ($) =>
       seq(
-        optional(repeat1($.macro_call)),
+        repeat($.macro_call),
         optional($.modifiers),
         choice(TOKENS.LET, TOKENS.VAR),
-        choice(field('parameter_name', choice(reserved('default', $.identifier), '_')), alias($.unicode_identifier, $.identifier), alias($.raw_identifier, $.identifier)),
+        field('parameter_name', choice(ident($, 'identifier'), token('_'))),
         ':',
         field('type', $._type),
         optional(seq('=', field('default_value', $._expression))),
@@ -723,9 +720,9 @@ const M = {
         optional(
           commaSep1Trailing(
             choice(
-              seq(alias(reserved('default', $.identifier), $.identifier), ':', $._expression),
+              seq(ident($, 'identifier'), ':', $._expression),
               $._expression,
-              seq(TOKENS.INOUT, optional(seq($._expression, '.')), reserved('default', $.identifier)),
+              seq(TOKENS.INOUT, optional(seq($._expression, '.')), ident($, 'identifier')),
             ),
           ),
         ),
@@ -738,11 +735,7 @@ const M = {
       choice(
         $._literal,
         $.array_literal,
-        choice(
-          alias(reserved('default', $.identifier), $.identifier),
-          alias($.unicode_identifier, $.identifier),
-          alias($.raw_identifier, $.identifier),
-        ),
+        ident($, 'identifier'),
         $.type_conversion_expression,
         $.parenthesized_expression,
         $.tuple_expression,
@@ -919,14 +912,12 @@ const M = {
       ),
 
     resource_specifications: ($) => commaSep1Trailing($.resource_specification),
-    resource_specification: ($) => seq(reserved('default', $.identifier), optional(seq(':', $._type)), '=', $._expression),
+    resource_specification: ($) => seq(ident($, 'identifier'), optional(seq(':', $._type)), '=', $._expression),
 
-    catch_clause: ($) =>
-      seq(
-        TOKENS.CATCH,
-        choice(seq('(', optional($.catch_pattern), ')'), $.catch_pattern),
-        field('catch_body', $.block),
-      ),
+    // Parens are required (cjc rejects `catch e {}`), but the pattern itself
+    // stays optional so an invalid pattern (`catch (e)` without `: Type`)
+    // localizes the error inside the clause instead of derailing the tail.
+    catch_clause: ($) => seq(TOKENS.CATCH, '(', optional($.catch_pattern), ')', field('catch_body', $.block)),
 
     handle_clause: ($) =>
       seq(TOKENS.HANDLE, '(', field('command_pattern', $.command_type_pattern), ')', field('handle_body', $.block)),
@@ -1058,23 +1049,18 @@ const M = {
       choice($.wildcard_pattern, $._var_binding_pattern, alias($._tuple_pattern_irrefutable, $.tuple_pattern)),
 
     _tuple_pattern_irrefutable: ($) => seq('(', commaSep1Trailing($._pattern_irrefutable), ')'),
-    _var_binding_pattern: ($) =>
-      choice(
-        alias(reserved('default', $.identifier), $.var_binding_pattern),
-        alias($.unicode_identifier, $.var_binding_pattern),
-        alias($.raw_identifier, $.var_binding_pattern),
-      ),
+    _var_binding_pattern: ($) => ident($, 'var_binding_pattern'),
     tuple_pattern: ($) => seq('(', commaSep1Trailing($._pattern), ')'),
 
     enum_pattern: ($) =>
       choice(
         seq(
           seq($._name, optional($.type_arguments), '.'),
-          field('constructor', alias(reserved('default', $.identifier), $.enum_constructor)),
+          field('constructor', ident($, 'enum_constructor')),
           optional(field('arguments', $.enum_pattern_arguments)),
         ),
         seq(
-          field('constructor', alias(reserved('default', $.identifier), $.enum_constructor)),
+          field('constructor', ident($, 'enum_constructor')),
           field('arguments', $.enum_pattern_arguments),
         ),
       ),
@@ -1118,45 +1104,30 @@ const M = {
 
     _type_list: ($) => commaSep1Trailing($._type),
 
-    _named_or_type_list: ($) => commaSep1Trailing(choice(seq(reserved('default', $.identifier), ':', $._type), $._type)),
+    _named_or_type_list: ($) => commaSep1Trailing(choice(seq(ident($, 'identifier'), ':', $._type), $._type)),
 
     type_parameters: ($) => seq('<', commaSep1Trailing($.type_parameter), '>'),
 
-    type_parameter: ($) => seq(field('name', reserved('default', $.identifier))),
+    type_parameter: ($) => seq(field('name', ident($, 'identifier'))),
 
     // ===== names & suffixes =====
-    _name: ($) =>
-      choice(
-        reserved('default', $.identifier),
-        alias($.unicode_identifier, $.identifier),
-        alias($.raw_identifier, $.identifier),
-        $.scoped_identifier,
-      ),
+    _name: ($) => choice(ident($, 'identifier'), $.scoped_identifier),
     scoped_identifier: ($) =>
       prec.left(
         seq(
           field('scope', choice($._name, $.package_identifier)),
           choice('.', '::'),
-          field('name', reserved('default', $.identifier)),
+          field('name', ident($, 'identifier')),
         ),
       ),
-    field_access: ($) =>
-      seq(
-        '.',
-        choice(
-          reserved('default', $.identifier),
-          alias($.unicode_identifier, $.identifier),
-          alias($.raw_identifier, $.identifier),
-        ),
-      ),
-    scope_resolution: ($) => seq('::', reserved('default', $.identifier)),
+    field_access: ($) => seq('.', ident($, 'identifier')),
+    scope_resolution: ($) => seq('::', ident($, 'identifier')),
     index_access: ($) =>
       seq(
         '[',
         choice(
-          seq($._expression, optional(token('..'))),
-          seq($._expression, choice(token('..'), token('..=')), $._expression, optional(seq(':', $._expression))),
-          seq(token('..'), $._expression),
+          $._expression,
+          seq(optional($._expression), choice('..', '..='), optional($._expression)),
         ),
         ']',
       ),
@@ -1318,7 +1289,7 @@ const M = {
     string_interpolation: ($) =>
       seq(
         alias($._interp_open, $.interp_open),
-        repeat(seq(optional(repeat1(terminator($))), $._interpolation_statement)),
+        repeat(seq(repeat(terminator($)), $._interpolation_statement)),
         alias($._interp_close, $.interp_close),
       ),
 
@@ -1361,27 +1332,32 @@ const M = {
     // regex WITHOUT the `u` flag — a \p{...} class, explicit unicode
     // ranges, or the u flag itself silently kill keyword conversion
     // (Int64 lexes as a plain identifier and type conversions collapse).
-    // So `identifier` stays the ASCII word token (plus the ASCII raw
-    // escape), and unicode/backticked-unicode shapes are separate tokens
-    // that the IDENT/NONE_IDENT helpers join at every identifier position.
-    // They are their own node types (aliasing them to the word symbol
-    // overflows the generator's word analysis) — queries capture them
-    // alongside (identifier). They are never keyword-captured — exactly
-    // cjc's semantics. cjc additionally
-    // lexes `a-b.c` (separators inside backticks) as a PACKAGE_IDENTIFIER
-    // token for import paths, which the package rules don't model.
-    identifier: (_) => token(choice(/[a-zA-Z_][a-zA-Z0-9_]*/, seq('`', /[a-zA-Z_][a-zA-Z0-9_]*/, '`'))),
+    // So `identifier` stays the pure ASCII word token, and the
+    // backticked-escape and unicode shapes are separate tokens joined by
+    // the ident() helper at every identifier position. Do NOT alias either
+    // of them directly to the word symbol — that overflows the generator's
+    // word analysis. They are never keyword-captured, exactly cjc's
+    // semantics. cjc additionally lexes backticked segments containing
+    // separators as PACKAGE_IDENTIFIER for import paths (see
+    // package_identifier).
+    identifier: (_) => token(/[a-zA-Z_][a-zA-Z0-9_]*/),
     unicode_identifier: ($) => token(/[\p{XID_Start}_][\p{XID_Continue}_]*/u),
     raw_identifier: ($) => token(seq('`', /[\p{XID_Start}_][\p{XID_Continue}_]*/u, '`')),
     // cjc's PACKAGE_IDENTIFIER (ScanBackquotedIdentifier): a backticked
-    // import-path segment whose content may contain '-' and '.' — used as a
-    // NON-LAST segment of import paths (`import `my-pkg`.x`); the compiler
-    // diagnoses a raw LAST segment, which the scoped chain enforces
-    // structurally (its tail is always a plain identifier). Also accepted
-    // before import wildcards (`import `my-pkg`.*`). The :: separator is
-    // import/package-header syntax, not type syntax; scoped_identifier
-    // over-accepts it in type chains for simplicity.
-    package_identifier: ($) => token(seq('`', /[\p{XID_Continue}.\- ]+/u, '`')),
+    // import-path segment whose content contains at least one separator
+    // ('-' / '.' / space) — plain backticked names are raw identifiers, not
+    // package paths, so the separator requirement keeps the two tokens from
+    // overlapping (a lookahead is not available in tree-sitter regexes, hence
+    // the three-part shape). Used as a NON-LAST segment of import paths
+    // (`import `my-pkg`.x`); the compiler diagnoses a raw LAST segment, which
+    // the scoped chain enforces structurally (its tail is always a plain
+    // identifier). Also accepted before import wildcards (`import `my-pkg`.*`).
+    // The :: separator is import/package-header syntax, not type syntax;
+    // scoped_identifier over-accepts it in type chains for simplicity, and
+    // the package HEADER over-accepts raw segments (cjc: "cannot using '`'
+    // in package name") — an accepted divergence, same class as the :: one.
+    package_identifier: ($) =>
+      token(seq('`', /[\p{XID_Continue}.\- ]*/u, choice('.', '-', ' '), /[\p{XID_Continue}.\- ]*/u, '`')),
   },
 };
 
