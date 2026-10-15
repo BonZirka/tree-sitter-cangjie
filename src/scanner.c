@@ -54,11 +54,9 @@ enum TokenType {
 
 #define STACK_MAX 32
 
-// Per-kind behavior profile: the stack machine's transition table. Entering
-// a context pushes a frame; the frame's info decides how the shared
-// expression dispatcher treats it. Capability flags are context facts, NOT
-// derivable from valid_symbols alone (e.g. quote bodies keep raw-string
-// syntax as verbatim content even though the grammar could lex it).
+// Per-kind profile: the stack machine's transition table. Capability flags are
+// context facts, NOT derivable from valid_symbols (quote bodies lex raw-string
+// syntax as verbatim content).
 typedef struct {
     bool expr_mode;      // expression position
     uint8_t close_token; // 0 = no constant closer
@@ -117,12 +115,9 @@ static void skip_ws(TSLexer *lexer) {
         skip(lexer);
 }
 
-// Comments inside quote and macro bodies are raw content, not tokens: an
-// apostrophe, quote or delimiter in one ("they're", "(unclosed", "]") must
-// not open a string or shift the delimiter stack. Line comments run to EOL
-// (the newline is left for the caller's own handling), block comments to
-// '*/'. The leading '/' is consumed either way, so a lone '/' is ordinary
-// content — callers must not consume it again.
+// Comment content inside quote/macro bodies is raw: delimiters in it must not
+// open strings or shift the delimiter stack. EOL (newline left for the caller)
+// or '*/' ends it; the leading '/' is consumed.
 static void skip_comment_content(TSLexer *lexer) {
     advance(lexer);
     if (lexer->lookahead == '/') {
@@ -145,7 +140,6 @@ static void skip_comment_content(TSLexer *lexer) {
     }
 }
 
-// Pop the top frame and emit its close token.
 static bool emit_close(TSLexer *lexer, Scanner *s, uint8_t sym) {
     pop(s);
     advance(lexer);
@@ -154,10 +148,8 @@ static bool emit_close(TSLexer *lexer, Scanner *s, uint8_t sym) {
     return true;
 }
 
-// Raw-string and line/multiline string opens, valid_symbols-gated, so
-// contexts that lack a capability simply never take the branch. allow_raw
-// is a context capability, not derivable from valid_symbols: quote bodies
-// lex raw-string syntax as verbatim content, so they pass false.
+// String opens, valid_symbols-gated. allow_raw is a context capability, not
+// derivable from valid_symbols: quote bodies pass false (raw syntax = content).
 static bool scan_string_opens(TSLexer *lexer, Scanner *s, const bool *valid_symbols, bool allow_raw) {
     if (allow_raw && valid_symbols[RAW_STRING_START] && lexer->lookahead == '#') {
         return scan_raw_open(lexer, s);
@@ -529,19 +521,10 @@ static bool scan_quote_open(TSLexer *lexer, Scanner *s) {
     return true;
 }
 
-// Trivia skipper for speculative trailing-context peeks. Consumes spaces,
-// tabs, newlines, CRs and both comment kinds (block comments nest). Returns
-// false on a bare '/' (division): the trailing context is not trivia then.
-// All consumption past a token's mark_end is discarded and re-lexed by the
-// parser (cf. scan_generic_lt), so declining after arbitrary peeking is safe.
-// Peek past a token's mark_end over whitespace and comments, leaving the
-// lookahead on the first significant character. Every consumed character
-// goes through advance() — never skip(): the runtime moves token_start past
-// every skipped char (lexer.c: `if (skip) token_start = current`), so a
-// skip after mark_end pushes the start past the marked end and the token
-// gets clamped to zero width (its node would span nothing and highlight
-// captures on it would color nothing). The runtime rewinds to mark_end when
-// the token is accepted, so the peeked trivia is re-lexed normally.
+// Trivia skipper for speculative peeks; returns false on a bare '/' (division).
+// EVERY char goes through advance(), never skip(): the runtime moves token_start
+// past skipped chars (lexer.c: `if (skip) token_start = current`), so a skip
+// after mark_end clamps the token to zero width; the runtime rewinds on accept.
 static bool skip_peek_trivia(TSLexer *lexer) {
     for (;;) {
         while (lexer->lookahead == ' ' || lexer->lookahead == '\t' ||
@@ -576,10 +559,8 @@ static bool skip_peek_trivia(TSLexer *lexer) {
     }
 }
 
-// Conservative superset of the characters that can begin an expression
-// (cf. _primary_expression / unary alternatives). Over-approximating is
-// safe: a false fire yields an error inside perform_expression, while a
-// false decline would break legal `perform\nEff()` ASI.
+// Conservative superset of expression-start chars: a false fire yields an error
+// inside perform_expression, a false decline breaks legal `perform\nEff()` ASI.
 static bool is_expression_start_char(int32_t c) {
     switch (c) {
     case '"':
@@ -600,12 +581,8 @@ static bool is_expression_start_char(int32_t c) {
     }
 }
 
-// `perform` is a soft keyword: it is the effect-perform prefix only when an
-// expression (the command argument) actually follows, across trivia. The
-// DSL token is offerable exactly where perform_expression is reachable
-// (single grammar occurrence), so valid_symbols is the state-axis gate and
-// this word+peek is the lexical axis. On decline the word re-lexes as a
-// plain identifier (`let x = perform`, `f(perform: 1)`, `class perform {}`).
+// `perform` is soft: fires only when an expression follows across trivia;
+// on decline it re-lexes as a plain identifier (`let x = perform`).
 static bool scan_perform_dsl(TSLexer *lexer) {
     if (lexer->lookahead != 'p')
         return false;
@@ -613,9 +590,7 @@ static bool scan_perform_dsl(TSLexer *lexer) {
     if (!match_word_tail(lexer, "erform", 6))
         return false;
     lexer->mark_end(lexer);
-    // Peek past the mark on the real lexer: the runtime rewinds to mark_end
-    // when the token is accepted, and a struct copy cannot work — the runtime
-    // does not update the copy's lookahead, so skip_peek_trivia would spin.
+    // Peek on the REAL lexer: a struct copy cannot work (the runtime never updates the copy's lookahead).
     if (!skip_peek_trivia(lexer))
         return false;
     if (!is_expression_start_char(lexer->lookahead))
@@ -624,9 +599,8 @@ static bool scan_perform_dsl(TSLexer *lexer) {
     return true;
 }
 
-// `resume` is soft like `perform`: the resumption forms are the keyword-infix
-// continuations `with ...` / `throwing ...` (cjc-verified). Bare `resume` and
-// `resume(e)` (a plain call) stay identifiers.
+// `resume` is soft like `perform` (cjc-verified continuations `with`/`throwing`);
+// bare `resume` and `resume(e)` stay identifiers.
 static bool scan_resume_dsl(TSLexer *lexer) {
     if (lexer->lookahead != 'r')
         return false;
@@ -634,7 +608,6 @@ static bool scan_resume_dsl(TSLexer *lexer) {
     if (!match_word_tail(lexer, "esume", 5))
         return false;
     lexer->mark_end(lexer);
-    // Peek past the mark on the real lexer (see scan_perform_dsl).
     if (!skip_peek_trivia(lexer))
         return false;
     bool continuation = false;
@@ -657,17 +630,14 @@ static bool scan_quote_content(TSLexer *lexer) {
     while (lexer->lookahead != 0) {
         char c = (char)lexer->lookahead;
         if (c == '/') {
-            // Comment inside a quote body: raw content to EOL / '*/', so the
-            // apostrophes, quotes and parens in it stay content.
+            // Raw content to EOL / '*/': apostrophes and parens in it stay content.
             any = true;
             skip_comment_content(lexer);
             continue;
         }
         if (c == '\n' || c == '\r') {
-            // Every newline inside a quote body is its own token; whether it is
-            // a visible separator quoteToken or ignored trivia is decided by the
-            // grammar (quote_expression), not here. Advance, never skip: an
-            // all-skip token collapses to zero width.
+            // Every newline in a quote body is its own token; the grammar decides
+            // separator vs trivia. advance(), never skip: all-skip tokens collapse to zero width.
             if (any) {
                 lexer->mark_end(lexer);
                 return true;
@@ -684,9 +654,7 @@ static bool scan_quote_content(TSLexer *lexer) {
             return any;
         }
         if (c == '@') {
-            // Split an unescaped @Name head into its own token (QUOTE_MACRO_HEAD)
-            // so queries can make macro calls inside quotes visible; their
-            // arguments stay raw. \@ escapes never reach here.
+            // Split an unescaped @Name head (QUOTE_MACRO_HEAD) so queries can see macro calls inside quotes.
             lexer->mark_end(lexer);
             if (!any) {
                 advance(lexer);
@@ -728,13 +696,10 @@ static bool scan_macro_body_open(TSLexer *lexer, Scanner *s) {
     return true;
 }
 
-// Shared expression-position dispatch: one stack-machine state for top
-// level, interpolations, braces and quote interps. The frame's info
-// decides capabilities; the caller guarantees top is expr-mode.
+// Shared expression-position dispatch; the caller guarantees top is expr-mode.
 static bool scan_expr_frame(TSLexer *lexer, Scanner *s, const bool *valid_symbols, const FrameInfo *info) {
     if (info->generic_lt && valid_symbols[GENERIC_LT]) {
-        // Spaces/tabs only: a '\n' here must stay for scan_terminator (ASI) —
-        // a generic '<' never starts across a newline in cangjie.
+        // Spaces/tabs only: a '\n' must stay for scan_terminator (ASI).
         skip_inline_ws(lexer);
         if (lexer->lookahead == '<') {
             if (scan_generic_lt(lexer))
@@ -784,9 +749,7 @@ static bool scan_macro_body_content(TSLexer *lexer, Scanner *s) {
     while (lexer->lookahead != 0) {
         char c = (char)lexer->lookahead;
         if (c == '(' || c == '[' || c == '{') {
-            // Nested group: a bookkeeping frame, pushed mid-token so the
-            // delimiter stays inside the content it spans (byte-identical
-            // token streams).
+            // Nested group: pushed mid-token so the delimiter stays inside the content it spans.
             push(s, CTX_MACRO_GROUP, (c == '(') ? ')' : (c == '[') ? ']' : '}');
             advance(lexer);
             any = true;
@@ -799,7 +762,6 @@ static bool scan_macro_body_content(TSLexer *lexer, Scanner *s) {
                 any = true;
                 continue;
             }
-            // Body closer: the MACRO_BODY frame sits below any pending groups.
             uint8_t bi = s->top - 1;
             while (bi > 0 && s->kinds[bi] == CTX_MACRO_GROUP)
                 bi--;
@@ -814,9 +776,7 @@ static bool scan_macro_body_content(TSLexer *lexer, Scanner *s) {
             continue;
         }
         if (c == '/') {
-            // Comment inside a macro body: raw content to EOL / '*/', so an
-            // apostrophe or a delimiter in it cannot start a string token or
-            // unbalance the group stack.
+            // Raw content: a delimiter in it cannot start a string or unbalance the stack.
             any = true;
             skip_comment_content(lexer);
             continue;
@@ -828,7 +788,6 @@ static bool scan_macro_body_content(TSLexer *lexer, Scanner *s) {
         advance(lexer);
         any = true;
     }
-    // EOF inside the body: drop the body and its pending groups.
     while (s->top > 0 && (s->kinds[s->top - 1] == CTX_MACRO_BODY || s->kinds[s->top - 1] == CTX_MACRO_GROUP)) {
         pop(s);
     }
@@ -838,10 +797,7 @@ static bool scan_macro_body_content(TSLexer *lexer, Scanner *s) {
 
 static bool ws(char c) { return c == ' ' || c == '\t' || c == '\r' || c == '\n'; }
 
-// Swift's ParseExpr.cpp rule (SO 36387657): favor the operator '<' unless a
-// generic clause balances to '>' and the next token is in the follow set.
-// '(' '[' '.' count only immediately after '>'; ')',']','{','}',',',';'
-// count across whitespace.
+// Swift's ParseExpr.cpp rule (SO 36387657): favor '<' unless a generic clause balances to '>' with a follow-set token next.
 static bool scan_generic_lt(TSLexer *lexer) {
     lexer->mark_end(lexer);
     advance(lexer); // consume the '<' (peek)
@@ -933,10 +889,9 @@ static bool scan_generic_lt(TSLexer *lexer) {
         }
         return false; // not type-list content: comparison
     }
-    // Follow set: Swift's *_following adapted to cangjie ASI — after
-    // whitespace the expression-continuation tokens ('.' '?' '{' '|' '&' '~',
-    // cf. scan_terminator) keep the generic reading; '==' etc. favor the
-    // comparison. Comments are trivia here; a newline counts as crossing.
+    // Follow set: Swift's *_following adapted to cangjie ASI — continuation
+    // tokens ('.' '?' '{' '|' '&' '~') keep the generic reading, '==' etc.
+    // favor comparison; comments are trivia, a newline counts as crossing.
     bool spaced = false, newline = false;
     int32_t c = 0;
     for (;;) {
@@ -979,13 +934,10 @@ static bool scan_generic_lt(TSLexer *lexer) {
         break;
     }
     bool follow;
-    // A newline after a well-formed clause ends the statement (cangjie ASI):
-    // the generic reading wins regardless of what the next line starts with.
+    // A newline after a well-formed clause ends the statement (ASI): generic reading wins.
     if (newline || c == 0)
         follow = true;
-    // '(' and '=' are accepted across whitespace too (corpus compatibility —
-    // spaced `Array<Int64> (args)` — and machine-generated macrocall spacing);
-    // '.' stays Swift-strict (period_following).
+    // '(' / '=' accepted across whitespace (corpus compat); '.' stays Swift-strict.
     else if (c == '(' || c == '[' || c == '=' || (c == '.' && !spaced))
         follow = true;
     else if (c == ')' || c == ']' || c == '{' || c == '}' || c == ',' || c == ';' || c == '?' || c == '@' || c == '|' ||
@@ -1002,12 +954,10 @@ static bool scan_generic_lt(TSLexer *lexer) {
 bool tree_sitter_cangjie_external_scanner_scan(void *payload, TSLexer *lexer, const bool *valid_symbols) {
     Scanner *s = (Scanner *)payload;
 
-    // Error-state guard: `_error_sentinel` is referenced by no grammar rule,
-    // so it is valid only during error recovery, where ALL externals are marked
-    // valid. Without this, the context-free block-comment body scanner (no
-    // scanner-side start marker) can start at an arbitrary position and swallow
-    // the rest of the file, letting a "blob" error version win the recovery
-    // cost race. Context-backed tokens stay legal: only real starts push.
+    // Error-state guard: `_error_sentinel` is valid only during error recovery
+    // (no grammar rule references it; all externals are marked valid there).
+    // Without this the context-free block-comment scanner can start anywhere and
+    // swallow the file, letting a "blob" error version win the recovery race.
     if (valid_symbols[ERROR_SENTINEL] && s->top == 0) {
         return false;
     }
@@ -1092,9 +1042,7 @@ bool tree_sitter_cangjie_external_scanner_scan(void *payload, TSLexer *lexer, co
         skip_ws(lexer);
         if (scan_string_opens(lexer, s, valid_symbols, true))
             return true;
-        // Nested quote expressions are legal inside interpolations
-        // (cjc-verified: quote($(quote(t))) compiles); the inner `quote(`
-        // pushes its own CTX_QUOTE frame below this interp frame.
+        // Nested quotes are legal inside interpolations (cjc-verified); the inner `quote(` pushes its own frame.
         if (valid_symbols[QUOTE_OPEN] && scan_quote_open(lexer, s))
             return true;
         return false;
@@ -1107,9 +1055,8 @@ bool tree_sitter_cangjie_external_scanner_scan(void *payload, TSLexer *lexer, co
         while (i > 0 && s->kinds[i] == CTX_MACRO_GROUP)
             i--;
         char body_closer = s->params[i];
-        // The innermost group's closer folds into content; the BODY's
-        // closer closes the body, winning over any unbalanced pending
-        // groups (recovery semantics).
+        // The innermost group's closer folds into content; the BODY's closer
+        // wins over unbalanced pending groups (recovery semantics).
         bool group_folds = (s->kinds[s->top - 1] == CTX_MACRO_GROUP && lexer->lookahead == s->params[s->top - 1]);
         if (!group_folds && (valid_symbols[MACRO_ATTR_CLOSE] || valid_symbols[MACRO_INPUT_CLOSE]) &&
             lexer->lookahead == body_closer) {
