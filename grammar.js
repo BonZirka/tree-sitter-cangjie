@@ -633,13 +633,11 @@ const M = {
           seq(alias($._name, $.super_or_interface), optional($.type_arguments)),
         ),
       ),
-    extend_type: ($) =>
-      choice(
-        seq(optional($.type_parameters), $._name, optional($.type_arguments)),
-        ...primitiveTokens(),
-        // cjc accepts extends of optional types (`extend ?Int64 { ... }`)
-        $.prefix_type,
-      ),
+    // The extend target is a full type for the compiler's parser (cjc's
+    // parser accepts tuples/arrows too and its semantic pass rejects
+    // extending them — "extending type ... is not supported"), so this is
+    // just a type with optional generic parameters; no narrow shape needed.
+    extend_type: ($) => seq(optional($.type_parameters), $._type),
 
     block: ($) => seq('{', optional($._expression_or_declarations), '}'),
     // INVARIANT: nothing reachable here may start with a modifier token.

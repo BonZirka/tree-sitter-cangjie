@@ -1171,22 +1171,10 @@
     "fields": {},
     "children": {
       "multiple": true,
-      "required": false,
+      "required": true,
       "types": [
         {
-          "type": "identifier",
-          "named": true
-        },
-        {
-          "type": "prefix_type",
-          "named": true
-        },
-        {
-          "type": "scoped_identifier",
-          "named": true
-        },
-        {
-          "type": "type_arguments",
+          "type": "_type",
           "named": true
         },
         {
@@ -4302,14 +4290,6 @@
     "named": true
   },
   {
-    "type": "Bool",
-    "named": false
-  },
-  {
-    "type": "Float16",
-    "named": false
-  },
-  {
     "type": "Float16",
     "named": true
   },
@@ -4318,36 +4298,16 @@
     "named": true
   },
   {
-    "type": "Float32",
-    "named": false
-  },
-  {
     "type": "Float64",
     "named": true
-  },
-  {
-    "type": "Float64",
-    "named": false
   },
   {
     "type": "Int16",
     "named": true
   },
   {
-    "type": "Int16",
-    "named": false
-  },
-  {
     "type": "Int32",
     "named": true
-  },
-  {
-    "type": "Int32",
-    "named": false
-  },
-  {
-    "type": "Int64",
-    "named": false
   },
   {
     "type": "Int64",
@@ -4358,28 +4318,12 @@
     "named": true
   },
   {
-    "type": "Int8",
-    "named": false
-  },
-  {
-    "type": "IntNative",
-    "named": false
-  },
-  {
     "type": "IntNative",
     "named": true
   },
   {
     "type": "Nothing",
     "named": true
-  },
-  {
-    "type": "Nothing",
-    "named": false
-  },
-  {
-    "type": "Rune",
-    "named": false
   },
   {
     "type": "Rune",
@@ -4394,44 +4338,20 @@
     "named": true
   },
   {
-    "type": "UInt16",
-    "named": false
-  },
-  {
     "type": "UInt32",
     "named": true
-  },
-  {
-    "type": "UInt32",
-    "named": false
   },
   {
     "type": "UInt64",
     "named": true
   },
   {
-    "type": "UInt64",
-    "named": false
-  },
-  {
     "type": "UInt8",
     "named": true
   },
   {
-    "type": "UInt8",
-    "named": false
-  },
-  {
-    "type": "UIntNative",
-    "named": false
-  },
-  {
     "type": "UIntNative",
     "named": true
-  },
-  {
-    "type": "Unit",
-    "named": false
   },
   {
     "type": "Unit",

@@ -3559,163 +3559,23 @@
       }
     },
     "extend_type": {
-      "type": "CHOICE",
+      "type": "SEQ",
       "members": [
         {
-          "type": "SEQ",
+          "type": "CHOICE",
           "members": [
             {
-              "type": "CHOICE",
-              "members": [
-                {
-                  "type": "SYMBOL",
-                  "name": "type_parameters"
-                },
-                {
-                  "type": "BLANK"
-                }
-              ]
-            },
-            {
               "type": "SYMBOL",
-              "name": "_name"
+              "name": "type_parameters"
             },
             {
-              "type": "CHOICE",
-              "members": [
-                {
-                  "type": "SYMBOL",
-                  "name": "type_arguments"
-                },
-                {
-                  "type": "BLANK"
-                }
-              ]
+              "type": "BLANK"
             }
           ]
         },
         {
-          "type": "TOKEN",
-          "content": {
-            "type": "STRING",
-            "value": "Int8"
-          }
-        },
-        {
-          "type": "TOKEN",
-          "content": {
-            "type": "STRING",
-            "value": "Int16"
-          }
-        },
-        {
-          "type": "TOKEN",
-          "content": {
-            "type": "STRING",
-            "value": "Int32"
-          }
-        },
-        {
-          "type": "TOKEN",
-          "content": {
-            "type": "STRING",
-            "value": "Int64"
-          }
-        },
-        {
-          "type": "TOKEN",
-          "content": {
-            "type": "STRING",
-            "value": "IntNative"
-          }
-        },
-        {
-          "type": "TOKEN",
-          "content": {
-            "type": "STRING",
-            "value": "UInt8"
-          }
-        },
-        {
-          "type": "TOKEN",
-          "content": {
-            "type": "STRING",
-            "value": "UInt16"
-          }
-        },
-        {
-          "type": "TOKEN",
-          "content": {
-            "type": "STRING",
-            "value": "UInt32"
-          }
-        },
-        {
-          "type": "TOKEN",
-          "content": {
-            "type": "STRING",
-            "value": "UInt64"
-          }
-        },
-        {
-          "type": "TOKEN",
-          "content": {
-            "type": "STRING",
-            "value": "UIntNative"
-          }
-        },
-        {
-          "type": "TOKEN",
-          "content": {
-            "type": "STRING",
-            "value": "Float16"
-          }
-        },
-        {
-          "type": "TOKEN",
-          "content": {
-            "type": "STRING",
-            "value": "Float32"
-          }
-        },
-        {
-          "type": "TOKEN",
-          "content": {
-            "type": "STRING",
-            "value": "Float64"
-          }
-        },
-        {
-          "type": "TOKEN",
-          "content": {
-            "type": "STRING",
-            "value": "Rune"
-          }
-        },
-        {
-          "type": "TOKEN",
-          "content": {
-            "type": "STRING",
-            "value": "Bool"
-          }
-        },
-        {
-          "type": "TOKEN",
-          "content": {
-            "type": "STRING",
-            "value": "Unit"
-          }
-        },
-        {
-          "type": "TOKEN",
-          "content": {
-            "type": "STRING",
-            "value": "Nothing"
-          }
-        },
-        {
           "type": "SYMBOL",
-          "name": "prefix_type"
+          "name": "_type"
         }
       ]
     },
