@@ -1846,15 +1846,15 @@
           "named": true
         },
         {
+          "type": "identifier",
+          "named": true
+        },
+        {
           "type": "macro_attr_close",
           "named": true
         },
         {
           "type": "macro_attr_open",
-          "named": true
-        },
-        {
-          "type": "macro_identifier",
           "named": true
         }
       ]
@@ -1907,7 +1907,7 @@
           "named": true
         },
         {
-          "type": "macro_identifier",
+          "type": "identifier",
           "named": true
         },
         {
@@ -4570,10 +4570,6 @@
   },
   {
     "type": "macro_call_sigil",
-    "named": true
-  },
-  {
-    "type": "macro_identifier",
     "named": true
   },
   {

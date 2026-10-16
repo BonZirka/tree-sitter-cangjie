@@ -509,11 +509,14 @@
     (identifier) @variable.builtin)
 
 ; ===== Macro call arguments: ad-hoc expression lists =====
-; Bodies parse as expressions (identifiers, numbers, strings, operators all
-; color via the regular captures above); only the named-argument label is
-; body-specific, colored like a call label.
+; Bodies parse as expressions, so identifiers, numbers, strings and operators
+; color via the regular captures above. The named-argument label is a direct
+; identifier child (argument expressions nest under postfix_expression), and
+; colors like a parameter — the same treatment as call labels.
 
-(macro_identifier) @variable.parameter
+(call_suffix (identifier) @variable.parameter)
+(macro_attribute_body (identifier) @variable.parameter)
+(macro_call_body (identifier) @variable.parameter)
 
 ; ===== String interpolation =====
 

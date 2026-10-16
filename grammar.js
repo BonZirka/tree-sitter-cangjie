@@ -1234,9 +1234,12 @@ const M = {
         ),
       ),
     _macro_body_arguments: ($) => commaSep1Trailing($._macro_body_argument),
+    // The named-argument label is a plain identifier (ident(): unicode and
+    // backticked names included), exactly like call_suffix labels — no
+    // body-specific node, so the identifier captures apply uniformly.
     _macro_body_argument: ($) =>
       choice(
-        seq(alias(reserved('default', $.identifier), $.macro_identifier), ':', field('value', $._expression)),
+        seq(ident($, 'identifier'), ':', field('value', $._expression)),
         $._expression,
       ),
 

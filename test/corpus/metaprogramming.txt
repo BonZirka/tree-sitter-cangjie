@@ -1321,10 +1321,10 @@ let d = @Bench[x in data]
         (macro_name)
         (macro_attribute_body
           (macro_attr_open)
-          (macro_identifier)
+          (identifier)
           value: (postfix_expression
             (identifier))
-          (macro_identifier)
+          (identifier)
           value: (postfix_expression
             (integer_literal))
           (macro_attr_close)))))
