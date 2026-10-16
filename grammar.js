@@ -215,18 +215,12 @@ const M = {
     $._quote_interp_close,
     $._quote_close,
     $._macro_at,
-    $._macro_attr_open,
-    $._macro_body_content,
-    $._macro_attr_close,
-    $._macro_input_open,
-    $._macro_input_close,
     $._error_sentinel,
     $._generic_lt,
     $._quote_macro_head,
     $._quote_newline,
     $._perform_dsl,
     $._resume_dsl,
-    $._macro_body_word,
   ],
 
   supertypes: ($) => [$._literal, $._expression, $._type],
@@ -237,6 +231,11 @@ const M = {
     [$._call_tail],
     [$.modifiers, $._modifiers_var],
     [$.modifiers, $._variable_declaration_tail],
+    // `@M(x)` — the parens could be the macro's input body or a call suffix
+    // on the body-less macro; runtime-resolved by macro_call_body's dynamic
+    // precedence. First-iteration allowance, to be revisited.
+    [$.macro_expression],
+    [$._macro_head],
   ],
 
   rules: {
@@ -918,12 +917,12 @@ const M = {
         alias($._macro_at, $.macro_call_sigil),
         optional('!'),
         $._macro_name,
-        optional(alias($._macro_attr_body, $.macro_attribute_body)),
+        optional($.macro_attribute_body),
       ),
 
     // Macro parameters are raw token streams (spec); prec.dynamic beats decorators.
     macro_expression: ($) =>
-      prec.dynamic(-1, seq($._macro_head, optional(alias($._macro_input_body, $.macro_call_body)))),
+      prec.dynamic(-1, seq($._macro_head, optional($.macro_call_body))),
 
     quote_expression: ($) =>
       prec(
@@ -1213,38 +1212,32 @@ const M = {
 
     macro_call: ($) => prec(1, $._macro_head),
 
-    _macro_attr_body: ($) =>
-      prec.right(
-        seq(
-          alias($._macro_attr_open, $.macro_attr_open),
-          repeat($._macro_body_item),
-          optional(alias($._macro_attr_close, $.macro_attr_close)),
+    // Macro bodies are ad-hoc EXPRESSION lists (cjls parses macro content
+    // speculatively and falls back to raw tokens on error; we parse
+    // structurally): bare or comma-separated expressions, named `k: v`
+    // arguments, and `x in y` via the binary operators. The bodies carry
+    // dynamic precedence so they attach to the head — without it, `@M[1]`
+    // in expression position would parse as an index suffix on a body-less
+    // macro, `@M(x)` as a call.
+    macro_attribute_body: ($) =>
+      prec.dynamic(
+        1,
+        prec.right(
+          seq(alias('[', $.macro_attr_open), optional($._macro_body_arguments), alias(']', $.macro_attr_close)),
         ),
       ),
-
-    _macro_input_body: ($) =>
-      prec.right(
-        seq(
-          alias($._macro_input_open, $.macro_input_open),
-          repeat($._macro_body_item),
-          optional(alias($._macro_input_close, $.macro_input_close)),
+    macro_call_body: ($) =>
+      prec.dynamic(
+        1,
+        prec.right(
+          seq(alias('(', $.macro_input_open), optional($._macro_body_arguments), alias(')', $.macro_input_close)),
         ),
       ),
-
-    _macro_body_item: ($) =>
+    _macro_body_arguments: ($) => commaSep1Trailing($._macro_body_argument),
+    _macro_body_argument: ($) =>
       choice(
-        alias($._macro_body_content, $.macro_raw_token),
-        // Ad-hoc lexical split of the raw body (cjls parity): names and
-        // numbers surface as tokens so queries can capture them. The word is
-        // an EXTERNAL token, not the word symbol: the body is raw text, so
-        // reserved words must lex as words here, and the generator forbids
-        // duplicating the word token's rule in a plain token.
-        alias($._macro_body_word, $.macro_identifier),
-        $.integer_literal,
-        $.float_literal,
-        $.escape_sequence,
-        $.string_literal,
-        $.rune_literal,
+        seq(alias(reserved('default', $.identifier), $.macro_identifier), ':', field('value', $._expression)),
+        $._expression,
       ),
 
     block_comment: ($) => seq('/*', $._block_comment_content),

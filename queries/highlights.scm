@@ -508,12 +508,12 @@
     "$" @variable.builtin .
     (identifier) @variable.builtin)
 
-; ===== Macro call arguments: raw token streams per spec =====
-; The bodies are split ad-hoc (cjls parity): names and numbers surface as
-; tokens inside the raw stream.
+; ===== Macro call arguments: ad-hoc expression lists =====
+; Bodies parse as expressions (identifiers, numbers, strings, operators all
+; color via the regular captures above); only the named-argument label is
+; body-specific, colored like a call label.
 
-(macro_identifier) @variable
-(macro_raw_token) @markup.raw
+(macro_identifier) @variable.parameter
 
 ; ===== String interpolation =====
 

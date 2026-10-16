@@ -632,8 +632,10 @@ non-attribute macro call
     (macro_name)
     (macro_call_body
       (macro_input_open)
-      (macro_identifier)
-      (macro_raw_token)
+      (postfix_expression
+        (postfix_expression
+          (identifier))
+        (call_suffix))
       (macro_input_close))))
 
 ==================
@@ -650,13 +652,17 @@ attribute macro call
     (macro_name)
     (macro_attribute_body
       (macro_attr_open)
-      (macro_identifier)
-      (macro_raw_token)
+      (postfix_expression
+        (postfix_expression
+          (identifier))
+        (call_suffix))
       (macro_attr_close))
     (macro_call_body
       (macro_input_open)
-      (macro_identifier)
-      (macro_raw_token)
+      (postfix_expression
+        (postfix_expression
+          (identifier))
+        (call_suffix))
       (macro_input_close))))
 
 ==================
@@ -692,8 +698,10 @@ attribute macro call with empty attribute body
       (macro_attr_close))
     (macro_call_body
       (macro_input_open)
-      (macro_identifier)
-      (macro_raw_token)
+      (postfix_expression
+        (postfix_expression
+          (identifier))
+        (call_suffix))
       (macro_input_close))))
 
 ==================
@@ -758,8 +766,11 @@ main() {
           (macro_name)
           (macro_call_body
             (macro_input_open)
-            (macro_raw_token)
-            (macro_raw_token)
+            (binary_expression
+              (postfix_expression
+                (integer_literal))
+              (postfix_expression
+                (integer_literal)))
             (macro_input_close)))))))
 
 ==================
@@ -798,8 +809,11 @@ main() {
             (macro_name)
             (macro_call_body
               (macro_input_open)
-              (macro_raw_token)
-              (macro_raw_token)
+              (binary_expression
+                (postfix_expression
+                  (integer_literal))
+                (postfix_expression
+                  (integer_literal)))
               (macro_input_close)))))
       (postfix_expression
         (jump_expression
@@ -807,7 +821,7 @@ main() {
             (identifier)))))))
 
 ==================
-unbalanced parens in macro input leave body unclosed
+unbalanced parens in macro input parse as a call and close at EOF
 ==================
 
 @ABC(a ( b)
@@ -820,13 +834,16 @@ unbalanced parens in macro input leave body unclosed
     (macro_name)
     (macro_call_body
       (macro_input_open)
-      (macro_identifier)
-      (macro_raw_token)
-      (macro_identifier)
-      (macro_raw_token))))
+      (postfix_expression
+        base: (postfix_expression
+          (identifier))
+        suffix: (call_suffix
+          (postfix_expression
+            (identifier))))
+      (MISSING macro_input_close))))
 
 ==================
-unbalanced brackets in attribute leave body unclosed
+unbalanced brackets in attribute parse as index and call, close missing
 ==================
 
 @ABC[a [ b]()
@@ -839,10 +856,15 @@ unbalanced brackets in attribute leave body unclosed
     (macro_name)
     (macro_attribute_body
       (macro_attr_open)
-      (macro_identifier)
-      (macro_raw_token)
-      (macro_identifier)
-      (macro_raw_token))))
+      (postfix_expression
+        base: (postfix_expression
+          base: (postfix_expression
+            (identifier))
+          suffix: (index_access
+            (postfix_expression
+              (identifier))))
+        suffix: (call_suffix))
+      (MISSING macro_attr_close))))
 
 ==================
 source location tags in expressions and default parameters
@@ -983,12 +1005,14 @@ func foo() {
       (macro_name)
       (macro_attribute_body
         (macro_attr_open)
-        (macro_identifier)
-        (macro_raw_token)
-        (string_literal
-          (string_start)
-          (string_content)
-          (string_end))
+        (binary_expression
+          (postfix_expression
+            (identifier))
+          (postfix_expression
+            (string_literal
+              (string_start)
+              (string_content)
+              (string_end))))
         (macro_attr_close)))
     (function_definition
       (func_name)
@@ -1022,27 +1046,34 @@ func foo() {
       (macro_name)
       (macro_attribute_body
         (macro_attr_open)
-        (macro_raw_token)
-        (macro_identifier)
-        (macro_raw_token)
-        (string_literal
-          (string_start)
-          (string_content)
-          (string_end))
-        (macro_raw_token)
-        (macro_identifier)
-        (macro_raw_token)
-        (string_literal
-          (string_start)
-          (string_content)
-          (string_end))
-        (macro_raw_token)
-        (macro_identifier)
-        (macro_raw_token)
-        (string_literal
-          (string_start)
-          (string_content)
-          (string_end))
+        (binary_expression
+          (postfix_expression
+            (parenthesized_expression
+              (binary_expression
+                (binary_expression
+                  (postfix_expression
+                    (identifier))
+                  (postfix_expression
+                    (string_literal
+                      (string_start)
+                      (string_content)
+                      (string_end))))
+                (binary_expression
+                  (postfix_expression
+                    (identifier))
+                  (postfix_expression
+                    (string_literal
+                      (string_start)
+                      (string_content)
+                      (string_end)))))))
+          (binary_expression
+            (postfix_expression
+              (identifier))
+            (postfix_expression
+              (string_literal
+                (string_start)
+                (string_content)
+                (string_end)))))
         (macro_attr_close)))
     (function_definition
       (func_name)
@@ -1076,8 +1107,9 @@ func tee() { }
       (macro_name)
       (macro_attribute_body
         (macro_attr_open)
-        (macro_raw_token)
-        (macro_identifier)
+        (unary_expression
+          (postfix_expression
+            (identifier)))
         (macro_attr_close)))
     (function_definition
       (func_name)
@@ -1089,7 +1121,8 @@ func tee() { }
       (macro_name)
       (macro_attribute_body
         (macro_attr_open)
-        (macro_identifier)
+        (postfix_expression
+          (identifier))
         (macro_attr_close)))
     (function_definition
       (func_name)
@@ -1112,12 +1145,14 @@ import std.math.*
       (macro_name)
       (macro_attribute_body
         (macro_attr_open)
-        (macro_identifier)
-        (macro_raw_token)
-        (string_literal
-          (string_start)
-          (string_content)
-          (string_end))
+        (binary_expression
+          (postfix_expression
+            (identifier))
+          (postfix_expression
+            (string_literal
+              (string_start)
+              (string_content)
+              (string_end))))
         (macro_attr_close)))
     (package_full
       (scoped_identifier
@@ -1204,7 +1239,8 @@ public macro M2(input: Tokens): Tokens {
                   (macro_name)
                   (macro_call_body
                     (macro_input_open)
-                    (macro_identifier)
+                    (postfix_expression
+                      (identifier))
                     (macro_input_close))))
               (postfix_expression
                 (postfix_expression
@@ -1228,3 +1264,96 @@ public macro M2(input: Tokens): Tokens {
                         (integer_literal))))
                   (quote_interp_close))
                 (quote_close)))))))))
+
+==================
+macro bodies: ad-hoc expression argument forms
+==================
+
+let a = @M(bare)
+let b = @M[1, x + 2, "s"]
+let c = @M[k: v, n: 42]
+let d = @Bench[x in data]
+@When[os == "Windows"]
+
+---
+
+(source_file
+  (variable_declaration
+    name: (variable_name
+      (var_binding_pattern))
+    initializer: (postfix_expression
+      (macro_expression
+        (macro_call_sigil)
+        (macro_name)
+        (macro_call_body
+          (macro_input_open)
+          (postfix_expression
+            (identifier))
+          (macro_input_close)))))
+  (variable_declaration
+    name: (variable_name
+      (var_binding_pattern))
+    initializer: (postfix_expression
+      (macro_expression
+        (macro_call_sigil)
+        (macro_name)
+        (macro_attribute_body
+          (macro_attr_open)
+          (postfix_expression
+            (integer_literal))
+          (binary_expression
+            left: (postfix_expression
+              (identifier))
+            right: (postfix_expression
+              (integer_literal)))
+          (postfix_expression
+            (string_literal
+              (string_start)
+              (string_content)
+              (string_end)))
+          (macro_attr_close)))))
+  (variable_declaration
+    name: (variable_name
+      (var_binding_pattern))
+    initializer: (postfix_expression
+      (macro_expression
+        (macro_call_sigil)
+        (macro_name)
+        (macro_attribute_body
+          (macro_attr_open)
+          (macro_identifier)
+          value: (postfix_expression
+            (identifier))
+          (macro_identifier)
+          value: (postfix_expression
+            (integer_literal))
+          (macro_attr_close)))))
+  (variable_declaration
+    name: (variable_name
+      (var_binding_pattern))
+    initializer: (postfix_expression
+      (macro_expression
+        (macro_call_sigil)
+        (macro_name)
+        (macro_attribute_body
+          (macro_attr_open)
+          (binary_expression
+            left: (postfix_expression
+              (identifier))
+            right: (postfix_expression
+              (identifier)))
+          (macro_attr_close)))))
+  (macro_expression
+    (macro_call_sigil)
+    (macro_name)
+    (macro_attribute_body
+      (macro_attr_open)
+      (binary_expression
+        left: (postfix_expression
+          (identifier))
+        right: (postfix_expression
+          (string_literal
+            (string_start)
+            (string_content)
+            (string_end))))
+      (macro_attr_close))))

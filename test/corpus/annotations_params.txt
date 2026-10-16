@@ -20,8 +20,8 @@ enum E {
         (macro_attribute_body
           (macro_attr_open)
           (macro_identifier)
-          (macro_raw_token)
-          (macro_raw_token)
+          (postfix_expression
+            (integer_literal))
           (macro_attr_close)))
       (identifier)
       (macro_call
@@ -30,11 +30,11 @@ enum E {
         (macro_attribute_body
           (macro_attr_open)
           (macro_identifier)
-          (macro_raw_token)
-          (string_literal
-            (string_start)
-            (string_content)
-            (string_end))
+          (postfix_expression
+            (string_literal
+              (string_start)
+              (string_content)
+              (string_end)))
           (macro_attr_close)))
       (macro_call
         (macro_call_sigil)
@@ -67,11 +67,11 @@ class P {
               (macro_attribute_body
                 (macro_attr_open)
                 (macro_identifier)
-                (macro_raw_token)
-                (string_literal
-                  (string_start)
-                  (string_content)
-                  (string_end))
+                (postfix_expression
+                  (string_literal
+                    (string_start)
+                    (string_content)
+                    (string_end)))
                 (macro_attr_close)))
             (modifiers)
             (named_parameter

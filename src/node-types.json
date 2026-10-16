@@ -1825,21 +1825,24 @@
   {
     "type": "macro_attribute_body",
     "named": true,
-    "fields": {},
+    "fields": {
+      "value": {
+        "multiple": true,
+        "required": false,
+        "types": [
+          {
+            "type": "_expression",
+            "named": true
+          }
+        ]
+      }
+    },
     "children": {
       "multiple": true,
       "required": true,
       "types": [
         {
-          "type": "escape_sequence",
-          "named": true
-        },
-        {
-          "type": "float_literal",
-          "named": true
-        },
-        {
-          "type": "integer_literal",
+          "type": "_expression",
           "named": true
         },
         {
@@ -1852,18 +1855,6 @@
         },
         {
           "type": "macro_identifier",
-          "named": true
-        },
-        {
-          "type": "macro_raw_token",
-          "named": true
-        },
-        {
-          "type": "rune_literal",
-          "named": true
-        },
-        {
-          "type": "string_literal",
           "named": true
         }
       ]
@@ -1895,21 +1886,24 @@
   {
     "type": "macro_call_body",
     "named": true,
-    "fields": {},
+    "fields": {
+      "value": {
+        "multiple": true,
+        "required": false,
+        "types": [
+          {
+            "type": "_expression",
+            "named": true
+          }
+        ]
+      }
+    },
     "children": {
       "multiple": true,
       "required": true,
       "types": [
         {
-          "type": "escape_sequence",
-          "named": true
-        },
-        {
-          "type": "float_literal",
-          "named": true
-        },
-        {
-          "type": "integer_literal",
+          "type": "_expression",
           "named": true
         },
         {
@@ -1922,18 +1916,6 @@
         },
         {
           "type": "macro_input_open",
-          "named": true
-        },
-        {
-          "type": "macro_raw_token",
-          "named": true
-        },
-        {
-          "type": "rune_literal",
-          "named": true
-        },
-        {
-          "type": "string_literal",
           "named": true
         }
       ]
@@ -4603,10 +4585,6 @@
     "named": true
   },
   {
-    "type": "macro_raw_token",
-    "named": true
-  },
-  {
     "type": "main",
     "named": false
   },
@@ -4624,11 +4602,11 @@
   },
   {
     "type": "operator",
-    "named": false
+    "named": true
   },
   {
     "type": "operator",
-    "named": true
+    "named": false
   },
   {
     "type": "override",

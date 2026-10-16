@@ -27,18 +27,12 @@ enum TokenType {
     QUOTE_INTERP_CLOSE,
     QUOTE_CLOSE,
     MACRO_AT,
-    MACRO_ATTR_OPEN,
-    MACRO_BODY_CONTENT,
-    MACRO_ATTR_CLOSE,
-    MACRO_INPUT_OPEN,
-    MACRO_INPUT_CLOSE,
     ERROR_SENTINEL,
     GENERIC_LT,
     QUOTE_MACRO_HEAD,
     QUOTE_NEWLINE,
     PERFORM_DSL,
     RESUME_DSL,
-    MACRO_BODY_WORD,
 };
 
 #define CTX_NONE 0
@@ -50,8 +44,6 @@ enum TokenType {
 #define CTX_QUOTE 6
 #define CTX_QUOTE_PAREN 7
 #define CTX_QUOTE_INTERP 8
-#define CTX_MACRO_BODY 9
-#define CTX_MACRO_GROUP 10
 
 #define STACK_MAX 32
 
@@ -77,8 +69,6 @@ static const FrameInfo INFO[] = {
     [CTX_QUOTE] = {false, QUOTE_CLOSE, ')', false, false, false, false, false, false, false},
     [CTX_QUOTE_PAREN] = {false, QUOTE_PAREN_CLOSE, ')', false, false, false, false, false, false, false},
     [CTX_QUOTE_INTERP] = {true, QUOTE_INTERP_CLOSE, ')', true, true, true, false, true, false, true},
-    [CTX_MACRO_BODY] = {false, 0, 0, false, false, false, false, false, false, true},
-    [CTX_MACRO_GROUP] = {false, 0, 0, false, false, false, false, false, false, true},
 };
 
 typedef struct {
@@ -95,7 +85,6 @@ static bool scan_string_open(TSLexer *lexer, Scanner *s);
 static bool scan_generic_lt(TSLexer *lexer);
 static bool scan_terminator(TSLexer *lexer);
 static bool scan_block_comment_content(TSLexer *lexer);
-static bool scan_macro_body_open(TSLexer *lexer, Scanner *s);
 static bool scan_macro_at(TSLexer *lexer);
 static bool scan_quote_open(TSLexer *lexer, Scanner *s);
 static bool scan_perform_dsl(TSLexer *lexer);
@@ -683,20 +672,6 @@ static bool scan_macro_at(TSLexer *lexer) {
     return true;
 }
 
-static bool scan_macro_body_open(TSLexer *lexer, Scanner *s) {
-    skip_inline_ws(lexer);
-    if (lexer->lookahead != '[' && lexer->lookahead != '(')
-        return false;
-    char opener = (char)lexer->lookahead;
-    if (s->top >= STACK_MAX)
-        return false;
-    push(s, CTX_MACRO_BODY, (opener == '[') ? ']' : ')');
-    advance(lexer);
-    lexer->mark_end(lexer);
-    lexer->result_symbol = (opener == '[') ? MACRO_ATTR_OPEN : MACRO_INPUT_OPEN;
-    return true;
-}
-
 // Shared expression-position dispatch; the caller guarantees top is expr-mode.
 static bool scan_expr_frame(TSLexer *lexer, Scanner *s, const bool *valid_symbols, const FrameInfo *info) {
     if (info->generic_lt && valid_symbols[GENERIC_LT]) {
@@ -731,91 +706,10 @@ static bool scan_expr_frame(TSLexer *lexer, Scanner *s, const bool *valid_symbol
         return true;
     if (info->quote_open && valid_symbols[QUOTE_OPEN] && scan_quote_open(lexer, s))
         return true;
-    if (info->macro_open) {
-        if ((valid_symbols[MACRO_ATTR_OPEN] || valid_symbols[MACRO_INPUT_OPEN]) && scan_macro_body_open(lexer, s))
-            return true;
-        if (valid_symbols[MACRO_AT] && scan_macro_at(lexer))
-            return true;
-    }
+    if (info->macro_open && valid_symbols[MACRO_AT] && scan_macro_at(lexer))
+        return true;
     return false;
 }
-
-static bool scan_macro_body_content(TSLexer *lexer, Scanner *s) {
-    uint8_t top = s->kinds[s->top - 1];
-    if (top != CTX_MACRO_BODY && top != CTX_MACRO_GROUP)
-        return false;
-    char closer = s->params[s->top - 1];
-    bool any = false;
-    lexer->result_symbol = MACRO_BODY_CONTENT;
-    while (lexer->lookahead != 0) {
-        char c = (char)lexer->lookahead;
-        if (c == '(' || c == '[' || c == '{') {
-            // Nested group: pushed mid-token so the delimiter stays inside the content it spans.
-            push(s, CTX_MACRO_GROUP, (c == '(') ? ')' : (c == '[') ? ']' : '}');
-            advance(lexer);
-            any = true;
-            continue;
-        }
-        if (c == ')' || c == ']' || c == '}') {
-            if (s->kinds[s->top - 1] == CTX_MACRO_GROUP && s->params[s->top - 1] == c) {
-                pop(s);
-                advance(lexer);
-                any = true;
-                continue;
-            }
-            uint8_t bi = s->top - 1;
-            while (bi > 0 && s->kinds[bi] == CTX_MACRO_GROUP)
-                bi--;
-            if (s->kinds[bi] == CTX_MACRO_BODY && c == s->params[bi]) {
-                lexer->mark_end(lexer);
-                if (!any)
-                    return false;
-                return true;
-            }
-            advance(lexer);
-            any = true;
-            continue;
-        }
-        if (c == '/') {
-            // Raw content: a delimiter in it cannot start a string or unbalance the stack.
-            any = true;
-            skip_comment_content(lexer);
-            continue;
-        }
-        if (c == '#' || c == '"' || c == '\'' || c == '\\') {
-            lexer->mark_end(lexer);
-            return any;
-        }
-        // Ad-hoc split (cjls parity): end the raw run at an ASCII word or
-        // digit. On an empty run the word itself is lexed here as
-        // MACRO_BODY_WORD (an external, so no keyword machinery applies and
-        // reserved words lex as words); digits fall through to the grammar's
-        // literal tokens. Non-ASCII stays raw content.
-        if (iswalpha(c) || c == '_') {
-            if (any) {
-                lexer->mark_end(lexer);
-                return true;
-            }
-            lexer->result_symbol = MACRO_BODY_WORD;
-            while (iswalpha(lexer->lookahead) || iswdigit(lexer->lookahead) || lexer->lookahead == '_')
-                advance(lexer);
-            lexer->mark_end(lexer);
-            return true;
-        }
-        if (any && iswdigit(c)) {
-            lexer->mark_end(lexer);
-            return true;
-        }
-        advance(lexer);
-        any = true;
-    }
-    while (s->top > 0 && (s->kinds[s->top - 1] == CTX_MACRO_BODY || s->kinds[s->top - 1] == CTX_MACRO_GROUP)) {
-        pop(s);
-    }
-    lexer->mark_end(lexer);
-    return any;
-}
-
 static bool ws(char c) { return c == ' ' || c == '\t' || c == '\r' || c == '\n'; }
 
 // Swift's ParseExpr.cpp rule (SO 36387657): favor '<' unless a generic clause balances to '>' with a follow-set token next.
@@ -1067,34 +961,6 @@ bool tree_sitter_cangjie_external_scanner_scan(void *payload, TSLexer *lexer, co
         if (valid_symbols[QUOTE_OPEN] && scan_quote_open(lexer, s))
             return true;
         return false;
-
-    case CTX_MACRO_GROUP:
-        /* fall through: a folding closer and what follows stay body content */
-    case CTX_MACRO_BODY: {
-        // The MACRO_BODY frame sits below any pending group frames.
-        uint8_t i = s->top - 1;
-        while (i > 0 && s->kinds[i] == CTX_MACRO_GROUP)
-            i--;
-        char body_closer = s->params[i];
-        // The innermost group's closer folds into content; the BODY's closer
-        // wins over unbalanced pending groups (recovery semantics).
-        bool group_folds = (s->kinds[s->top - 1] == CTX_MACRO_GROUP && lexer->lookahead == s->params[s->top - 1]);
-        if (!group_folds && (valid_symbols[MACRO_ATTR_CLOSE] || valid_symbols[MACRO_INPUT_CLOSE]) &&
-            lexer->lookahead == body_closer) {
-            while (s->top > 0 && (s->kinds[s->top - 1] == CTX_MACRO_BODY || s->kinds[s->top - 1] == CTX_MACRO_GROUP)) {
-                pop(s);
-            }
-            advance(lexer);
-            lexer->mark_end(lexer);
-            lexer->result_symbol = (body_closer == ']') ? MACRO_ATTR_CLOSE : MACRO_INPUT_CLOSE;
-            return true;
-        }
-        if (valid_symbols[MACRO_BODY_CONTENT] && scan_macro_body_content(lexer, s))
-            return true;
-        if (scan_string_opens(lexer, s, valid_symbols, true))
-            return true;
-        return false;
-    }
 
     default:
         return false;

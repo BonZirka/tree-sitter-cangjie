@@ -35,10 +35,10 @@ main() {
             (quote_close)))))))
 
 ==================
-macro body with escape, string and raw tokens
+macro body parses expressions, strings and numbers
 ==================
 main() {
-  @M[a \@ b "s" c]
+  @M[t, "s" + u, 1.5e3]
 }
 ------------------
 
@@ -52,22 +52,22 @@ main() {
           (macro_name)
           (macro_attribute_body
             (macro_attr_open)
-            (macro_identifier)
-            (macro_raw_token)
-            (escape_sequence)
-            (macro_raw_token)
-            (macro_identifier)
-            (macro_raw_token)
-            (string_literal
-              (string_start)
-              (string_content)
-              (string_end))
-            (macro_raw_token)
-            (macro_identifier)
+            (postfix_expression
+              (identifier))
+            (binary_expression
+              left: (postfix_expression
+                (string_literal
+                  (string_start)
+                  (string_content)
+                  (string_end)))
+              right: (postfix_expression
+                (identifier)))
+            (postfix_expression
+              (float_literal))
             (macro_attr_close)))))))
 
 ==================
-unbalanced macro paren group recovers at the close bracket
+unbalanced call in macro body recovers with a missing paren
 ==================
 main() {
   @M[a(b]
@@ -85,9 +85,13 @@ main() {
           (macro_name)
           (macro_attribute_body
             (macro_attr_open)
-            (macro_identifier)
-            (macro_raw_token)
-            (macro_identifier)
+            (postfix_expression
+              base: (postfix_expression
+                (identifier))
+              suffix: (call_suffix
+                (postfix_expression
+                  (identifier))
+                (MISSING ")")))
             (macro_attr_close))))
       (variable_declaration
         name: (variable_name
@@ -96,24 +100,18 @@ main() {
           (integer_literal))))))
 
 ==================
-unterminated macro body recovers at EOF without swallowing the file
+unterminated macro body at EOF in an unclosed block
 ==================
 main() {
   @M[abc
 ------------------
 
 (source_file
-  (main_definition
+  (ERROR
     (parameter_list)
-    (block
-      (postfix_expression
-        (macro_expression
-          (macro_call_sigil)
-          (macro_name)
-          (macro_attribute_body
-            (macro_attr_open)
-            (macro_identifier))))
-      (MISSING "}"))))
+    (macro_call_sigil)
+    (macro_name)
+    (identifier)))
 
 ==================
 macro expression inside string interpolation
@@ -138,7 +136,8 @@ let s = "${@f(1)}"
               (macro_name)
               (macro_call_body
                 (macro_input_open)
-                (macro_raw_token)
+                (postfix_expression
+                  (integer_literal))
                 (macro_input_close))))
           (interp_close))
         (string_end)))))
@@ -189,9 +188,9 @@ main() {
             (macro_name)
             (macro_attribute_body
               (macro_attr_open)
-              (macro_raw_token)
-              (macro_identifier)
-              (macro_raw_token)
+              (line_comment)
+              (postfix_expression
+                (identifier))
               (macro_attr_close)))))
       (variable_declaration
         (variable_name
@@ -202,7 +201,7 @@ main() {
             (macro_name)
             (macro_attribute_body
               (macro_attr_open)
-              (macro_raw_token)
-              (macro_identifier)
-              (macro_raw_token)
+              (block_comment)
+              (postfix_expression
+                (identifier))
               (macro_attr_close))))))))
