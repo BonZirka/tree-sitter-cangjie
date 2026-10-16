@@ -452,16 +452,34 @@ const M = {
     // Block-scope functions carry no modifiers (cjc) — see the statement-start invariant.
     _local_function_definition: ($) => $._function_tail,
     _function_tail: ($) =>
-      prec.right(
-        seq(
-          TOKENS.FUNC,
-          // main is hard, but cjc accepts it as a function name — its only identifier position.
-          field('name', alias(choice(reserved('default', $.identifier), $.unicode_identifier, $.raw_identifier, TOKENS.MAIN), $.func_name)),
-          optional($.type_parameters),
-          field('parameters', $.parameter_list),
-          optional(field('return_type', $.return_type)),
-          optional($.generic_constraints),
-          optional(field('body', $.block)),
+      choice(
+        // The with-body version outranks the body-less one: at an unclosed
+        // trailing '{' (EOF while typing) both versions cost one error, and
+        // the dynamic precedence makes MISSING '}' win over flagging the '{'.
+        prec.dynamic(
+          1,
+          prec.right(
+            seq(
+              TOKENS.FUNC,
+              // main is hard, but cjc accepts it as a function name — its only identifier position.
+              field('name', alias(choice(reserved('default', $.identifier), $.unicode_identifier, $.raw_identifier, TOKENS.MAIN), $.func_name)),
+              optional($.type_parameters),
+              field('parameters', $.parameter_list),
+              optional(field('return_type', $.return_type)),
+              optional($.generic_constraints),
+              field('body', $.block),
+            ),
+          ),
+        ),
+        prec.right(
+          seq(
+            TOKENS.FUNC,
+            field('name', alias(choice(reserved('default', $.identifier), $.unicode_identifier, $.raw_identifier, TOKENS.MAIN), $.func_name)),
+            optional($.type_parameters),
+            field('parameters', $.parameter_list),
+            optional(field('return_type', $.return_type)),
+            optional($.generic_constraints),
+          ),
         ),
       ),
     operator_function_definition: ($) =>
