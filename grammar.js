@@ -226,6 +226,7 @@ const M = {
     $._quote_newline,
     $._perform_dsl,
     $._resume_dsl,
+    $._macro_body_word,
   ],
 
   supertypes: ($) => [$._literal, $._expression, $._type],
@@ -1231,7 +1232,20 @@ const M = {
       ),
 
     _macro_body_item: ($) =>
-      choice(alias($._macro_body_content, $.macro_raw_token), $.escape_sequence, $.string_literal, $.rune_literal),
+      choice(
+        alias($._macro_body_content, $.macro_raw_token),
+        // Ad-hoc lexical split of the raw body (cjls parity): names and
+        // numbers surface as tokens so queries can capture them. The word is
+        // an EXTERNAL token, not the word symbol: the body is raw text, so
+        // reserved words must lex as words here, and the generator forbids
+        // duplicating the word token's rule in a plain token.
+        alias($._macro_body_word, $.macro_identifier),
+        $.integer_literal,
+        $.float_literal,
+        $.escape_sequence,
+        $.string_literal,
+        $.rune_literal,
+      ),
 
     block_comment: ($) => seq('/*', $._block_comment_content),
     // cjc: identifiers are XID (NFC-normalized by cjc; tree-sitter keeps bytes),

@@ -10997,6 +10997,23 @@
           "value": "macro_raw_token"
         },
         {
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_macro_body_word"
+          },
+          "named": true,
+          "value": "macro_identifier"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "integer_literal"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "float_literal"
+        },
+        {
           "type": "SYMBOL",
           "name": "escape_sequence"
         },
@@ -11267,6 +11284,10 @@
     {
       "type": "SYMBOL",
       "name": "_resume_dsl"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "_macro_body_word"
     }
   ],
   "inline": [

@@ -509,7 +509,10 @@
     (identifier) @variable.builtin)
 
 ; ===== Macro call arguments: raw token streams per spec =====
+; The bodies are split ad-hoc (cjls parity): names and numbers surface as
+; tokens inside the raw stream.
 
+(macro_identifier) @variable
 (macro_raw_token) @markup.raw
 
 ; ===== String interpolation =====

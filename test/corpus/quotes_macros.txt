@@ -52,14 +52,18 @@ main() {
           (macro_name)
           (macro_attribute_body
             (macro_attr_open)
+            (macro_identifier)
             (macro_raw_token)
             (escape_sequence)
+            (macro_raw_token)
+            (macro_identifier)
             (macro_raw_token)
             (string_literal
               (string_start)
               (string_content)
               (string_end))
             (macro_raw_token)
+            (macro_identifier)
             (macro_attr_close)))))))
 
 ==================
@@ -81,7 +85,9 @@ main() {
           (macro_name)
           (macro_attribute_body
             (macro_attr_open)
+            (macro_identifier)
             (macro_raw_token)
+            (macro_identifier)
             (macro_attr_close))))
       (variable_declaration
         name: (variable_name
@@ -106,7 +112,7 @@ main() {
           (macro_name)
           (macro_attribute_body
             (macro_attr_open)
-            (macro_raw_token))))
+            (macro_identifier))))
       (MISSING "}"))))
 
 ==================
@@ -184,6 +190,8 @@ main() {
             (macro_attribute_body
               (macro_attr_open)
               (macro_raw_token)
+              (macro_identifier)
+              (macro_raw_token)
               (macro_attr_close)))))
       (variable_declaration
         (variable_name
@@ -194,5 +202,7 @@ main() {
             (macro_name)
             (macro_attribute_body
               (macro_attr_open)
+              (macro_raw_token)
+              (macro_identifier)
               (macro_raw_token)
               (macro_attr_close))))))))

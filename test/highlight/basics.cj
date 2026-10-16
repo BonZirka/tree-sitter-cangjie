@@ -80,6 +80,7 @@ macro mk(x: Expr) { @body(1) }
 //    ^ @function.macro
 //                  ^ @function.macro
 //                   ^ @function.macro
+//                        ^ @number
 //                           ^ @function.macro
 //                            ^ @markup.raw
 
@@ -87,7 +88,10 @@ macro mk(x: Expr) { @body(1) }
 //^ @function.macro
 // ^ @function.macro
 //     ^ @function.macro
-//      ^ @markup.raw
+//      ^ @variable
+//          ^ @variable
+//           ^ @markup.raw
+//              ^ @markup.raw
 
 let r = quote(1 + @PlusOne(x) * 2)
 //                     ^ @function.macro

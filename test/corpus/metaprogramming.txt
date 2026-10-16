@@ -632,6 +632,7 @@ non-attribute macro call
     (macro_name)
     (macro_call_body
       (macro_input_open)
+      (macro_identifier)
       (macro_raw_token)
       (macro_input_close))))
 
@@ -649,10 +650,12 @@ attribute macro call
     (macro_name)
     (macro_attribute_body
       (macro_attr_open)
+      (macro_identifier)
       (macro_raw_token)
       (macro_attr_close))
     (macro_call_body
       (macro_input_open)
+      (macro_identifier)
       (macro_raw_token)
       (macro_input_close))))
 
@@ -689,6 +692,7 @@ attribute macro call with empty attribute body
       (macro_attr_close))
     (macro_call_body
       (macro_input_open)
+      (macro_identifier)
       (macro_raw_token)
       (macro_input_close))))
 
@@ -755,6 +759,7 @@ main() {
           (macro_call_body
             (macro_input_open)
             (macro_raw_token)
+            (macro_raw_token)
             (macro_input_close)))))))
 
 ==================
@@ -794,6 +799,7 @@ main() {
             (macro_call_body
               (macro_input_open)
               (macro_raw_token)
+              (macro_raw_token)
               (macro_input_close)))))
       (postfix_expression
         (jump_expression
@@ -814,6 +820,9 @@ unbalanced parens in macro input leave body unclosed
     (macro_name)
     (macro_call_body
       (macro_input_open)
+      (macro_identifier)
+      (macro_raw_token)
+      (macro_identifier)
       (macro_raw_token))))
 
 ==================
@@ -830,6 +839,9 @@ unbalanced brackets in attribute leave body unclosed
     (macro_name)
     (macro_attribute_body
       (macro_attr_open)
+      (macro_identifier)
+      (macro_raw_token)
+      (macro_identifier)
       (macro_raw_token))))
 
 ==================
@@ -971,6 +983,7 @@ func foo() {
       (macro_name)
       (macro_attribute_body
         (macro_attr_open)
+        (macro_identifier)
         (macro_raw_token)
         (string_literal
           (string_start)
@@ -1010,15 +1023,21 @@ func foo() {
       (macro_attribute_body
         (macro_attr_open)
         (macro_raw_token)
-        (string_literal
-          (string_start)
-          (string_content)
-          (string_end))
+        (macro_identifier)
         (macro_raw_token)
         (string_literal
           (string_start)
           (string_content)
           (string_end))
+        (macro_raw_token)
+        (macro_identifier)
+        (macro_raw_token)
+        (string_literal
+          (string_start)
+          (string_content)
+          (string_end))
+        (macro_raw_token)
+        (macro_identifier)
         (macro_raw_token)
         (string_literal
           (string_start)
@@ -1058,6 +1077,7 @@ func tee() { }
       (macro_attribute_body
         (macro_attr_open)
         (macro_raw_token)
+        (macro_identifier)
         (macro_attr_close)))
     (function_definition
       (func_name)
@@ -1069,7 +1089,7 @@ func tee() { }
       (macro_name)
       (macro_attribute_body
         (macro_attr_open)
-        (macro_raw_token)
+        (macro_identifier)
         (macro_attr_close)))
     (function_definition
       (func_name)
@@ -1092,6 +1112,7 @@ import std.math.*
       (macro_name)
       (macro_attribute_body
         (macro_attr_open)
+        (macro_identifier)
         (macro_raw_token)
         (string_literal
           (string_start)
@@ -1183,7 +1204,7 @@ public macro M2(input: Tokens): Tokens {
                   (macro_name)
                   (macro_call_body
                     (macro_input_open)
-                    (macro_raw_token)
+                    (macro_identifier)
                     (macro_input_close))))
               (postfix_expression
                 (postfix_expression

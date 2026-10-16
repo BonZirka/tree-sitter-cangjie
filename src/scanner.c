@@ -38,6 +38,7 @@ enum TokenType {
     QUOTE_NEWLINE,
     PERFORM_DSL,
     RESUME_DSL,
+    MACRO_BODY_WORD,
 };
 
 #define CTX_NONE 0
@@ -784,6 +785,26 @@ static bool scan_macro_body_content(TSLexer *lexer, Scanner *s) {
         if (c == '#' || c == '"' || c == '\'' || c == '\\') {
             lexer->mark_end(lexer);
             return any;
+        }
+        // Ad-hoc split (cjls parity): end the raw run at an ASCII word or
+        // digit. On an empty run the word itself is lexed here as
+        // MACRO_BODY_WORD (an external, so no keyword machinery applies and
+        // reserved words lex as words); digits fall through to the grammar's
+        // literal tokens. Non-ASCII stays raw content.
+        if (iswalpha(c) || c == '_') {
+            if (any) {
+                lexer->mark_end(lexer);
+                return true;
+            }
+            lexer->result_symbol = MACRO_BODY_WORD;
+            while (iswalpha(lexer->lookahead) || iswdigit(lexer->lookahead) || lexer->lookahead == '_')
+                advance(lexer);
+            lexer->mark_end(lexer);
+            return true;
+        }
+        if (any && iswdigit(c)) {
+            lexer->mark_end(lexer);
+            return true;
         }
         advance(lexer);
         any = true;
